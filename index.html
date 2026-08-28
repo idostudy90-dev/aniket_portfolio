@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aniket Sharma</title>
+
+  <!-- THE FRONT DOOR
+       This file does one job: whoever opens the website lands here
+       first, and is sent straight on to the intro page. Nothing is
+       drawn on this page — nobody ever sees it.
+
+       If you ever want the site to open on a different page, change
+       BOTH the line below and the one in the script at the bottom. -->
+  <meta http-equiv="refresh" content="0; url=intro/index.html">
+  <link rel="canonical" href="intro/index.html">
+</head>
+<body>
+
+  <!-- Shown only if the browser is very old, or JavaScript is off. -->
+  <p><a href="intro/index.html">Enter</a></p>
+
+  <script>
+    /* "replace" instead of a normal jump, so this front door does not
+       land in the browser's history. Otherwise the Back button on the
+       intro page would bounce you straight back here, and forward
+       again, in a loop. */
+    location.replace("intro/index.html");
+  </script>
+
+</body>
+</html>

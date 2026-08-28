@@ -1,0 +1,885 @@
+/* ==========================================================
+   ANIKET PORTFOLIO — 02 PROJECTS
+   Desktop layout. (Mobile comes later, as a separate step.)
+   Same skeleton as ../intro/style.css — sections 1-6 are the
+   shared machinery, section 7 is where the art goes.
+   ========================================================== */
+
+
+/* ---- 1. RESET ----
+   Clears the browser's default spacing so nothing shifts on its own. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+/* ---- 2. THE HANDWRITING FONT ----
+   Only needed for text typed as real text.
+   Text that is already baked into a PNG does not need this. */
+@font-face {
+  font-family: 'Aniket';
+  src: url('../Aniket-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Pixel font for the iPod's little screen. */
+@font-face {
+  font-family: 'Nokia';
+  src: url('../nokiafc22.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+/* ---- 3. THE PAPER BACKGROUND ----
+   Just the flat taupe colour here, so the area around the stage
+   matches. The actual paper texture is on the stage (section 5).
+   Unlike the intro, THIS PAGE SCROLLS DOWN — so only sideways
+   scrolling is blocked, not up-and-down. */
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #D2CCC3;
+
+  /* Scrolling still works — the bar itself is just hidden. */
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* old Edge */
+}
+
+/* Chrome, Safari, new Edge */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* ---- 4. THE SCREEN ----
+   Holds the stage, centred sideways, starting at the top.
+   Its height is set by fit.js — that is what gives the page the
+   right amount of scroll. */
+.screen {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+
+/* ---- 5. THE STAGE ----
+   The box that holds all the art.
+   It is ALWAYS 1739 x 1550 on the inside, so every left/top number
+   below is the real design number — you never have to recalculate.
+   The top 1739 x 1033 of it is one screenful, shrunk to fit the
+   window exactly like the intro page does, so everything is drawn
+   at the same size as on the intro. The rest hangs below and is
+   what you scroll down to.
+   (If you change 'height', change DESIGN_HEIGHT in fit.js to match —
+   that is the number that makes the page longer or shorter.) */
+.stage {
+  position: relative;
+  width: 1739px;
+  height: 1550px;
+  flex: none;
+  transform-origin: top center;
+}
+
+
+/* ---- 5b. THE PAPER ----
+   The paper lives inside the stage so blend modes (overlay, darken, etc.)
+   can mix with it. Covers the whole tall page, and bleeds out past the
+   sides via --inv so no bare edges show. Sits behind the art. */
+.stage::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width:  max(100%, calc(100vw * var(--inv, 1)));
+  height: 100%;
+  transform: translateX(-50%);
+
+  background-color: #D2CCC3;
+  background-image: url('../intro/assest/bg texture.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  z-index: 0;
+}
+
+
+/* ---- 5c. THE CORNER SHADOW ----
+   Sits ON TOP of the stage art so the soft dark vignette covers the
+   corners and anything placed near the edges. Stretched over the whole
+   tall page, so the dark corners are the PAGE's corners, not the
+   window's — it does not follow you as you scroll. */
+.stage::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width:  max(100%, calc(100vw * var(--inv, 1)));
+  height: 100%;
+  transform: translateX(-50%);
+
+  background-image: url('../intro/assest/corner shadow.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%;
+  mix-blend-mode: color-burn;
+  pointer-events: none;
+  z-index: 5;
+}
+
+
+/* ---- 6. HOW EVERY PIECE OF ART BEHAVES ----
+   Shared rules so we don't repeat them for each image:
+     - position absolute  = placed by exact left/top numbers
+     - height auto        = never squashed or stretched
+     - user-select none   = can't be accidentally highlighted
+     - pointer-events none = clicks pass through (turn this OFF
+                             for anything clickable or hoverable) */
+.stage img {
+  position: absolute;
+  height: auto;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ---- 6b. THE PIECES YOU CAN CLICK ----
+   A <a class="page-link"> wrapper turns the hand-drawn notes into a
+   link to another page.
+
+     display: contents  = the wrapper itself draws nothing at all, so
+                          the pictures inside keep the exact left/top
+                          numbers they already have. Nothing moves.
+     pointer-events auto = switches clicks back ON for those pictures
+                          (the shared rule just above turns clicks off
+                          for every picture on the stage).
+
+   To make something else clickable, wrap it the same way. */
+.page-link {
+  display: contents;
+}
+
+.page-link img {
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity .18s ease;
+}
+
+/* fade a little on hover, so it feels like a button */
+.page-link:hover img {
+  opacity: 0.55;
+}
+
+
+
+
+/* ==========================================================
+   7. THE PIECES
+   One block per image. Add new ones below.
+
+   Template:
+     .el-name {
+       left:  000px;     <- distance from the stage's left edge
+       top:   000px;     <- distance from the stage's top edge
+       width: 000px;     <- set width only; height sorts itself out
+     }
+   ========================================================== */
+
+/* big faded coffee ring sitting behind the Projects heading. */
+.el-coffee-stain-1 {
+  left:  11px;
+  top:   26px;
+  width: 357.4px;
+  transform: rotate(5deg);
+  opacity: 0.5;
+  /* multiply, NOT darken — this PNG has a solid white background, and
+     the paper is darker than the stain, so darken erased it entirely.
+     Multiply drops the white out and lets the ring tint the paper. */
+  mix-blend-mode: normal;
+}
+
+/* the "Projects??" heading, sitting on top of the ring */
+.el-projects {
+  left:  90px;
+  top:  152px;
+  width: 220px;
+  mix-blend-mode: darken;
+  opacity: 0.7;
+}
+
+
+/* project card — left one (top row) */
+.el-pr-page-1 {
+  left:  70px;
+  top:   266px;
+  width: 734px;
+}
+
+/* project card — right one (top row) */
+.el-pr-page-2 {
+  left:  1009px;
+  top:   287px;
+  width: 734px;
+}
+
+/* project card — left one (bottom row) */
+.el-pr-page-3 {
+  left:  70px;
+  top:   760px;
+  width: 734px;
+}
+
+/* project card — right one (bottom row) */
+.el-pr-page-4 {
+  left:  1009px;
+  top:   770px;
+  width: 734px;
+}
+
+/* asterix doodle — sits out in the margin left of the stage */
+.el-asterix {
+  left:  70px;
+  top:   248px;
+  width: 400px;
+}
+
+/* red line running down the left */
+.el-red-line {
+  left:  20px;
+  top:   270px;
+  width: 14px;
+}
+
+/* star doodle on the left */
+.el-star {
+  left:  -90px;
+  top:   440px;
+  width: 90px;
+  mix-blend-mode: color-burn;
+}
+
+/* "intro" handwritten note, top-left corner */
+.el-intro {
+  left:  -88px;
+  top:   131px;
+  width: 90px;
+}
+
+/* the little arrow just above it */
+.el-intro-arrow {
+  left: -147px;
+  top:    50px;
+  width: 90px;
+  transform: rotate(-165deg);
+}
+
+/* sysUX label */
+.el-sysux {
+  left:  480px;
+  top:   195px;
+  width: 172px;
+  transform: rotate(5deg);
+}
+
+/* screen-aster */
+.el-screen-aster {
+  left:  702px;
+  top:   207px;
+  width: 132px;
+}
+
+/* handwritten category tags sitting above cards */
+.proj-tag {
+  position: absolute;
+  font-family: 'Aniket', cursive;
+  font-size: 42px;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  color: #c98a0c;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* kiwi tag (green mark) */
+.el-tag-kiwi {
+  left: 1410px;
+  top:  218px;
+  transform: rotate(3deg);
+}
+
+/* roopak tag (blue mark) */
+.el-tag-roopak {
+  left: 520px;
+  top:  708px;
+  transform: rotate(-2deg);
+}
+
+/* acsp tag (purple mark) */
+.el-tag-acsp {
+  left: 1450px;
+  top:  718px;
+  transform: rotate(2deg);
+}
+
+/* roopak project card (red mark area) */
+.el-roopak {
+  left:  70px;
+  top:   710px;
+  width: 435px;
+}
+
+/* kiwi project card (yellow mark area) */
+.el-kiwi {
+  left:  950px;
+  top:   130px;
+  width: 475px;
+  transform: rotate(2deg);
+}
+
+/* acsp project card (green mark area) */
+.el-acsp {
+  left:  1000px;
+  top:   750px;
+  width: 430px;
+  
+}
+
+/* me sketch (blue mark area — top-right corner) */
+/* roop */
+.el-roop {
+  left:  748px;
+  top:   684px;
+  width: 100px;
+}
+
+/* kiwi screen */
+.el-kiwi-screen {
+  left:  1651px;
+  top:   226px;
+  width: 180px;
+}
+
+/* acs earpiece */
+.el-acs {
+  left:  1660px;
+  top:   780px;
+  width: 140px;
+}
+
+.el-me {
+  left:  1650px;
+  top:   10px;
+  width: 200px;
+  mix-blend-mode: darken;
+  opacity: 1;
+}
+
+/* blue arrow buttons on each project card */
+.el-arrow-1 {
+  left:  715px;
+  top:   485px;
+  width: 85px;
+}
+
+.el-arrow-2 {
+  left:  1644px;
+  top:   536px;
+  width: 85px;
+}
+
+.el-arrow-3 {
+  left:  705px;
+  top:   1000px;
+  width: 85px;
+}
+
+.el-arrow-4 {
+  left:  1644px;
+  top:   989px;
+  width: 85px;
+}
+
+/* "more projects coming soon" text below cards */
+.el-more-projects {
+  position: absolute;
+  left: 50%;
+  top: 1210px;
+  transform: translateX(-50%);
+  font-family: 'Aniket', cursive;
+  font-size: 56px;
+  letter-spacing: -1px;
+  color: #319828;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* "other stuffs" handwritten note, bottom-right */
+.el-other-stuffs {
+  left:  1256px;
+  top:   1350px;
+  width: 400px;
+}
+
+/* the little arrow just after it */
+.el-next-arrow {
+  left:  1650px;
+  top:   1420px;
+  width: 100px;
+  transform: rotate(-20deg);
+}
+
+
+/* ----------------------------------------------------------
+   PROJECT TEMPLATE — the 7 pieces of one project
+
+   This is the other half of the PROJECT TEMPLATE at the bottom
+   of index.html. It is already filled in with the right sizes
+   and spacing, copied from the roopak project, and placed as a
+   new bottom-left card on a third row.
+
+   You do not need to touch any of these numbers. Switch the
+   project on in index.html and it will land in the right place.
+
+   If you want it somewhere else, the only two numbers that
+   really matter are the CARD's left and top. Everything else is
+   measured from those, so move the card first, then shift the
+   other six by the same amount.
+
+   For a SECOND new project: copy this whole block, and swap the
+   word "newproject" for a different word in every line — the
+   same word you used in index.html.
+   ---------------------------------------------------------- */
+
+/* 1. the paper card behind everything */
+.el-card-newproject {
+  left:   70px;
+  top:  1254px;
+  width: 734px;
+}
+
+/* 2. your big thumbnail picture, sitting on the card */
+.el-thumb-newproject {
+  left:   70px;
+  top:  1204px;
+  width: 435px;
+}
+
+/* 3. the small extra picture off to the right
+      (if you do not have one, delete its line in index.html) */
+.el-screen-newproject {
+  left:  748px;
+  top:  1178px;
+  width: 100px;
+}
+
+/* 4. the little handwritten category tag */
+.el-tag-newproject {
+  left:  520px;
+  top:  1202px;
+  transform: rotate(-2deg);
+}
+
+/* 5. the project name.
+      Each project uses its own font and colour — swap these two
+      lines for whichever you like. */
+.el-title-newproject {
+  left:  509px;
+  top:  1288px;
+  font-family: 'Crimson Text', serif;
+  font-weight: 700;
+  font-style: italic;
+  color: #282419;
+}
+
+/* 6. the paragraph underneath */
+.el-desc-newproject {
+  left:  507px;
+  top:  1338px;
+  width: 228px;
+}
+
+/* 7. the blue arrow, bottom-right of the card */
+.el-arrow-newproject {
+  left:  705px;
+  top:  1494px;
+  width: 85px;
+}
+
+
+/* ----------------------------------------------------------
+   PROJECT TITLES + BLURBS
+   Wording, fonts, sizes and colours all come from the Figma
+   file (frame 40:4). The stage is the same 1739px wide as that
+   frame, so the Figma pixel sizes are used exactly as they are.
+   Only the left/top come from where you drew on the page.
+   ---------------------------------------------------------- */
+
+/* the paragraph under each project name — same for all four */
+.proj-desc {
+  position: absolute;
+  font-family: 'Anaheim', sans-serif;
+  font-size: 24px;
+  font-weight: 580;
+  line-height: 1.25;
+  letter-spacing: -1.2px;
+  color: #000;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* the project name itself — each one has its own font and colour,
+   set further down */
+.proj-title {
+  position: absolute;
+  font-size: 30px;
+  line-height: normal;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+
+/* --- asterix (top-left card) --- */
+.el-title-asterix {
+  left: 490px;
+  top:  282px;
+  font-family: 'Crimson Text', serif;
+  font-weight: 700;
+  font-style: italic;
+  color: #282419;
+}
+
+.el-desc-asterix {
+  left:  479px;
+  top:   336px;
+  width: 229px;
+}
+
+
+/* --- kiwi (top-right card) --- */
+.el-title-kiwi {
+  left: 1400px;
+  top:  315px;
+  font-family: 'Fugaz One', cursive;
+  font-weight: 400;
+  line-height: 1.63;
+  color: #3789ff;
+}
+
+.el-desc-kiwi {
+  left:  1400px;
+  top:   364px;
+  width: 295px;
+}
+
+
+/* --- roopak (bottom-left card) --- */
+.el-title-roopak {
+  left: 509px;
+  top:  794px;
+  font-family: 'Crushed', cursive;
+  font-weight: 400;
+  color: #9a6130;
+}
+
+.el-desc-roopak {
+  left:  507px;
+  top:   844px;
+  width: 228px;
+}
+
+
+/* --- acs-p (bottom-right card) ---
+   This title is three pieces side by side: the name, the version
+   number in a pixel face, and two small grey lines. */
+.el-title-acsp {
+  left: 1420px;
+  top:  795px;
+  width: 265px;
+  height: 32px;
+}
+
+.el-title-acsp .acsp-name {
+  position: absolute;
+  left: 0;
+  top:  0;
+  font-family: 'Crimson Text', serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 36px;
+  line-height: 0.89;
+  letter-spacing: -1.08px;
+  color: rgba(0, 0, 0, 0.74);
+}
+
+.el-title-acsp .acsp-v1 {
+  position: absolute;
+  left: 72px;
+  top:  0;
+  font-family: 'Doto', monospace;
+  font-weight: 700;
+  font-variation-settings: 'ROND' 100;
+  font-size: 36px;
+  line-height: 0.89;
+  letter-spacing: -1.08px;
+  color: #404040;
+}
+
+/* The Figma file uses a face called Cursor Gothic for these two
+   little lines. It is not a free web font, so this falls back to
+   the system's own narrow sans. */
+.el-title-acsp .acsp-sub {
+  position: absolute;
+  left: 126px;
+  top:  4px;
+  font-family: 'Cursor Gothic', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 11.867px;
+  line-height: 1.18;
+  letter-spacing: -0.356px;
+  color: rgba(83, 83, 83, 0.62);
+}
+
+/* second little line, indented under the first */
+.el-title-acsp .acsp-sub-2 {
+  display: block;
+  padding-left: 48px;
+}
+
+.el-desc-acsp {
+  left:  1420px;
+  top:   850px;
+  width: 257px;
+  white-space: pre-wrap;
+}
+
+
+/* ==========================================================
+   8. THE NAV BAR
+   Sits centred at the top, pinned to the window. Slides up out of the
+   way when you scroll down, drops back in when you scroll up (nav.js).
+   ========================================================== */
+
+/* The strip pinned across the top of the window. It holds nothing
+   but the nav row, and it is the thing that slides up and down. */
+.nav-bar {
+  position: fixed;
+  left: 0;
+  top:  0;
+  width: 100%;
+  z-index: 20;
+
+  display: flex;
+  justify-content: center;
+
+  /* how fast it slides away and comes back */
+  transition: transform 280ms ease;
+
+  /* the empty parts of the strip must not swallow clicks */
+  pointer-events: none;
+}
+
+/* Scrolled down — tucked up out of sight. nav.js adds this class. */
+.nav-bar.is-hidden {
+  transform: translateY(-160%);
+}
+
+.el-nav {
+  padding-top: 30px;        /* nudge the whole row down with this */
+  display: flex;
+  align-items: center;
+  gap: 50px;                /* space between the four links */
+
+  /* fit.js shrinks this to match the artwork, so the nav stays the
+     same size as it is on the intro page */
+  transform-origin: top center;
+
+  pointer-events: auto;     /* the links themselves are clickable */
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;                 /* space between icon and word */
+  font-family: 'Aniket', cursive;
+  font-size: 32px;
+  letter-spacing: -1.92px;
+  line-height: 1;
+  color: #000;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 160ms ease;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible {
+  opacity: 0.55;
+}
+
+/* Plain inline icons sitting in the row. (Kept written as
+   '.el-nav .nav-icon' — two names — so it would still win against the
+   '.stage img' rule if the nav is ever moved back inside the stage.) */
+.el-nav .nav-icon {
+  position: static;
+  width:  24px;
+  height: 24px;
+  flex: none;
+}
+
+.el-nav .nav-icon-linkedin {
+  width:  23.09px;
+  height: 23px;
+  border-radius: 1.92px;
+}
+
+
+/* ==========================================================
+   9. THE MUSIC PLAYER
+   Lives OUTSIDE the stage, pinned to the bottom-left corner of the
+   window, so it never shrinks and never scrolls away.
+   Same numbers as the intro page.
+   ========================================================== */
+
+.ipod {
+  position: fixed;
+  left:   4px;
+  bottom: 24px;      /* move it around with these two numbers */
+  z-index: 10;
+
+  /* The iPod is drawn on a tilt. This stands it up straight.
+     Set to 0deg to get the original leaning look back. */
+  transform: rotate(11deg);
+}
+
+/* The drawn iPod itself. Change this width to resize the whole
+   player — the screen and buttons follow along automatically. */
+.ipod-img {
+  width: 150px;
+  height: auto;
+  display: block;
+  user-select: none;
+}
+
+/* The live screen — a yellow panel covering the printed one. */
+.ipod-screen {
+  position: absolute;
+  left: 49.9%;
+  top: 39.3%;
+  width: 44%;
+  height: 24%;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  background: #dbdc3c;
+  box-sizing: border-box;
+  padding: 5% 6%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 6px;
+}
+
+.ipod-title {
+  margin: 0;
+  font-family: 'Nokia', monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #425064;
+  overflow: hidden;
+}
+
+/* Song progress — an outlined track that fills as it plays. */
+.ipod-track {
+  height: 6px;
+  border: 1px solid #425064;
+}
+
+.ipod-fill {
+  height: 100%;
+  width: 0%;
+  background: #425064;
+}
+
+/* 4 frames stacked like a flipbook, only while music plays. */
+.pixel-anim {
+  position: absolute;
+  right: 10%;
+  bottom: 45%;
+  width: 22px;
+  height: 22px;
+  user-select: none;
+  pointer-events: none;
+  display: none;
+}
+
+.pixel-anim img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  animation: pixel-flip 1.2s steps(1) infinite;
+}
+
+.pixel-anim img:nth-child(1) { animation-delay: 0s; }
+.pixel-anim img:nth-child(2) { animation-delay: 0.3s; }
+.pixel-anim img:nth-child(3) { animation-delay: 0.6s; }
+.pixel-anim img:nth-child(4) { animation-delay: 0.9s; }
+
+@keyframes pixel-flip {
+  0%  { opacity: 1; }
+  25% { opacity: 0; }
+}
+
+/* Invisible round buttons sitting on top of the click wheel. */
+.ipod-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.ipod-play {
+  left: 59.7%;
+  top: 72.5%;
+  width: 15%;
+  aspect-ratio: 1;
+}
+
+/* The hand-drawn circle on the centre button. */
+.ipod-play-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* While music plays the circle sits flipped; it flips back on pause. */
+.ipod-play.pressed .ipod-play-img {
+  transform: rotate(180deg);
+}
+
+.ipod-prev {
+  left: 47.6%;
+  top: 73.4%;
+  width: 12%;
+  aspect-ratio: 1;
+}
+
+.ipod-next {
+  left: 71.5%;
+  top: 69.3%;
+  width: 12%;
+  aspect-ratio: 1;
+}

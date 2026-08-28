@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aniket Sharma</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- THE SCREEN -->
+  <!-- Fills the browser window exactly. Never scrolls. -->
+  <div class="screen">
+
+    <!-- THE STAGE -->
+    <!-- Everything you see on the page goes inside here.                -->
+    <!-- It is always 1739 x 1033 on the inside (same as the Figma      -->
+    <!-- frame), so Figma numbers work as-is. It is then shrunk or   -->
+    <!-- grown to fit the window.                                     -->
+    <div class="stage">
+
+      <!-- NAV BAR — Email / Resume / Behance / LinkedIn -->
+      <nav class="el-nav">
+        <a class="nav-link" href="mailto:aniketkumarsharma9142@gmail.com">
+          <img class="nav-icon" src="assest/nav/mail.svg" alt="">
+          <span>Email</span>
+        </a>
+        <a class="nav-link" href="#">
+          <img class="nav-icon" src="assest/nav/resume.svg" alt="">
+          <span>Resume</span>
+        </a>
+        <a class="nav-link" href="https://www.behance.net/aniket-sharma/projects" target="_blank" rel="noopener">
+          <img class="nav-icon" src="assest/nav/behance.png" alt="">
+          <span>Behance</span>
+        </a>
+        <a class="nav-link" href="https://www.linkedin.com/in/aniket-kumar-sharma-7b370a381/" target="_blank" rel="noopener">
+          <img class="nav-icon nav-icon-linkedin" src="assest/nav/linkedin.jpg" alt="">
+          <span>LinkedIn</span>
+        </a>
+      </nav>
+
+      <!-- substack note (top-left) -->
+      <img class="el-substack" src="assest/substack.png" alt="Substack note">
+
+      <!-- IITG logo — sits UNDER the torn paper, like in Figma -->
+      <img class="el-iitg" src="assest/iitg logo - blend mode Darken.png" alt="IIT Guwahati">
+
+      <!-- torn paper -->
+      <img class="el-torn-paper" src="assest/torn paper.png" alt="">
+
+      <!-- photo + tapes -->
+      <img class="el-intro" src="assest/intro.png" alt="Aniket">
+
+      <!-- thought bubble — "i want to make a song !" -->
+      <img class="el-cloud" src="assest/cloude.png" alt="i want to make a song!">
+
+      <!-- coffee stain -->
+      <img class="el-coffee-stain" src="assest/coffee stain.png" alt="">
+
+      <!-- second coffee stain -->
+      <img class="el-coffee-stain-2" src="assest/coffee stain.png" alt="">
+
+      <!-- third coffee stain -->
+      <img class="el-coffee-stain-3" src="assest/coffee stain.png" alt="">
+
+      <!-- coffee splash -->
+      <img class="el-coffee-splash" src="assest/cofee spalsh.png" alt="">
+
+      <!-- the four tool icons + "tools I frequently use" -->
+      <img class="el-tools" src="assest/tools i use.png" alt="Tools I frequently use">
+
+      <!-- camera & photography label -->
+      <img class="el-camera" src="assest/camera.png" alt="Camera">
+      <p class="el-label-photography">PHOTOGRAPHY</p>
+
+      <!-- circled doodle ("music + long walks = mental peace") -->
+      <img class="el-circled" src="assest/circled.png" alt="">
+      <p class="el-label-music">MUSIC</p>
+      <img class="el-music" src="assest/music.png" alt="Music note">
+      <img class="el-walk" src="assest/walk.png" alt="Walking figure">
+      <p class="el-label-walk">Long Walks</p>
+
+      <!-- "see my work" + the arrow pointing on to the next page -->
+      <a class="page-link" href="../projects/index.html" aria-label="Go to my projects">
+        <img class="el-see-my-work" src="assest/see my work.png" alt="See my work">
+        <img class="el-next-arrow" src="assest/next-arrow.png" alt="">
+      </a>
+
+      <!-- scribble on the right -->
+      <img class="el-scribble-3" src="assest/scribble 3.png" alt="">
+
+      <!-- post it (top-right, runs off the top edge like in Figma) -->
+      <img class="el-post-it" src="assest/post it.png" alt="">
+
+      <!-- coffee ring — "Projects??" bottom-right corner -->
+      <!-- big faded coffee ring behind the Projects heading -->
+      <img class="el-coffee-stain-1" src="assest/coffee stain 1.png" alt="">
+
+      <a class="page-link" href="../projects/index.html" aria-label="Go to my projects">
+        <img class="el-projects" src="assest/projects.png" alt="Projects??">
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- THE MUSIC PLAYER -->
+  <!-- Sits outside the stage, pinned to the bottom-left corner of the
+       screen, so it stays the same size no matter the window. -->
+  <div class="ipod" id="ipod">
+    <img class="ipod-img" src="../ipod.png" alt="iPod music player">
+
+    <!-- The live screen: covers the printed text, shows the real song. -->
+    <div class="ipod-screen">
+      <!-- Little pixel burst, only while music is playing. -->
+      <div class="pixel-anim" id="pixel-anim">
+        <img src="assest/pixel/1.png" alt="">
+        <img src="assest/pixel/2.png" alt="">
+        <img src="assest/pixel/3.png" alt="">
+        <img src="assest/pixel/4.png" alt="">
+      </div>
+      <p class="ipod-title" id="ipod-title">Song 1</p>
+      <div class="ipod-track">
+        <div class="ipod-fill" id="ipod-fill"></div>
+      </div>
+    </div>
+
+    <!-- Invisible buttons sitting over the click wheel. -->
+    <button class="ipod-btn ipod-prev" aria-label="previous song"></button>
+    <button class="ipod-btn ipod-play" aria-label="play or pause">
+      <img class="ipod-play-img" src="../Ellipse 5.png" alt="">
+    </button>
+    <button class="ipod-btn ipod-next" aria-label="next song"></button>
+  </div>
+
+  <script src="fit.js"></script>
+  <script src="music.js"></script>
+
+</body>
+</html>

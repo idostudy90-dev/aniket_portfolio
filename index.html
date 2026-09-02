@@ -314,6 +314,13 @@
           <button class="projects__prev" type="button" aria-label="Previous project" disabled>
             <img src="assests/more-phone-back.png" alt="" aria-hidden="true" width="70" height="68">
           </button>
+          <!-- The swipe cue. `aria-hidden` on purpose: it is an
+               affordance for a thumb, and anyone on a screen reader
+               already has the two real buttons either side of it,
+               announced properly. It fades out once you have swiped —
+               it has done its job by then. -->
+          <span class="projects__hint" aria-hidden="true">swipe for more</span>
+
           <button class="projects__next" type="button" aria-label="Next project">
             <img src="assests/more-phone.png" alt="" aria-hidden="true" width="70" height="68">
           </button>

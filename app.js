@@ -115,6 +115,7 @@
   var track = document.querySelector('.projects__list');
   var nextBtn = document.querySelector('.projects__next');
   var prevBtn = document.querySelector('.projects__prev');
+  var hint = document.querySelector('.projects__hint');
 
   if (track && nextBtn) {
     // card pitch, measured rather than assumed, so it stays right
@@ -167,6 +168,9 @@
            invisible control that goes nowhere. It starts `disabled`
            in the markup, so this holds even if the script is late. */
         prevBtn.disabled = !canGoBack;
+        /* the swipe cue rides the same signal: the moment you have
+           moved the track at all, you have learnt the gesture */
+        if (hint) hint.classList.toggle('is-off', canGoBack);
       }
 
       track.addEventListener('scroll', syncPrev, { passive: true });

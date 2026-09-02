@@ -1983,6 +1983,26 @@ main {
   }
 
   :root {
+    /* ⚠️ THE ONE NUMBER THAT SIZES A PROJECT CARD ON PHONES. Aniket
+       asked for them smaller — "looking too long" (2026-09-02).
+
+       Two thirds of a card's height is its COVER, which is 314 x 429.
+       Nothing else is big enough to matter: trimming the padding and
+       the gaps buys about 20px, the picture buys five times that. And
+       the picture can only shrink by making the whole card narrower —
+       cropping it shorter would cut into the artwork, which runs to
+       the very bottom edge on all five covers (measured, not assumed).
+
+       So this is the dial: narrower card -> proportionally shorter
+       cover -> shorter card, with the artwork untouched and framed
+       exactly as drawn. 264 against the Figma's 326, which also leaves
+       a wider slice of the next card showing — the swipe affordance
+       gets stronger as the card gets smaller.
+
+       ⚠️ It does NOT move the first card. That is the track's
+       `padding-left: 19`, a separate number and a Figma alignment. */
+    --pcard: 16.5rem;
+    /* 264 */
     --frame-pad: 1.5rem;
     /* 24 */
     --nav-pad-top: 1.25rem;
@@ -2210,11 +2230,10 @@ main {
   .project--acsp,
   .project--gmaps,
   .project--roopak {
-    flex: 0 0 20.375rem;
+    flex: 0 0 var(--pcard);
     /* every card is one carousel slide here — the desktop widths and
        Roopak's centring are both switched off */
     margin-inline: 0;
-    /* 326 */
     scroll-snap-align: start;
     border: 0;
     /* ⚠️ The drawn rectangle is NOT centred inside the PNG. Measured off
@@ -2233,7 +2252,11 @@ main {
        at 98.5% of the card's height whatever that height is, so padding
        is the only thing that moves it away from the description: at the
        old 12 it cleared the last line of text by 3px. */
-    padding: 0.5rem 0.75rem 2.5rem;
+    padding: 0.5rem 0.75rem 1.75rem;
+    /* ⚠️ was 40 at the bottom. That was air the card no longer needs
+       now it is smaller; 28 still clears the last line of the blurb
+       comfortably, and the drawn frame's baseline follows the card's
+       height so it comes with it. */
   }
 
   /* ⚠️ Every card must be there from the moment you arrive, NOT fade in
@@ -2313,6 +2336,32 @@ main {
     align-items: center;
     margin-top: 1.375rem;
     /* 22 — sits lower under the track */
+  }
+
+  /* The swipe cue. It sits in the middle of the arrow row, which is
+     `space-between` — so with three children it lands centred between
+     the two arrows, in space that was empty anyway. Deliberately quiet:
+     the handwriting face at 15, in --gray, no box and no icon. It is a
+     nudge, not a control. */
+  .projects__hint {
+    /* IBM Plex, not the handwriting face — Aniket's call, 2026-09-02.
+       ⚠️ It drops to 14 and loses the tight tracking at the same time:
+       the hand face is light and airy, Plex at the same 15 with -0.03em
+       reads noticeably heavier and stopped being a whisper. */
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    /* 14 */
+    letter-spacing: 0;
+    color: var(--gray);
+    /* it must never take a tap meant for a card or an arrow */
+    pointer-events: none;
+    transition: opacity 0.35s var(--ease);
+  }
+
+  /* Once you have swiped, you know you can — app.js sets this on the
+     same signal that brings the back arrow in. */
+  .projects__hint.is-off {
+    opacity: 0;
   }
 
   .projects__prev,

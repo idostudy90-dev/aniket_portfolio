@@ -3418,6 +3418,50 @@ main {
   margin-bottom: 0;
 }
 
+
+/* ── Other Stuffs: the gallery page ───────────────────────────
+
+   Two things it wants that the case pages do not, both Aniket's
+   call (2026-09-02).
+
+   1. THE MOSAIC RUNS EDGE TO EDGE. `.case__shots` caps at 90rem,
+      which is right for a case study — a 1920-wide write-up centred
+      on a huge monitor. The mosaic is a picture, not a document, and
+      it is drawn bleeding off all four sides, so on a 1600 screen the
+      80px of paper either side read as a mistake.
+
+      ⚠️ THE FILE IS 1440 WIDE, so past 1440 this UPSCALES it. At 1600
+      that is 11% and invisible; at 2560 it is 78% and will look soft.
+      The fix is a wider export, not a change here — see notes.md.
+
+   2. THE FOOTER SITS CLOSE UNDER IT. On a case study the long
+      run-out is welcome; here it left 289px of empty grey on desktop
+      and 188 on a phone, which read as the page having ended early.
+      The three numbers below take that to about 112 on both, with the
+      back arrow living inside the gap rather than floating in it.
+
+   ⚠️ The `.footer__frame` override beats the phone band's own
+   `margin-top` on specificity, not on order — so ONE rule does both
+   bands. Don't split it into two. */
+
+.case__shots--full {
+  width: 100%;
+}
+
+.case-page--gallery .case {
+  padding-bottom: 0;
+}
+
+.case-page--gallery .case__back {
+  margin-top: 1.5rem;
+  /* 24, from 48 */
+}
+
+.case-page--gallery .footer__frame {
+  margin-top: 2.5rem;
+  /* 40, from 137 on desktop and 68 on phones */
+}
+
 .case__coming-soon {
   margin: 7rem auto;
   font-family: var(--font-hand);

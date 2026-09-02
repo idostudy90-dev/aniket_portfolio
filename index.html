@@ -3,30 +3,489 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aniket Sharma</title>
+  <title>Aniket — UX / Product Designer</title>
+  <meta name="description" content="Aniket — a UX/Product Designer with a knack for creating user-friendly and visually appealing digital experiences.">
 
-  <!-- THE FRONT DOOR
-       This file does one job: whoever opens the website lands here
-       first, and is sent straight on to the intro page. Nothing is
-       drawn on this page — nobody ever sees it.
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Passero One / Parkinsans / Crimson Text are the three playground
+       wordmarks — one per project, straight off the Figma. They are NOT
+       a type system, they are each product's own logo font, which is why
+       there are three of them for three words. See styles.css. -->
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@1&family=IBM+Plex+Sans:wght@400;500;600&family=Parkinsans:wght@400&family=Passero+One&display=swap" rel="stylesheet">
 
-       If you ever want the site to open on a different page, change
-       BOTH the line below and the one in the script at the bottom. -->
-  <meta http-equiv="refresh" content="0; url=intro/index.html">
-  <link rel="canonical" href="intro/index.html">
+  <link rel="stylesheet" href="fonts/aniket-font.css">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- This one line has to run BEFORE the page draws, which is why it's
+       here and not in app.js (that loads at the end of the body).
+       Anything waiting to fade in is hidden by a `.js ...` rule, so if
+       this class arrived late the note would flash on screen at full
+       strength and then hide itself again. And if scripting is off it
+       never arrives at all, which is the point — everything just shows. -->
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
 
-  <!-- Shown only if the browser is very old, or JavaScript is off. -->
-  <p><a href="intro/index.html">Enter</a></p>
+  <!-- ══════════════════════════════════════════════════
+       THE PAGE'S BACKGROUND GRADIENT
 
-  <script>
-    /* "replace" instead of a normal jump, so this front door does not
-       land in the browser's history. Otherwise the Back button on the
-       intro page would bounce you straight back here, and forward
-       again, in a loop. */
-    location.replace("intro/index.html");
-  </script>
+       One empty div, painted behind everything. It is NOT decoration
+       on any one section: it starts under the hero and runs all the
+       way to the page's bottom edge — which is the footer's bottom
+       edge — so the whole lower half of the page sits on a very faint
+       grey wash instead of flat white. See styles.css.
+       ══════════════════════════════════════════════════ -->
+  <div class="page-gradient" aria-hidden="true"></div>
 
+  <!-- ══════════════════════════════════════════════════
+       NAV
+       ══════════════════════════════════════════════════ -->
+  <header class="nav" id="nav">
+    <div class="nav__wrap">
+      <div class="nav__inner">
+        <div class="nav__content">
+
+          <div class="nav__row">
+            <a class="nav__logo" href="#intro">
+              <img class="nav__doodle" src="assests/logo-doodle.png" alt="" aria-hidden="true">
+              <span class="nav__wordmark">Aniket</span>
+            </a>
+
+            <nav class="nav__links" aria-label="Sections">
+              <a href="#intro" class="nav__link is-active">Intro</a>
+              <a href="#projects" class="nav__link">Projects</a>
+              <a href="#playground" class="nav__link">Other Stuffs</a>
+            </nav>
+
+            <a href="#resume" class="nav__link nav__link--resume">
+              <span>Resume</span>
+              <svg class="nav__download-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+
+          <img class="nav__rule" src="assests/nav-rule.svg" alt="" aria-hidden="true">
+
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ══════════════════════════════════════════════════
+         HERO
+         A hand-placed collage. Everything inside .hero__stage is
+         positioned from the Figma's own coordinates — see the note
+         above .hero__stage in styles.css for how that works.
+         ══════════════════════════════════════════════════ -->
+    <section class="section hero" id="intro">
+      <div class="hero__stage">
+
+
+        <!-- The photo and the doodles move together, so they're one group.
+             On desktop this wrapper isn't a box at all; on phones it becomes
+             a small stage of its own. See .hero__cluster in styles.css. -->
+        <div class="hero__cluster">
+
+          <img class="hero__photo" src="assests/my photo.png"
+               alt="Aniket" width="570" height="702">
+
+          <!-- The three things Aniket does when he isn't designing. -->
+          <p class="hero__label hero__label--photography">Photography</p>
+          <p class="hero__label hero__label--music">Music</p>
+          <p class="hero__label hero__label--walks">Long Walks</p>
+
+          <img class="hero__doodle hero__doodle--camera" src="assests/doodle-camera.svg"
+               alt="" aria-hidden="true" width="66" height="50">
+          <img class="hero__doodle hero__doodle--music" src="assests/doodle-music.svg"
+               alt="" aria-hidden="true" width="57" height="54">
+
+          <!-- The walking figure is a different, more compact drawing on
+               phones — Aniket drew a separate one in the mobile frame. -->
+          <picture class="hero__doodle hero__doodle--walks">
+            <source media="(max-width: 1023px)" srcset="assests/doodle-longwalks-phone.svg">
+            <img src="assests/doodle-longwalks.svg" alt="" aria-hidden="true"
+                 width="62" height="103">
+          </picture>
+
+          <img class="hero__doodle hero__doodle--grass" src="assests/doodle-grass.svg"
+               alt="" aria-hidden="true" width="47" height="46">
+
+        </div>
+
+        <p class="hero__greeting">
+          Hi I am <span class="hero__name">Aniket</span>
+        </p>
+
+        <p class="hero__tagline">
+          a passionate <span class="hero__role">UX/Product Designer</span> with
+          a knack for creating user-friendly and visually appealing
+          digital experiences and a sprinkle of vibe coding.
+        </p>
+
+        <!-- Two faint blue hairlines from the Figma — the crosshair the
+             collage is hung on. Plain divs; they're 2px of flat colour. -->
+        <div class="hero__guide hero__guide--down" aria-hidden="true"></div>
+        <div class="hero__guide hero__guide--across" aria-hidden="true"></div>
+
+        <img class="hero__iitg" src="assests/iitg logo.png"
+             alt="Indian Institute of Technology Guwahati" width="248" height="247">
+
+        <img class="hero__scribble hero__scribble--camera" src="assests/scribble-camera.svg"
+             alt="" aria-hidden="true" width="42" height="10">
+        <img class="hero__scribble hero__scribble--music" src="assests/scribble-music.svg"
+             alt="" aria-hidden="true" width="29" height="24">
+        <img class="hero__scribble hero__scribble--walks" src="assests/scribble-longwalks.svg"
+             alt="" aria-hidden="true" width="11" height="30">
+
+        <!-- The four tools. Each sits in a hand-drawn top-left corner
+             bracket — that's the border-top + border-left in the CSS, not
+             an image. Sliced out of assests/tools.png so each one can be
+             swapped on its own. -->
+        <div class="hero__tools">
+          <img class="hero__tool" src="assests/tool-figma.png"
+               alt="Figma" width="186" height="186">
+          <img class="hero__tool" src="assests/tool-photoshop.png"
+               alt="Adobe Photoshop" width="186" height="186">
+          <img class="hero__tool" src="assests/tool-antigravity.png"
+               alt="Antigravity" width="186" height="186">
+          <img class="hero__tool" src="assests/tool-claude.png"
+               alt="Claude" width="186" height="186">
+        </div>
+
+        <p class="hero__tools-caption">Tools which I frequently use</p>
+
+        <!-- The big loop top-right. It runs off the edge of the frame in
+             Figma, so the export is already cropped to the page edge. -->
+        <img class="hero__scribble hero__scribble--loop" src="assests/hero-scribble.svg"
+             alt="" aria-hidden="true" width="237" height="207">
+
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         QUOTE CARD
+         ⚠️ note.png is NOT blank paper — the handwriting and the blue
+         "-random substack post" are already baked into it. It's a flat
+         3x export of the whole card, so there is no live text to lay
+         over it and nothing to line up. The quote lives in the alt
+         text, which is how anyone using a screen reader gets it.
+         ══════════════════════════════════════════════════ -->
+    <section class="section quote" id="quote">
+      <div class="quote__frame">
+
+        <img class="petal petal--l1" src="assests/scroll-flower.png"
+             alt="" aria-hidden="true" width="900" height="900">
+
+        <img class="quote__card" src="assests/note.png" data-reveal
+             alt="Designing is like being in love ..... you overthink, obsess,
+                  can't sleep - because you care too much. — random substack post"
+             width="1521" height="1170">
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         PROJECTS
+         Two quite different layouts. On desktop: Asterix full width,
+         Kiwi full width, then acsp and Google Maps side by side, then
+         Roopak on its own centred row. On phones the same five become a
+         swipeable carousel — see the phone block in styles.css. The
+         covers are different crops per band, hence the <picture> on
+         each one.
+         ══════════════════════════════════════════════════ -->
+    <section class="section projects" id="projects">
+      <div class="projects__frame">
+
+        <img class="petal petal--r1" src="assests/scroll-flower.png"
+             alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--l2" src="assests/scroll-flower.png"
+             alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--r2" src="assests/scroll-flower.png"
+             alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--l3" src="assests/scroll-flower.png"
+             alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--r3" src="assests/scroll-flower.png"
+             alt="" aria-hidden="true" width="900" height="900">
+
+        <img class="projects__tag" src="assests/project%20tag.png"
+             alt="Projects" width="417" height="177">
+
+        <ul class="projects__list">
+          <li class="project project--asterix">
+            <!-- Every card opens its own case-study page. ⚠️ Three of the
+                 five folders in assests/ are still EMPTY, so those pages
+                 are a heading and two back buttons until the pictures
+                 land — see notes.md. -->
+            <a class="project__link" href="asterix.html" data-reveal>
+              <picture class="project__cover">
+                <source media="(max-width: 1023px)" srcset="assests/asterix-phone.png">
+                <img src="assests/asterix%20banner%20-%20Dekstop.png" alt="" width="886" height="517">
+              </picture>
+              <p class="project__meta">
+                <span class="project__name">Asterix</span>
+                <span class="project__year">2026</span>
+              </p>
+              <p class="project__blurb">a proactive customer support system for identification and solving customer issues</p>
+            </a>
+          </li>
+          <li class="project project--kiwi">
+            <a class="project__link" href="kiwi.html" data-reveal>
+              <picture class="project__cover">
+                <source media="(max-width: 1023px)" srcset="assests/kiwi-phone.png">
+                <img src="assests/kiwi-dekstop.png" alt="" width="886" height="515">
+              </picture>
+              <p class="project__meta">
+                <span class="project__name">Kiwi</span>
+                <span class="project__year">2025</span>
+              </p>
+              <p class="project__blurb">a tool to help early stage founders manage there finances</p>
+            </a>
+          </li>
+          <li class="project project--acsp">
+            <a class="project__link" href="acsp.html" data-reveal>
+              <picture class="project__cover">
+                <source media="(max-width: 1023px)" srcset="assests/acsp-phone.png">
+                <img src="assests/acsp-%20dekstop.png" alt="" width="423" height="515">
+              </picture>
+              <p class="project__meta">
+                <span class="project__name">acsp</span>
+                <span class="project__year">2026</span>
+              </p>
+              <p class="project__blurb">Exploring a future shaped by extremely short human attention spans</p>
+            </a>
+          </li>
+          <li class="project project--gmaps">
+            <a class="project__link" href="gmaps.html" data-reveal>
+              <picture class="project__cover">
+                <source media="(max-width: 1023px)" srcset="assests/gmaps-phone.png">
+                <img src="assests/gmaps-%20dekstop.png" alt="" width="423" height="515">
+              </picture>
+              <p class="project__meta">
+                <span class="project__name">Google Maps</span>
+                <span class="project__year">2026</span>
+              </p>
+              <!-- TODO: Aniket's own line for this one — the blurb below is a
+                   placeholder. Whatever it becomes, change it in
+                   build-case-pages.py too so gmaps.html keeps matching. -->
+              <p class="project__blurb">a redesign of google maps</p>
+            </a>
+          </li>
+          <li class="project project--roopak">
+            <a class="project__link" href="roopak.html" data-reveal>
+              <picture class="project__cover">
+                <source media="(max-width: 1023px)" srcset="assests/roopak-phone.png">
+                <img src="assests/roopak-dekstop.png" alt="" width="423" height="379">
+              </picture>
+              <p class="project__meta">
+                <span class="project__name">Roopak</span>
+                <span class="project__year">2025</span>
+              </p>
+              <p class="project__blurb">a tool helping local artisans produce representable pictures of there products</p>
+            </a>
+          </li>
+        </ul>
+
+        <!-- phones only: steps the carousel a card at a time.
+
+             ⚠️ THE BACK ARROW IS A MIRRORED COPY OF THE FILE, NOT A
+             CSS FLIP. `more-phone-back.png` is `more-phone.png`
+             through a horizontal flip — same pen, same circle,
+             1.9 KB. A `transform: scaleX(-1)` was the obvious way to
+             do it and it is NOT used here on purpose: see the note
+             beside `.projects__prev` in styles.css.
+
+             It starts `disabled` and faded out — there is nothing to
+             go back to at the first card — and app.js clears that as
+             soon as you have swiped. It still takes up its space in
+             the row while faded, which is what keeps the forward
+             arrow pinned to the right instead of hopping across when
+             the back one appears.
+
+             ⚠️ 70 x 68 is the PNG's REAL size. The forward arrow has
+             said 152 x 149 since it was built, which is wrong and
+             reserves the wrong shape for a beat while it loads — the
+             ratios are close (1.020 against 1.029) so nothing visibly
+             jumps, but there is no reason to copy the mistake. -->
+        <div class="projects__nav">
+          <button class="projects__prev" type="button" aria-label="Previous project" disabled>
+            <img src="assests/more-phone-back.png" alt="" aria-hidden="true" width="70" height="68">
+          </button>
+          <button class="projects__next" type="button" aria-label="Next project">
+            <img src="assests/more-phone.png" alt="" aria-hidden="true" width="70" height="68">
+          </button>
+        </div>
+
+        <p class="projects__more">more projects coming soon</p>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         PLAYGROUND — the vibe-coded side projects.
+
+         MarkIT and Fisshy are VIDEO players wearing their PNG as the
+         poster. No <source> yet — Aniket's clips aren't in. A <video>
+         with no source simply shows its poster forever, which is
+         exactly the placeholder we want, so nothing needs stubbing.
+         When the files land, drop a <source> into each one and the
+         play-on-scroll in app.js starts working on its own.
+
+         Ariana is a still, by design — it was never a video.
+         ══════════════════════════════════════════════════ -->
+    <section class="section playground" id="playground">
+      <div class="playground__frame">
+
+        <img class="playground__tag" src="assests/vibe%20tag.png"
+             alt="vibe-coding my ideas" width="804" height="177">
+
+        <ul class="playground__list">
+
+          <li class="lab lab--markit">
+            <a class="lab__card" href="markit.html" data-reveal>
+              <video class="lab__media" poster="assests/markit_placeholder-dekstop.png"
+                     muted loop playsinline preload="none" width="541" height="286">
+                <!-- <source src="assests/markit.mp4" type="video/mp4"> -->
+              </video>
+              <h3 class="lab__name lab__name--markit">MarkIT</h3>
+              <p class="lab__blurb">a vs code plugin which enables a new interaction in the process of doing changes in frontend during vibe coding</p>
+            </a>
+          </li>
+
+          <li class="lab lab--fisshy">
+            <a class="lab__card" href="fisshy.html" data-reveal>
+              <video class="lab__media" poster="assests/fisshy-placeholder-desktop.png"
+                     muted loop playsinline preload="none" width="541" height="287">
+                <!-- <source src="assests/fisshy.mp4" type="video/mp4"> -->
+              </video>
+              <h3 class="lab__name lab__name--fisshy">Fisshy</h3>
+              <p class="lab__blurb">a figma plugin to help navigate to the frame which they are working on in a huge unorganized file</p>
+            </a>
+          </li>
+
+          <li class="lab lab--ariana">
+            <a class="lab__card" href="ariana.html" data-reveal>
+              <img class="lab__media" src="assests/ariana.png" alt=""
+                   width="541" height="279">
+              <h3 class="lab__name lab__name--ariana">
+                <span class="lab__wordmark">Ar<span class="lab__wordmark-i">I</span>ana<img
+                  class="lab__asterisk" src="assests/ariana-asterisk.svg" alt=""
+                  width="10" height="10"></span>
+              </h3>
+              <p class="lab__blurb">an exhibition assistant letting people know the project without any person standing, basically a simple voice enabled chat bot</p>
+            </a>
+          </li>
+
+        </ul>
+
+        <p class="playground__more">more vibe coding on the way</p>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         OTHER STUFFS — the post-it.
+
+         One flat image, like the quote card: `postit.png` already has
+         the paper, the heading, the four bullets and the marker pen
+         baked into it. There is no live text here, so the words reach
+         screen readers through the `alt` ONLY — if the post-it art
+         changes, the alt has to change with it.
+
+         The arrow beside it is a real link. It has nowhere to go yet;
+         the gallery page it points at is still to be built.
+         ══════════════════════════════════════════════════ -->
+    <section class="section stuffs" id="stuffs">
+      <div class="stuffs__frame">
+
+        <img class="petal petal--l4" src="assests/scroll-flower.png"
+             alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--r4" src="assests/scroll-flower.png"
+             alt="" aria-hidden="true" width="900" height="900">
+
+        <div class="stuffs__group" data-reveal>
+
+          <img class="stuffs__note" src="assests/postit.png"
+               alt="Other stuffs which I do: posters, branding, illustrations and sketches"
+               width="1419" height="1254">
+
+          <!-- TODO: point this at the gallery page once it exists -->
+          <a class="stuffs__more" href="#" aria-label="See the posters, branding and sketches">
+            <img src="assests/postit-arrow.png" alt="" width="210" height="117">
+          </a>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ══════════════════════════════════════════════════
+       FOOTER — "lets connect", the three buttons, the laptop.
+
+       The three buttons are whole PNGs: the icon AND the word are
+       drawn into each one, so their accessible name has to come from
+       the link, not from the picture. Hence alt="" on the img and a
+       real label on the <a>.
+
+       ⚠️ All three point at "#". Aniket hasn't sent his email,
+       LinkedIn or Behance yet — see notes.md.
+       ══════════════════════════════════════════════════ -->
+  <footer class="footer" id="connect">
+    <div class="footer__frame" data-reveal>
+
+      <!-- a broken hand-drawn rule with three crosses on it. It runs
+           off BOTH window edges, like the hero's big loop. -->
+      <div class="footer__rule" aria-hidden="true">
+        <span class="footer__line footer__line--a"></span>
+        <img class="footer__x footer__x--1" src="assests/footer-mark.png" alt="" width="79" height="76">
+        <span class="footer__line footer__line--b"></span>
+        <img class="footer__x footer__x--2" src="assests/footer-mark.png" alt="" width="79" height="76">
+        <span class="footer__line footer__line--c"></span>
+        <img class="footer__x footer__x--3" src="assests/footer-mark.png" alt="" width="79" height="76">
+        <span class="footer__line footer__line--d"></span>
+      </div>
+
+      <p class="footer__title"><span class="footer__lets">lets</span> connect</p>
+
+      <ul class="footer__links">
+        <li><a class="footer__link" href="mailto:aniket.sharma@iitg.ac.in" aria-label="Email Aniket">
+          <img src="assests/email.png" alt="" width="348" height="135"></a></li>
+        <li><a class="footer__link" href="https://www.linkedin.com/in/aniket-kumar-sharma-7b370a381/" target="_blank" rel="noopener noreferrer" aria-label="Aniket on LinkedIn">
+          <img src="assests/linkedin.png" alt="" width="438" height="135"></a></li>
+        <li><a class="footer__link" href="https://www.behance.net/aniket-sharma" target="_blank" rel="noopener noreferrer" aria-label="Aniket on Behance">
+          <img src="assests/behance.png" alt="" width="444" height="135"></a></li>
+      </ul>
+
+      <img class="footer__pc" src="assests/footer%20pc.png" alt=""
+           width="2080" height="1564">
+
+      <!-- Figma's `scribble 4` — the same drawing as the hero's big
+           loop, parked just off the frame's bottom-right in both the
+           desktop and the mobile file. Aniket asked for it brought in
+           to the edge. -->
+      <img class="footer__scribble" src="assests/hero-scribble.svg" alt=""
+           aria-hidden="true" width="237" height="207">
+
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════════════════════════
+       THE "VIEW PROJECT" CURSOR
+
+       One image, shared by all five project cards, parked off-screen
+       until you hover one on a desktop — then it rides the pointer.
+       It lives out here rather than inside a card because there is
+       only ever one pointer, so there only ever needs to be one of
+       these. `aria-hidden` and empty alt: every card is already a
+       link with its own accessible name, and this says nothing a
+       keyboard or screen-reader user isn't told twice already.
+       ══════════════════════════════════════════════════ -->
+  <img class="view-cursor" src="assests/view.png" alt="" aria-hidden="true"
+       width="328" height="106">
+
+  <script src="app.js"></script>
 </body>
 </html>

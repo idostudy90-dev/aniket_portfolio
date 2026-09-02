@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roopak — Aniket</title>
+  <meta name="description" content="Roopak — a tool helping local artisans produce representable pictures of there products.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@1&family=IBM+Plex+Sans:wght@400;500;600&family=Parkinsans:wght@400&family=Passero+One&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="fonts/aniket-font.css">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Same one line as index.html, and for the same reason: it has to run
+       before the page draws, or the footer flashes on at full strength and
+       then hides itself to fade back in. See notes.md. -->
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body class="case-page">
+
+  <!-- ══════════════════════════════════════════════════
+       NAV — a back arrow and the project's name.
+
+       It is the home page's bar, reused: same classes, so it
+       lines up with it exactly. `id="nav"` is what app.js looks
+       for, and `data-hide-on-scroll` is what makes it slide away
+       as you read down and come back when you scroll up. The
+       home page leaves that attribute off and stays stuck.
+
+       ⚠️ The arrow goes to the PROJECTS SECTION, not the top of
+       the home page — Aniket's ask, so you land back where you
+       left off.
+       ══════════════════════════════════════════════════ -->
+  <header class="nav case-nav" id="nav" data-hide-on-scroll>
+    <div class="nav__wrap">
+      <div class="nav__inner">
+        <div class="nav__content">
+          <div class="nav__row">
+            <a class="case-nav__back" href="index.html#projects" aria-label="Back to projects">
+              <span aria-hidden="true">&#8592;</span>
+            </a>
+            <p class="case-nav__title">Roopak</p>
+          </div>
+          <img class="nav__rule" src="assests/nav-rule.svg" alt="" aria-hidden="true">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════
+       ROOPAK — the case study
+       ══════════════════════════════════════════════════ -->
+  <main class="case">
+
+    <h1 class="case__name">Roopak</h1>
+
+    <!-- The project's own description, exactly as it reads on the card
+         in the projects section. If one changes, change the other. -->
+    <p class="case__title">a tool helping local artisans produce representable pictures of there products</p>
+
+    <!-- ── The write-up ──
+         2 slices of one continuous image, stacked in order so they read
+         as a single long picture. `.case__shots` kills the gaps between
+         them; see styles.css.
+
+         The first one loads straight away because it is on screen; the
+         rest are lazy, because together they are 13.1 MB. -->
+    <div class="case__shots">
+      <img src="assests/roopak/1.png" width="1920" height="11585" alt="Roopak case study, part 1 of 2">
+      <img src="assests/roopak/2.png" width="1920" height="13324" alt="Roopak case study, part 2 of 2" loading="lazy" decoding="async">
+    </div>
+
+
+    <a class="case__back" href="index.html#projects" aria-label="Back to projects">
+      <span class="case__arrow" aria-hidden="true">&#8592;</span>
+    </a>
+
+  </main>
+
+  <!-- ══════════════════════════════════════════════════
+       FOOTER — the same one as the home page.
+       ⚠️ It is a COPY. If index.html's footer changes, change
+       it here too. All three links still point at `#`.
+       ══════════════════════════════════════════════════ -->
+  <footer class="footer" id="connect">
+    <div class="footer__frame" data-reveal>
+
+      <div class="footer__rule" aria-hidden="true">
+        <span class="footer__line footer__line--a"></span>
+        <img class="footer__x footer__x--1" src="assests/footer-mark.png" alt="" width="79" height="76">
+        <span class="footer__line footer__line--b"></span>
+        <img class="footer__x footer__x--2" src="assests/footer-mark.png" alt="" width="79" height="76">
+        <span class="footer__line footer__line--c"></span>
+        <img class="footer__x footer__x--3" src="assests/footer-mark.png" alt="" width="79" height="76">
+        <span class="footer__line footer__line--d"></span>
+      </div>
+
+      <p class="footer__title"><span class="footer__lets">lets</span> connect</p>
+
+      <ul class="footer__links">
+        <li><a class="footer__link" href="mailto:aniket.sharma@iitg.ac.in" aria-label="Email Aniket">
+          <img src="assests/email.png" alt="" width="348" height="135"></a></li>
+        <li><a class="footer__link" href="https://www.linkedin.com/in/aniket-kumar-sharma-7b370a381/" target="_blank" rel="noopener noreferrer" aria-label="Aniket on LinkedIn">
+          <img src="assests/linkedin.png" alt="" width="438" height="135"></a></li>
+        <li><a class="footer__link" href="https://www.behance.net/aniket-sharma" target="_blank" rel="noopener noreferrer" aria-label="Aniket on Behance">
+          <img src="assests/behance.png" alt="" width="444" height="135"></a></li>
+      </ul>
+
+      <img class="footer__pc" src="assests/footer%20pc.png" alt=""
+           width="2080" height="1564">
+
+      <img class="footer__scribble" src="assests/hero-scribble.svg" alt=""
+           aria-hidden="true" width="237" height="207">
+
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

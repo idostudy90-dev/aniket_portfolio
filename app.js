@@ -243,11 +243,11 @@
      rather than on load, so the page doesn't pull video down for a
      section most people never reach.
 
-     ⚠️ There is no <source> in them yet — Aniket's clips aren't in.
+     ⚠️ MARKIT HAS ITS CLIP (2026-09-10); FISSHY STILL HAS NO <source>.
      A <video> with nothing to play just keeps showing its poster, and
      `play()` rejects; the catch below swallows that, which is why this
-     is silent and harmless until the files land. It also covers the
-     real case of a browser refusing autoplay.
+     is silent and harmless until that file lands too. It also covers
+     the real case of a browser refusing autoplay.
 
      ⚠️ Reduced motion means reduced motion. If the visitor asked for
      less, the videos stay on their poster and never start.           */
@@ -364,10 +364,16 @@
   }
 
 
-  /* ── The "View Project" cursor ──
-     `view.png` rides the pointer on a desktop. One shared element for
-     the whole page; the CSS parks it transparent and
-     `pointer-events: none` until we say otherwise.
+  /* ── The cursor ──
+     The page draws its own pointer: a blue dot that follows the mouse
+     and grows into a "View Project" pill over a project's cover. See
+     `.cursor` in styles.css for the shapes; this file decides where it
+     is and which state it is in.
+
+     ⚠️ IT REPLACED A SEPARATE CHIP. `view.png` used to ride along
+     BESIDE the native cursor. Aniket asked for the blue cursor itself
+     to become that state (2026-09-08) — and a native `cursor:` cannot
+     animate, so the pointer had to become an element first.
 
      ⚠️ WHERE IT FIRES IS DELIBERATELY OPPOSITE ON THE TWO KINDS OF
      CARD (Aniket, 2026-09-02):
@@ -375,128 +381,490 @@
        · a vibe-coding card — everywhere EXCEPT the video/still, so
          over the name and the blurb
      Both are one `closest()` test against the card's own media
-     element, just read in opposite directions — see ZONES below. The
-     listeners sit on the whole link either way, so moving between a
-     live area and a dead one inside the same card is just another
-     `pointermove` and the pill answers it.
+     element, just read in opposite directions — see ZONES below.
 
-     ⚠️ THE GATE IS HERE, NOT IN THE CSS. Two conditions, and both
-     matter: the collage layout (>=1024, below which the project cards
-     become a swipeable carousel and a pill under your thumb would be
-     nonsense), and a real hovering pointer. `(hover: hover)` alone is
-     not enough — a laptop with a touchscreen reports it — so each
-     event also has to come from `pointerType === 'mouse'`. A stylus or
-     a finger on a desktop-width tablet gets the normal tap.
+     ⚠️ THE GATE IS HERE, NOT IN THE CSS, and it is what stops a phone
+     ending up with no pointer at all. Three conditions: the collage
+     layout (>=1024, below which the project cards become a swipeable
+     carousel), a real hovering pointer, and `pointerType === 'mouse'`
+     on the event itself — `(hover: hover)` alone is not enough, a
+     laptop with a touchscreen reports it. Only once all three pass
+     does `has-cursor` go on <html> and hide the native cursor. */
 
-     ⚠️ THE ARROW IS NOT HIDDEN. An earlier build did that; Aniket
-     wants both, so the CSS offsets the pill down-and-right instead. */
+  var cursor = document.querySelector('.cursor');
 
-  var viewCursor = document.querySelector('.view-cursor');
+  /* ZONES — [what you hover, the media inside it, does the media
+     TRIGGER it, what the pill says, and optionally a CARD to draw
+     instead of the pill].
 
-  /* ZONES — [the cards, the media inside one, does the media TRIGGER it]
-     `false` reads as "the media is the dead spot, the rest is live". */
+     `false` in the third slot reads as "the media is the dead spot,
+     the rest is live". `null` in the second reads as "no dead spot at
+     all, the whole thing is live" — which is the IITG mark, a picture
+     with nothing inside it to divide.
+
+     A fifth value `{ src, w, h }` turns the cursor into that picture
+     at that size; the fourth is then `null`, because a zone is either
+     a worded pill or a card and never both.
+
+     ⚠️ THE FIRST SELECTOR IS THE `<li>`, NOT THE CARD, AND THAT IS
+     LOAD-BEARING. Both kinds of card shrink 3% under the cursor, so
+     the card's own box — and every box inside it — MOVES while you
+     are pointing at it. The list item does not move: a child's
+     transform never touches its parent. Name the card here instead
+     and the ring it vacates falls outside the zone, which is what
+     made the pill blink around every edge (fixed 2026-09-10). See
+     `zoneFor` for the other half of that fix.
+
+     ⚠️ ADD A ZONE HERE AND NOTHING ELSE NEEDS TOUCHING. The wording
+     travels with the zone and the pill measures itself to fit it; a
+     card brings its own size and is preloaded from this table. */
+  /* ⚠️ EVERY HERO CARD RIDES AT THIS WIDTH and takes its height from
+     its own drawing. 162 is where Aniket settled them (2026-09-10),
+     and it is what the gutter cards these replaced used — `13.889cqw`
+     on both of them. `.cursor.is-card`'s `border-radius` in styles.css
+     is measured against this; move it far and that wants a look. */
+  var CARD_W = 162;
+
   var viewZones = [
-    ['.project__link', '.project__cover', true],
-    ['.lab__card',     '.lab__media',     false]
+    ['.project', '.project__cover', true,  'View Project'],
+    /* ⚠️ THESE TWO MUST STAY ABOVE THE PLAIN `.lab` ROW. Zones are
+       read in order and the first match wins, so the specific card has
+       to come before the general one — put them after and every
+       playground card says "View Project" again. Aniket, 2026-09-10:
+       Fisshy and Ariana have no write-up yet. Give one a page and its
+       row here comes out. */
+    ['.lab--fisshy', '.lab__media', false, 'Coming Soon'],
+    ['.lab--ariana', '.lab__media', false, 'Coming Soon'],
+    ['.lab',     '.lab__media',     false, 'View Project'],
+    ['.hero__iitg',    null,              true,  'IIT GUWAHATI'],
+
+    /* THE TWO HERO TILES — Aniket's ask, 2026-09-10. These carry a
+       FIFTH value, a card, and a zone that has one draws that picture
+       instead of a worded pill: the cursor grows into the very card
+       that used to open in the gutter beside the tile. The two PNGs
+       are already the cursor's own blue, which is why this reads as
+       the dot unfolding rather than a picture appearing.
+
+       ℹ `w`/`h` ARE ONLY A FALLBACK. Every card is measured from its
+       own file as it preloads (see below) and rides at `CARD_W` wide
+       with the picture's own proportions, so these two numbers are
+       just the shape of the box for the instant before the file lands.
+       Redraw a card at any size and drop it in — nothing here has to
+       follow it.
+
+       ⚠️ MUSIC IS THE ODD ONE OUT: A WORDED PILL, NOT A CARD. There is
+       no `music hover.png` to unfold into, so Aniket asked for it to say
+       its line instead (2026-09-11) — which is why its row has a FOURTH
+       value and no fifth, the same shape as the IITG mark above. Draw a
+       card for it one day and the swap is: wording out, `{ src, w, h }`
+       in. A zone is one or the other, never both. */
+    ['.hero__doodle--camera', null, true, null,
+      { src: 'assests/camera hover.png', w: 162, h: 82 }],
+    ['.hero__doodle--walks',  null, true, null,
+      { src: 'assests/long walk hover.png', w: 162, h: 122 }],
+    ['.hero__doodle--music',  null, true, 'I want to make a song']
   ];
 
-  if (viewCursor) {
-    var deskMq = window.matchMedia('(min-width: 1024px) and (hover: hover)');
+  if (cursor) {
+    var deskMq = window.matchMedia(
+      '(min-width: 1024px) and (hover: hover) and (pointer: fine)'
+    );
+    var CLICKABLE = 'a, button, summary, [role="button"]';
+    var root = document.documentElement;
 
-    /* ⚠️ THE SMOOTHING. `tx/ty` is where the pointer is, `px/py` is
-       where the pill has got to, and each frame closes the gap by
-       CHASE. That lag IS the effect — the pill arrives a beat after
-       the cursor and settles, instead of being welded to it. Same
-       shape as the scroll flowers' spin, and the same reason it is
-       done here rather than as a CSS transition: a transition would
-       restart from a moving start point every frame and never settle.
+    var label = cursor.querySelector('.cursor__label');
+    var cardEl = cursor.querySelector('.cursor__card');
 
-       Someone who has asked for less motion gets 1 — no chase at all,
-       the pill simply is where the pointer is. */
-    var CHASE = calmMode ? 1 : 0.19;
-    var tx = 0, ty = 0;
-    var px = 0, py = 0;
-    var running = false;
+    /* ⚠️ PRELOADED, OR THE FIRST HOVER IS A BLANK BLUE BOX. Setting
+       `src` at the moment of the hover starts the fetch then and there
+       and the card unfolds around nothing. These `Image()`s are never
+       added to the page — they exist only to put the files in the
+       browser's cache before they are wanted.
 
-    function write() {
-      viewCursor.style.setProperty('--vx', px.toFixed(1) + 'px');
-      viewCursor.style.setProperty('--vy', py.toFixed(1) + 'px');
-    }
+       ⚠️ AND THE SAME LOAD SIZES THE CARD. Every card rides at
+       `CARD_W` and takes its height from the picture's own proportions,
+       read off the file itself — so a card can be redrawn at any size
+       or any shape and simply dropped into assests/. The `w`/`h` in
+       the table are only the fallback for the instant before the file
+       lands; keep them roughly right and nobody ever sees them.
 
-    function chase() {
-      px += (tx - px) * CHASE;
-      py += (ty - py) * CHASE;
-      // close enough: land it exactly and stop, so we are not running a
-      // frame loop forever over a third of a pixel
-      if (Math.abs(tx - px) < 0.3 && Math.abs(ty - py) < 0.3) {
-        px = tx;
-        py = ty;
-        running = false;
-      }
-      write();
-      if (running) requestAnimationFrame(chase);
-    }
-
-    function start() {
-      if (!running) {
-        running = true;
-        requestAnimationFrame(chase);
-      }
-    }
-
-    function hide() {
-      viewCursor.classList.remove('is-on');
-    }
-
+       This is deliberate history: the sizes used to be typed in by
+       hand, and they were wrong twice — once from trusting a display
+       size in index.html, once from a card being re-exported at a new
+       resolution. Nothing to keep in step now. */
     viewZones.forEach(function (zone) {
-      var cards = Array.prototype.slice.call(
-        document.querySelectorAll(zone[0])
-      );
+      var card = zone[4];
+      if (!card) return;
 
-      cards.forEach(function (card) {
-        function live(event) {
-          if (!deskMq.matches || event.pointerType !== 'mouse') return false;
-          var onMedia = !!(event.target.closest && event.target.closest(zone[1]));
-          return zone[2] ? onMedia : !onMedia;
-        }
-
-        card.addEventListener('pointermove', function (event) {
-          if (!live(event)) { hide(); return; }
-
-          tx = event.clientX;
-          ty = event.clientY;
-
-          /* ⚠️ Snap on the way IN, chase after that. Without the snap
-             the pill still carries wherever it was left last time and
-             you watch it sail across the page while it fades up. */
-          if (!viewCursor.classList.contains('is-on')) {
-            px = tx;
-            py = ty;
-            write();
-            viewCursor.classList.add('is-on');
-          }
-
-          start();
-        });
-
-        card.addEventListener('pointerleave', hide);
-        /* a click takes you to the case page; don't leave it lit on
-           the way out */
-        card.addEventListener('pointercancel', hide);
-        card.addEventListener('click', hide);
-      });
+      var probe = new Image();
+      probe.onload = function () {
+        if (!probe.naturalWidth) return;
+        card.w = CARD_W;
+        card.h = Math.round(
+          CARD_W * probe.naturalHeight / probe.naturalWidth
+        );
+      };
+      probe.src = card.src;
     });
 
-    function syncMode() {
-      if (!deskMq.matches) hide();
+    /* the card for a zone that has one, swapped only when it changes —
+       re-setting the same `src` would decode the picture again */
+    function showCard(card) {
+      if (cardEl.getAttribute('src') !== card.src) {
+        cardEl.setAttribute('src', card.src);
+      }
+      cursor.style.setProperty('--card-w', card.w + 'px');
+      cursor.style.setProperty('--card-h', card.h + 'px');
     }
+
+    /* ⚠️ MEASURED ONCE PER WORDING, THEN REMEMBERED. Reading a width
+       forces the browser to lay out then and there, so it must never
+       happen on a pointermove that changed nothing — hence the cache
+       and the `!==` guard in `say()` below. */
+    var widths = {};
+    var PILL_PAD = 32;
+
+    function say(text) {
+      if (label.textContent === text) return;
+      label.textContent = text;
+
+      if (widths[text] === undefined) {
+        widths[text] = label.offsetWidth + PILL_PAD;
+      }
+      cursor.style.setProperty('--pill-w', widths[text] + 'px');
+    }
+
+    /* THE CARD THE POINTER WAS LAST INSIDE, AND THE ANSWER IT GAVE.
+
+       ⚠️ THIS PAIR IS WHY THE PILL NO LONGER BLINKS. The cards shrink
+       3% while you point at them, so the cover, the name and the blurb
+       all slide a few pixels out from under a pointer that has not
+       moved — and `pointermove` does not fire for geometry that moves
+       on its own, so the next flick of the mouse would answer from a
+       box that had quietly changed shape. Hovering anywhere near an
+       edge blinked the pill on and off.
+
+       So the pointer landing on the card's OWN BODY — the ring it
+       vacated as it shrank, and the gaps between its parts — is read
+       as "no news" and keeps the answer it already had. The card's
+       real parts, the cover and the text, still answer for themselves,
+       and Aniket's live/dead split is untouched. */
+    var lastBox = null;
+    var lastLive = false;
+
+    /* also the element the pointer is inside, for `is-over` below */
+    var zoneBox = null;
+
+    /* the ZONE the pointer is inside, or null for nowhere. It hands
+       back the whole row rather than just the wording, because a row
+       may carry a card instead — see the table above. */
+    function zoneFor(target) {
+      zoneBox = null;
+      if (!target || !target.closest) { lastBox = null; return null; }
+
+      for (var i = 0; i < viewZones.length; i++) {
+        var zone = viewZones[i];
+        var box = target.closest(zone[0]);
+        if (!box) continue;
+
+        zoneBox = box;
+        var live;
+
+        if (zone[1] === null) {
+          /* no media element named: the whole zone is live */
+          live = true;
+        } else {
+          /* ⚠️ `parentElement === box` IS THE CARD ITSELF. The zone is
+             the <li> and its only child is the card, so a hit on the
+             card element rather than on one of its parts means the
+             pointer is on bare card — the vacated ring or a margin
+             between the parts. Neither has an answer of its own. */
+          var vague = target === box || target.parentElement === box;
+          var inMedia = !!target.closest(zone[1]);
+          var plain = zone[2] ? inMedia : !inMedia;
+
+          live = (vague && box === lastBox) ? lastLive : plain;
+        }
+
+        lastBox = box;
+        lastLive = live;
+        return live ? zone : null;
+      }
+
+      /* out of every zone: the next card starts with a clean slate */
+      lastBox = null;
+      return null;
+    }
+
+    function follow(event) {
+      if (!deskMq.matches || event.pointerType !== 'mouse') { hide(); return; }
+
+      /* ⚠️ WRITTEN STRAIGHT FROM THE EVENT, EVERY MOVE, WITH NO
+         SMOOTHING. The old chip was a label chasing the cursor and an
+         eased lag suited it; this IS the cursor, and any gap between
+         the mouse and the drawing of it reads as the page lagging. */
+      cursor.style.setProperty('--cx', event.clientX + 'px');
+      cursor.style.setProperty('--cy', event.clientY + 'px');
+
+      root.classList.add('has-cursor');
+      cursor.classList.add('is-live');
+
+      /* ⚠️ A ZONE IS EITHER A PILL OR A CARD, NEVER BOTH — the two
+         states set the same width and height, so leaving both on would
+         hand the browser two answers for one box. */
+      var zone = zoneFor(event.target);
+      var card = zone && zone[4];
+      var wording = card ? null : (zone && zone[3]);
+
+      if (card) showCard(card);
+      if (wording) say(wording);
+
+      cursor.classList.toggle('is-view', !!wording);
+      cursor.classList.toggle('is-card', !!card);
+      /* ⚠️ THE SAME RING WOULD BLINK THIS ONE TOO. On bare card the
+         target is the <li>, which is not itself a link — so the dot
+         would drop from 28 back to 20 for a few pixels at the edge.
+         If the zone we are in holds a link, the pointer is over
+         something clickable whatever it technically landed on. */
+      var over = !!(event.target.closest && event.target.closest(CLICKABLE));
+      if (!over && zoneBox) { over = !!zoneBox.querySelector(CLICKABLE); }
+      cursor.classList.toggle('is-over', over);
+    }
+
+    /* hand the pointer back: the native cursor returns with it, so the
+       user is never left without one */
+    function hide() {
+      lastBox = null;
+      zoneBox = null;
+      cursor.classList.remove('is-live', 'is-view', 'is-card', 'is-over');
+      root.classList.remove('has-cursor');
+    }
+
+    document.addEventListener('pointermove', follow, { passive: true });
+    document.addEventListener('pointerdown', follow, { passive: true });
+
+    /* out of the window, into another tab, or onto a browser control */
+    document.addEventListener('pointerleave', hide);
+    window.addEventListener('blur', hide);
 
     /* Safari before 14 has no `addEventListener` on a MediaQueryList,
        and this file supports whatever the rest of it supports. */
+    function syncMode() { if (!deskMq.matches) hide(); }
     if (deskMq.addEventListener) {
       deskMq.addEventListener('change', syncMode);
     } else if (deskMq.addListener) {
       deskMq.addListener(syncMode);
+    }
+  }
+
+
+  /* ── 2b. The hero tiles on phones — TAP, not hover ──
+
+     Desktop answers a tile by turning the cursor into its card. A phone
+     has no cursor and no hover, so Aniket asked for the same three
+     answers on tap, each up for 5 seconds (2026-09-12).
+
+     ⚠️ IT READS THE SAME `viewZones` TABLE THE CURSOR DOES. The rows
+     are filtered to the three `.hero__doodle--*` selectors and used
+     exactly as they are — fifth value is a card, fourth is a wording,
+     never both. Redraw a card or change a line up there and this
+     follows with nothing to edit here.
+
+     ⚠️ IT LIVES BELOW 1024, WHICH IS WHERE THE TILES' MOBILE LAYOUT
+     LIVES TOO. The cluster becomes its own 390-wide stage in the 1023
+     band of styles.css, not the 767 one, and that is the same band the
+     tap card is styled in — phones and tablets both.
+
+     ⚠️ IT DOES NOT WAIT FOR THE CARD SIZES. The probe images above
+     rewrite `card.w`/`card.h` when the files land, and this does not
+     read either: the phone card takes its width from styles.css and its
+     height from the picture. Only `src` is wanted from the table.  */
+
+  var pop = document.querySelector('.doodle-pop');
+
+  if (pop) {
+    /* ⚠️ THE CURSOR'S OWN QUERY, USED INVERTED — deliberately not
+       `(max-width: 767px)`. The cursor runs at `min-width: 1024` with a
+       real hovering mouse; anything else has no cursor to turn into a
+       card, so anything else is where the tap card belongs. Written out
+       again rather than borrowed from `deskMq` so this block still
+       works if `.cursor` is ever taken out of index.html. Change one of
+       these two strings and you open a gap with no answer in it, or an
+       overlap with two. */
+    var popDeskMq = window.matchMedia(
+      '(min-width: 1024px) and (hover: hover) and (pointer: fine)'
+    );
+    var popLabel = pop.querySelector('.doodle-pop__label');
+    var popCard = pop.querySelector('.doodle-pop__card');
+    var popStage = pop.parentElement;
+
+    /* Aniket's number: 5s at first, 3s the same day (2026-09-12). The
+       card goes up on the tap and comes down on its own — there is
+       nothing to dismiss.
+
+       ⚠️ IT IS THE TIME THE CARD IS READABLE, not the time it is on
+       screen. The 200ms it takes to arrive runs inside this, and the
+       160ms exit runs after it. */
+    var POP_MS = 3000;
+    var popTimer = null;
+
+    /* ⚠️ THE CARDS ARE ALREADY IN THE CACHE BY NOW — the probe up in
+       the cursor block preloads every card in the table and it runs
+       whatever the screen size is. Nothing here fetches anything; the
+       first tap only has to decode a picture the browser already holds.
+
+       ⚠️ AND THE PROBE IS WHERE `card.w`/`card.h` COME FROM, which is
+       what lets this size the box BEFORE the picture is in it. See
+       `sizeCard` below — that is the difference between a card that
+       arrives and a card that snaps into shape a frame later. */
+    var popZones = viewZones.filter(function (zone) {
+      return zone[0].indexOf('.hero__doodle--') === 0;
+    });
+
+    /* ⚠️ THESE TWO MUST MATCH styles.css. The exit's length is how long
+       the shape classes have to stay on for (see `closePop`), and the
+       entrance's is how long a tile-to-tile swap waits before opening
+       the next one. Change either there and change it here. */
+    var POP_IN_MS = 200;
+    var POP_OUT_MS = 160;
+
+    var shapeTimer = null;
+    var swapTimer = null;
+
+    /* ⚠️ IT ONLY TAKES OFF `is-open`, AND THAT IS THE WHOLE FIX. This
+       used to drop `is-card`/`is-view` in the same breath — which
+       removes the background, the radius and the picture's `display`
+       INSTANTLY, so there was nothing left on screen for the fade to
+       fade. The card did not leave, it vanished. The shape now stays
+       until the exit has actually run. */
+    function closePop() {
+      window.clearTimeout(popTimer);
+      popTimer = null;
+      pop.classList.remove('is-open');
+
+      window.clearTimeout(shapeTimer);
+      shapeTimer = window.setTimeout(function () {
+        pop.classList.remove('is-card', 'is-view');
+      }, POP_OUT_MS);
+    }
+
+    /* ⚠️ THE BOX IS SIZED BEFORE THE PICTURE IS DECODED. An <img> with
+       a fresh `src` measures zero high for a frame or two, and this box
+       is centred on the tile from its own height — so without this the
+       card opened at the wrong place at the wrong size and then jumped
+       to the right one, mid-fade. Width and height ATTRIBUTES give the
+       element its intrinsic ratio straight away; the CSS width still
+       decides how big it really is, the attributes only tell the
+       browser what shape to reserve. */
+    function sizeCard(card) {
+      if (!card.w || !card.h) return;
+      popCard.setAttribute('width', card.w);
+      popCard.setAttribute('height', card.h);
+    }
+
+    function fill(tile, zone) {
+      var card = zone[4];
+      var wording = card ? null : zone[3];
+
+      /* ⚠️ A ZONE IS ONE OR THE OTHER, NEVER BOTH — the same rule the
+         cursor works to. Both classes on at once would give the box two
+         backgrounds and two shapes to be. */
+      pop.classList.toggle('is-card', !!card);
+      pop.classList.toggle('is-view', !!wording);
+
+      if (card) {
+        sizeCard(card);
+        if (popCard.getAttribute('src') !== card.src) {
+          popCard.setAttribute('src', card.src);
+        }
+      }
+      if (wording) { popLabel.textContent = wording; }
+
+      /* measured with the shape classes on and the box already the
+         right size — see `sizeCard` */
+      var stageW = popStage.clientWidth;
+      var popW = pop.offsetWidth;
+      var popH = pop.offsetHeight;
+
+      /* the tile's middle, in cluster pixels — both are absolute
+         children of the cluster, so these offsets share one origin */
+      var midX = tile.offsetLeft + tile.offsetWidth / 2;
+      var midY = tile.offsetTop + tile.offsetHeight / 2;
+
+      /* ⚠️ CLAMPED, OR THE WALKER'S CARD HANGS OFF THE RIGHT. That tile
+         sits at about 83% of the cluster, so a card centred on it would
+         run past the edge on any phone. EDGE is the breathing room left
+         at either side. */
+      var EDGE = 4;
+      var maxX = Math.max(EDGE, stageW - popW - EDGE);
+      var x = Math.min(Math.max(midX - popW / 2, EDGE), maxX);
+
+      pop.style.left = Math.round(x) + 'px';
+      pop.style.top = Math.round(midY - popH / 2) + 'px';
+    }
+
+    /* ⚠️ `is-open` GOES ON IN THE NEXT FRAME, NEVER IN THIS ONE. Set it
+       in the same task that wrote the classes, the src and the position
+       and the browser has one style to compute, not two — it skips
+       straight to the open state and there is no transition at all.
+       Handing it a frame is what gives the animation a from and a to. */
+    function raise(tile, zone) {
+      window.clearTimeout(shapeTimer);
+      fill(tile, zone);
+
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          pop.classList.add('is-open');
+        });
+      });
+
+      window.clearTimeout(popTimer);
+      popTimer = window.setTimeout(closePop, POP_MS);
+    }
+
+    /* ⚠️ A CARD NEVER TELEPORTS FROM ONE TILE TO ANOTHER. Tapping a
+       second tile while one is open would otherwise move the box and
+       swap the picture inside it in a single frame, which reads as a
+       glitch rather than as an answer. The open one leaves first, on
+       its own exit, and the new one arrives after it. */
+    function openPop(tile, zone) {
+      window.clearTimeout(swapTimer);
+
+      if (!pop.classList.contains('is-open')) {
+        raise(tile, zone);
+        return;
+      }
+
+      closePop();
+      swapTimer = window.setTimeout(function () {
+        raise(tile, zone);
+      }, POP_OUT_MS);
+    }
+
+    popZones.forEach(function (zone) {
+      var tile = document.querySelector(zone[0]);
+      if (!tile) return;
+
+      /* ⚠️ `click`, NOT `pointerdown`. A tap that turns into a scroll
+         fires pointerdown and would leave a card open behind the
+         moving page; click waits to see that the finger stayed put.
+
+         The tiles already take pointer events — desktop needs them to
+         for the cursor's zones — and nothing else on the page listens
+         to them, so there is no click of their own to protect. */
+      tile.addEventListener('click', function () {
+        if (popDeskMq.matches) { return; }
+        openPop(tile, zone);
+      });
+    });
+
+    /* widening into the cursor's range mid-card: the cursor takes over
+       and this box must not be left hanging in the collage */
+    function syncPop() { if (popDeskMq.matches) { closePop(); } }
+    if (popDeskMq.addEventListener) {
+      popDeskMq.addEventListener('change', syncPop);
+    } else if (popDeskMq.addListener) {
+      popDeskMq.addListener(syncPop);
     }
   }
 

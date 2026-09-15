@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aniket — UX / Product Designer</title>
-  <meta name="description" content="Aniket — a UX/Product Designer with a knack for creating user-friendly and visually appealing digital experiences.">
+  <meta name="description"
+    content="Aniket — a UX/Product Designer with a knack for creating user-friendly and visually appealing digital experiences.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,10 +14,47 @@
        wordmarks — one per project, straight off the Figma. They are NOT
        a type system, they are each product's own logo font, which is why
        there are three of them for three words. See styles.css. -->
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@1&family=IBM+Plex+Sans:wght@400;500;600&family=Parkinsans:wght@400&family=Passero+One&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@1&family=IBM+Plex+Sans:wght@400;500;600&family=Parkinsans:wght@400&family=Passero+One&display=swap"
+    rel="stylesheet">
 
   <link rel="stylesheet" href="fonts/aniket-font.css">
   <link rel="stylesheet" href="styles.css">
+
+  <!-- ══ THE PROJECT COVERS START DOWNLOADING WITH THE HERO ══════════
+       Aniket asked for the projects to arrive at the same time as the
+       hero rather than when you scroll to them (2026-09-08).
+
+       Left alone, a browser finds these five covers far below the fold
+       and gives them a LOW priority until it has laid the page out —
+       so they start late even though nothing marks them lazy. A preload
+       in <head> starts the fetch at parse time, beside the hero's own
+       images; `fetchpriority="high"` on each <img> then keeps them
+       there instead of being pushed back down the queue.
+
+       ⚠️ `media` IS DOING REAL WORK. Without it a phone would download
+       the desktop covers as well as its own — the preload does not know
+       about the <picture> below, it only knows what these lines say. One
+       set or the other is fetched, never both.
+
+       ⚠️ `type="image/webp"` lets a browser that cannot read WebP skip
+       the line entirely and fall through to the PNG in the <picture>.
+
+       ⚠️ These are only worth their bandwidth while they are SMALL. At
+       the 4.1MB the covers used to be, preloading them would have
+       starved the hero instead of arriving beside it; it is 407KB now.
+       Re-export a cover much heavier and take these out again.
+       ══════════════════════════════════════════════════════════════ -->
+  <link rel="preload" as="image" type="image/webp" media="(min-width: 1024px)" href="assests/asterix-desktop.webp">
+  <link rel="preload" as="image" type="image/webp" media="(min-width: 1024px)" href="assests/kiwi-dekstop.webp">
+  <link rel="preload" as="image" type="image/webp" media="(min-width: 1024px)" href="assests/acsp-desktop.webp">
+  <link rel="preload" as="image" type="image/webp" media="(min-width: 1024px)" href="assests/gmaps-desktop.webp">
+  <link rel="preload" as="image" type="image/png" media="(min-width: 1024px)" href="assests/roopak-dekstop.png">
+  <link rel="preload" as="image" type="image/png" media="(max-width: 1023px)" href="assests/asterix-phone.png">
+  <link rel="preload" as="image" type="image/png" media="(max-width: 1023px)" href="assests/kiwi-phone.png">
+  <link rel="preload" as="image" type="image/webp" media="(max-width: 1023px)" href="assests/acsp-phone.webp">
+  <link rel="preload" as="image" type="image/webp" media="(max-width: 1023px)" href="assests/gmaps-phone.webp">
+  <link rel="preload" as="image" type="image/webp" media="(max-width: 1023px)" href="assests/roopak-phone.webp">
 
   <!-- This one line has to run BEFORE the page draws, which is why it's
        here and not in app.js (that loads at the end of the body).
@@ -25,6 +64,7 @@
        never arrives at all, which is the point — everything just shows. -->
   <script>document.documentElement.classList.add('js');</script>
 </head>
+
 <body>
 
   <!-- ══════════════════════════════════════════════════
@@ -48,7 +88,6 @@
 
           <div class="nav__row">
             <a class="nav__logo" href="#intro">
-              <img class="nav__doodle" src="assests/logo-doodle.png" alt="" aria-hidden="true">
               <span class="nav__wordmark">Aniket</span>
             </a>
 
@@ -56,19 +95,9 @@
               <a href="#intro" class="nav__link is-active">Intro</a>
               <a href="#projects" class="nav__link">Projects</a>
               <a href="#playground" class="nav__link">Other Stuffs</a>
+              <a href="#resume" class="nav__link nav__link--resume">Resume</a>
             </nav>
-
-            <a href="#resume" class="nav__link nav__link--resume">
-              <span>Resume</span>
-              <svg class="nav__download-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-            </a>
           </div>
-
-          <img class="nav__rule" src="assests/nav-rule.svg" alt="" aria-hidden="true">
 
         </div>
       </div>
@@ -91,29 +120,89 @@
              a small stage of its own. See .hero__cluster in styles.css. -->
         <div class="hero__cluster">
 
-          <img class="hero__photo" src="assests/my photo.png"
-               alt="Aniket" width="570" height="702">
+          <img class="hero__photo" src="assests/my photo.png" alt="Aniket" width="570" height="702">
 
-          <!-- The three things Aniket does when he isn't designing. -->
-          <p class="hero__label hero__label--photography">Photography</p>
-          <p class="hero__label hero__label--music">Music</p>
-          <p class="hero__label hero__label--walks">Long Walks</p>
+          <!-- The three words that used to sit under the doodles —
+               "Photography", "Music", "Long Walks" — were removed with
+               the switch to tiles (2026-09-08). The icons say it. Their
+               rules are still in styles.css, marked as orphans. -->
 
-          <img class="hero__doodle hero__doodle--camera" src="assests/doodle-camera.svg"
-               alt="" aria-hidden="true" width="66" height="50">
-          <img class="hero__doodle hero__doodle--music" src="assests/doodle-music.svg"
-               alt="" aria-hidden="true" width="57" height="54">
+          <!-- ⚠️ THESE THREE ARE A SET NOW. They used to be line-art
+               SVGs, each a different shape; Aniket replaced them with
+               coloured tiles (2026-09-08), all roughly square, so they
+               are sized by one shared rule in styles.css instead of
+               three per-drawing widths.
 
-          <!-- The walking figure is a different, more compact drawing on
-               phones — Aniket drew a separate one in the mobile frame. -->
-          <picture class="hero__doodle hero__doodle--walks">
-            <source media="(max-width: 1023px)" srcset="assests/doodle-longwalks-phone.svg">
-            <img src="assests/doodle-longwalks.svg" alt="" aria-hidden="true"
-                 width="62" height="103">
+               ⚠️ ALL THREE ARE <picture> NOW (2026-09-12). Each tile has
+               its own phone drawing and they swap together under 767:
+               camera_phone.png, music_phone'.png, long walks_phone.png.
+               They are 271, 223 and 329 square against the desktop
+               files' 94x86, 109x103 and 115x110 — SQUARE, which is what
+               the shared box already assumes, so nothing had to change
+               in styles.css.
+
+               ⚠️ `doodle-longwalks-phone.svg` IS NOT ONE OF THESE. It is
+               the old line-art walker and it stays unused; the phone set
+               is coloured tiles like the desktop set. -->
+          <picture>
+            <source media="(max-width: 767px)" srcset="assests/camera_phone.png">
+            <img class="hero__doodle hero__doodle--camera" src="assests/camera.png" alt="" aria-hidden="true"
+              width="94" height="86">
           </picture>
 
-          <img class="hero__doodle hero__doodle--grass" src="assests/doodle-grass.svg"
-               alt="" aria-hidden="true" width="47" height="46">
+          <!-- ⚠️ THE TWO HOVER CARDS USED TO SIT HERE, one after each of
+               their tiles — `camera hover.png` and `long walk hover.png`,
+               revealed by a `~` sibling selector and pinned open in the
+               gutter to the left. Aniket asked for the CURSOR to become
+               them instead (2026-09-10), so they are now drawn inside
+               `.cursor` and driven by the zone table in app.js. The
+               `.hero__record` rules in styles.css are kept but orphaned
+               — put these two <img>s back, each immediately after its
+               own tile, and the old behaviour returns as it was. -->
+          <!-- ⚠️ THE APOSTROPHE IN `music_phone'.png` IS REALLY IN THE
+               FILENAME — it is written `%27` here because a raw ' would
+               close the attribute. Rename the file and this must change
+               with it. -->
+          <picture>
+            <source media="(max-width: 767px)" srcset="assests/music_phone%27.png">
+            <img class="hero__doodle hero__doodle--music" src="assests/music.png" alt="" aria-hidden="true"
+              width="109" height="103">
+          </picture>
+          <picture>
+            <source media="(max-width: 767px)" srcset="assests/long%20walks_phone.png">
+            <img class="hero__doodle hero__doodle--walks" src="assests/long%20walks.png" alt="" aria-hidden="true"
+              width="115" height="110">
+          </picture>
+
+          <img class="hero__doodle hero__doodle--grass" src="assests/doodle-grass.svg" alt="" aria-hidden="true"
+            width="47" height="46">
+
+          <!-- ══ THE TILES' ANSWER ON PHONES ══════════════════════
+               On desktop the blue cursor BECOMES the card when you hover
+               a tile (see `.cursor` and the zone table in app.js). A
+               phone has no hover, so Aniket asked for the same three
+               answers on TAP, each staying up for 5 seconds
+               (2026-09-12).
+
+               ⚠️ ONE ELEMENT FOR ALL THREE TILES, not one each. app.js
+               moves it to whichever tile was tapped and fills it from
+               the SAME zone table the cursor reads, so a card redrawn
+               or a wording changed there lands here too with nothing to
+               keep in step.
+
+               ⚠️ IT IS EMPTY ON PURPOSE. The picture's `src` and the
+               label's words are written by app.js at the moment of the
+               tap; there is nothing to see, and nothing to download,
+               until a tile is touched.
+
+               ⚠️ WHEREVER THE CURSOR ISN'T. styles.css keeps it
+               `display: none` until the 1023 band — the band the tiles'
+               mobile layout is written in — and app.js answers a tap
+               only when the cursor's own media query does NOT match. -->
+          <div class="doodle-pop" aria-hidden="true">
+            <span class="doodle-pop__label"></span>
+            <img class="doodle-pop__card" alt="">
+          </div>
 
         </div>
 
@@ -127,42 +216,26 @@
           digital experiences and a sprinkle of vibe coding.
         </p>
 
-        <!-- Two faint blue hairlines from the Figma — the crosshair the
-             collage is hung on. Plain divs; they're 2px of flat colour. -->
-        <div class="hero__guide hero__guide--down" aria-hidden="true"></div>
-        <div class="hero__guide hero__guide--across" aria-hidden="true"></div>
-
-        <img class="hero__iitg" src="assests/iitg logo.png"
-             alt="Indian Institute of Technology Guwahati" width="248" height="247">
-
-        <img class="hero__scribble hero__scribble--camera" src="assests/scribble-camera.svg"
-             alt="" aria-hidden="true" width="42" height="10">
-        <img class="hero__scribble hero__scribble--music" src="assests/scribble-music.svg"
-             alt="" aria-hidden="true" width="29" height="24">
-        <img class="hero__scribble hero__scribble--walks" src="assests/scribble-longwalks.svg"
-             alt="" aria-hidden="true" width="11" height="30">
+        <img class="hero__iitg" src="assests/iitg logo.png" alt="Indian Institute of Technology Guwahati" width="248"
+          height="247">
 
         <!-- The four tools. Each sits in a hand-drawn top-left corner
              bracket — that's the border-top + border-left in the CSS, not
              an image. Sliced out of assests/tools.png so each one can be
              swapped on its own. -->
         <div class="hero__tools">
-          <img class="hero__tool" src="assests/tool-figma.png"
-               alt="Figma" width="186" height="186">
-          <img class="hero__tool" src="assests/tool-photoshop.png"
-               alt="Adobe Photoshop" width="186" height="186">
-          <img class="hero__tool" src="assests/tool-antigravity.png"
-               alt="Antigravity" width="186" height="186">
-          <img class="hero__tool" src="assests/tool-claude.png"
-               alt="Claude" width="186" height="186">
+          <img class="hero__tool" src="assests/tool-figma.png" alt="Figma" width="186" height="186">
+          <img class="hero__tool" src="assests/tool-photoshop.png" alt="Adobe Photoshop" width="186" height="186">
+          <img class="hero__tool" src="assests/tool-antigravity.png" alt="Antigravity" width="186" height="186">
+          <img class="hero__tool" src="assests/tool-claude.png" alt="Claude" width="186" height="186">
         </div>
 
         <p class="hero__tools-caption">Tools which I frequently use</p>
 
         <!-- The big loop top-right. It runs off the edge of the frame in
              Figma, so the export is already cropped to the page edge. -->
-        <img class="hero__scribble hero__scribble--loop" src="assests/hero-scribble.svg"
-             alt="" aria-hidden="true" width="237" height="207">
+        <img class="hero__scribble hero__scribble--loop" src="assests/hero-scribble.svg" alt="" aria-hidden="true"
+          width="237" height="207">
 
       </div>
     </section>
@@ -178,13 +251,10 @@
     <section class="section quote" id="quote">
       <div class="quote__frame">
 
-        <img class="petal petal--l1" src="assests/scroll-flower.png"
-             alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--l1" src="assests/scroll-flower.png" alt="" aria-hidden="true" width="900" height="900">
 
-        <img class="quote__card" src="assests/note.png" data-reveal
-             alt="Designing is like being in love ..... you overthink, obsess,
-                  can't sleep - because you care too much. — random substack post"
-             width="1521" height="1170">
+        <img class="quote__card" src="assests/note.png" data-reveal alt="Designing is like being in love ..... you overthink, obsess,
+                  can't sleep - because you care too much. — random substack post" width="1521" height="1170">
       </div>
     </section>
 
@@ -200,43 +270,79 @@
     <section class="section projects" id="projects">
       <div class="projects__frame">
 
-        <img class="petal petal--r1" src="assests/scroll-flower.png"
-             alt="" aria-hidden="true" width="900" height="900">
-        <img class="petal petal--l2" src="assests/scroll-flower.png"
-             alt="" aria-hidden="true" width="900" height="900">
-        <img class="petal petal--r2" src="assests/scroll-flower.png"
-             alt="" aria-hidden="true" width="900" height="900">
-        <img class="petal petal--l3" src="assests/scroll-flower.png"
-             alt="" aria-hidden="true" width="900" height="900">
-        <img class="petal petal--r3" src="assests/scroll-flower.png"
-             alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--r1" src="assests/scroll-flower.png" alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--l2" src="assests/scroll-flower.png" alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--r2" src="assests/scroll-flower.png" alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--l3" src="assests/scroll-flower.png" alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--r3" src="assests/scroll-flower.png" alt="" aria-hidden="true" width="900" height="900">
 
-        <img class="projects__tag" src="assests/project%20tag.png"
-             alt="Projects" width="417" height="177">
+        <!-- The hand-drawn "Projects" tag PNG used to sit here; Aniket
+             asked for it gone and for a real text title in its place
+             (2026-09-08). Its old rule is still in styles.css. -->
+        <div class="projects__head">
+          <h2 class="projects__title">Projects</h2>
+          <p class="projects__soon">more coming soon</p>
+        </div>
 
+        <!-- ══ WHY EVERY COVER IS FOUR LINES ══════════════════════
+             Aniket asked for this section to load faster (2026-09-08).
+             The five desktop covers were 4.1MB of PNG, exported at up to
+             3x the size they are ever drawn at, and they downloaded
+             eagerly alongside everything else on the page.
+
+             Each <picture> now offers, IN THIS ORDER — first match wins:
+               1. phone WebP    (≤1023, modern browser)
+               2. phone PNG     (≤1023, no WebP support)
+               3. desktop WebP  (wide, modern browser)
+               4. the <img>     — the original desktop PNG, the fallback
+                                  for a browser that understands neither
+
+             ⚠️ THE ORDER IS THE LOGIC. Move the desktop WebP above the
+             phone rules and phones start downloading the desktop file.
+
+             ⚠️ THE .webp FILES ARE GENERATED, NOT DRAWN. They are the
+             PNGs beside them, resized to 2x their largest drawn width
+             and saved at quality 82. Re-export a cover and the .webp has
+             to be remade from it or the two drift apart. The PNGs are
+             untouched, so deleting the .webp files and these <source>
+             lines puts everything back exactly as it was.
+             ═══════════════════════════════════════════════════════ -->
+        <!-- ⚠️ ASTERIX HAS NO `data-reveal` AND THE OTHER FOUR DO.
+             That asymmetry is the whole point, not an oversight
+             (2026-09-08).
+
+             Every card used to fade up as it crossed into the viewport.
+             The one that read badly was the FIRST: you scroll out of the
+             hero, the section is already on screen, and its opening card
+             is still assembling itself. So Asterix is simply there — it
+             is the card that says the section has arrived — and the four
+             below it still come in as you reach them. -->
         <ul class="projects__list">
           <li class="project project--asterix">
             <!-- Every card opens its own case-study page. ⚠️ Three of the
                  five folders in assests/ are still EMPTY, so those pages
                  are a heading and two back buttons until the pictures
                  land — see notes.md. -->
-            <a class="project__link" href="asterix.html" data-reveal>
+            <a class="project__link" href="asterix.html">
               <picture class="project__cover">
                 <source media="(max-width: 1023px)" srcset="assests/asterix-phone.png">
-                <img src="assests/asterix%20banner%20-%20Dekstop.png" alt="" width="886" height="517">
+                <source type="image/webp" srcset="assests/asterix-desktop.webp">
+                <img src="assests/asterix%20banner%20-%20Dekstop.png" alt="" decoding="async" fetchpriority="high" width="886" height="517">
               </picture>
               <p class="project__meta">
                 <span class="project__name">Asterix</span>
                 <span class="project__year">2026</span>
               </p>
-              <p class="project__blurb">a proactive customer support system for identification and solving customer issues</p>
+              <p class="project__blurb">a proactive customer support system for identification and solving customer
+                issues</p>
             </a>
           </li>
           <li class="project project--kiwi">
             <a class="project__link" href="kiwi.html" data-reveal>
               <picture class="project__cover">
                 <source media="(max-width: 1023px)" srcset="assests/kiwi-phone.png">
-                <img src="assests/kiwi-dekstop.png" alt="" width="886" height="515">
+                <source type="image/webp" srcset="assests/kiwi-dekstop.webp">
+                <img src="assests/kiwi-dekstop.webp" alt="Kiwi dashboard overview" decoding="async" fetchpriority="high" width="886" height="515">
               </picture>
               <p class="project__meta">
                 <span class="project__name">Kiwi</span>
@@ -248,8 +354,10 @@
           <li class="project project--acsp">
             <a class="project__link" href="acsp.html" data-reveal>
               <picture class="project__cover">
+                <source media="(max-width: 1023px)" type="image/webp" srcset="assests/acsp-phone.webp">
                 <source media="(max-width: 1023px)" srcset="assests/acsp-phone.png">
-                <img src="assests/acsp-%20dekstop.png" alt="" width="423" height="515">
+                <source type="image/webp" srcset="assests/acsp-desktop.webp">
+                <img src="assests/acsp-%20dekstop.png" alt="" decoding="async" fetchpriority="high" width="423" height="515">
               </picture>
               <p class="project__meta">
                 <span class="project__name">acsp</span>
@@ -261,30 +369,38 @@
           <li class="project project--gmaps">
             <a class="project__link" href="gmaps.html" data-reveal>
               <picture class="project__cover">
+                <source media="(max-width: 1023px)" type="image/webp" srcset="assests/gmaps-phone.webp">
                 <source media="(max-width: 1023px)" srcset="assests/gmaps-phone.png">
-                <img src="assests/gmaps-%20dekstop.png" alt="" width="423" height="515">
+                <source type="image/webp" srcset="assests/gmaps-desktop.webp">
+                <img src="assests/gmaps-%20dekstop.png" alt="" decoding="async" fetchpriority="high" width="423" height="515">
               </picture>
               <p class="project__meta">
                 <span class="project__name">Google Maps</span>
                 <span class="project__year">2026</span>
               </p>
-              <!-- TODO: Aniket's own line for this one — the blurb below is a
-                   placeholder. Whatever it becomes, change it in
-                   build-case-pages.py too so gmaps.html keeps matching. -->
-              <p class="project__blurb">a redesign of google maps</p>
+              <!-- TODO: Aniket's own line for this one — the blurb below is
+                   still a placeholder. Whatever it becomes, change it in
+                   build-case-pages.py too so gmaps.html keeps matching.
+                   ⚠️ THE THREE AGREE AS OF 2026-09-11. They had drifted:
+                   this card was rewritten and gmaps.html was left on the
+                   generator's old "a redesign of google maps". -->
+              <p class="project__blurb">One platform. Every mode. Any situation.
+                Make urban mobility, legible, honest, and adaptive.</p>
             </a>
           </li>
           <li class="project project--roopak">
             <a class="project__link" href="roopak.html" data-reveal>
               <picture class="project__cover">
+                <source media="(max-width: 1023px)" type="image/webp" srcset="assests/roopak-phone.webp">
                 <source media="(max-width: 1023px)" srcset="assests/roopak-phone.png">
-                <img src="assests/roopak-dekstop.png" alt="" width="423" height="379">
+                <img src="assests/roopak-dekstop.png" alt="" decoding="async" fetchpriority="high" width="423" height="379">
               </picture>
               <p class="project__meta">
                 <span class="project__name">Roopak</span>
                 <span class="project__year">2025</span>
               </p>
-              <p class="project__blurb">a tool helping local artisans produce representable pictures of there products</p>
+              <p class="project__blurb">a tool helping local artisans produce representable pictures of there products
+              </p>
             </a>
           </li>
         </ul>
@@ -326,7 +442,9 @@
           </button>
         </div>
 
-        <p class="projects__more">more projects coming soon</p>
+        <!-- The green "more projects coming soon" note sat here, removed
+             2026-09-08 — "more coming soon" now says it up in the
+             section title row instead. Its rule is still in styles.css. -->
 
       </div>
     </section>
@@ -346,49 +464,86 @@
     <section class="section playground" id="playground">
       <div class="playground__frame">
 
-        <img class="playground__tag" src="assests/vibe%20tag.png"
-             alt="vibe-coding my ideas" width="804" height="177">
+        <!-- The hand-drawn "vibe-coding my ideas" tag PNG used to sit
+             here; replaced by this text title, the twin of the Projects
+             one (2026-09-08). ⚠️ THE 213 GAP BETWEEN THIS SECTION AND
+             PROJECTS RIDES ON THIS ELEMENT'S TOP MARGIN — take the
+             title out again and the two sections run together. -->
+        <h2 class="playground__title">Vibe-coding my ideas</h2>
 
         <ul class="playground__list">
 
           <li class="lab lab--markit">
             <a class="lab__card" href="markit.html" data-reveal>
-              <video class="lab__media" poster="assests/markit_placeholder-dekstop.png"
-                     muted loop playsinline preload="none" width="541" height="286">
-                <!-- <source src="assests/markit.mp4" type="video/mp4"> -->
+              <!-- ⚠️ THE POSTER IS THE VIDEO'S OWN FIRST FRAME, not the
+                   designed still. `markit_placeholder-dekstop.png` framed
+                   the editor differently, so the picture jumped the moment
+                   playback started. This one is frame 1 of the clip, so
+                   the still and the first frame are the same picture and
+                   nothing moves. That PNG is now unused.
+
+                   ⚠️ `muted` IS WHAT LETS IT PLAY AT ALL — no browser
+                   autoplays a clip with sound. The encode has no audio
+                   track either. `loop` is the replay; `playsinline` stops
+                   iOS taking it fullscreen; `preload="none"` keeps 1.4MB
+                   off the wire until app.js starts it, which it does when
+                   the card scrolls into view. -->
+              <video class="lab__media" poster="assests/markit-poster.jpg" muted loop playsinline
+                preload="none" width="541" height="286">
+                <source src="assests/markit.mp4" type="video/mp4">
               </video>
               <h3 class="lab__name lab__name--markit">MarkIT</h3>
-              <p class="lab__blurb">a vs code plugin which enables a new interaction in the process of doing changes in frontend during vibe coding</p>
+              <p class="lab__blurb">a vs code plugin which enables a new interaction in the process of doing changes in
+                frontend during vibe coding</p>
             </a>
           </li>
 
           <li class="lab lab--fisshy">
             <a class="lab__card" href="fisshy.html" data-reveal>
-              <video class="lab__media" poster="assests/fisshy-placeholder-desktop.png"
-                     muted loop playsinline preload="none" width="541" height="287">
+              <video class="lab__media" poster="assests/fisshy-placeholder-desktop.png" muted loop playsinline
+                preload="none" width="541" height="287">
                 <!-- <source src="assests/fisshy.mp4" type="video/mp4"> -->
               </video>
               <h3 class="lab__name lab__name--fisshy">Fisshy</h3>
-              <p class="lab__blurb">a figma plugin to help navigate to the frame which they are working on in a huge unorganized file</p>
+              <p class="lab__blurb">a figma plugin to help navigate to the frame which they are working on in a huge
+                unorganized file</p>
             </a>
           </li>
 
           <li class="lab lab--ariana">
             <a class="lab__card" href="ariana.html" data-reveal>
-              <img class="lab__media" src="assests/ariana.png" alt=""
-                   width="541" height="279">
+              <!-- ⚠️ ARIANA IS A VIDEO NOW (2026-09-10) — it was an <img>
+                   from the day this card was built, and several notes used
+                   to say so. Same set of attributes as MarkIT above, and
+                   the same reasons: `muted` is what makes autoplay legal,
+                   `loop` is the replay, `preload="none"` keeps the file off
+                   the wire until app.js starts it on scroll. The poster is
+                   frame 1 of the clip, so there is no jump when it starts;
+                   `assests/ariana.png`, the still that used to be here, is
+                   now unused. -->
+              <video class="lab__media" poster="assests/ariana-poster.jpg" muted loop playsinline
+                preload="none" width="541" height="279">
+                <source src="assests/ariana.mp4" type="video/mp4">
+              </video>
               <h3 class="lab__name lab__name--ariana">
-                <span class="lab__wordmark">Ar<span class="lab__wordmark-i">I</span>ana<img
-                  class="lab__asterisk" src="assests/ariana-asterisk.svg" alt=""
-                  width="10" height="10"></span>
+                <span class="lab__wordmark">Ar<span class="lab__wordmark-i">I</span>ana<img class="lab__asterisk"
+                    src="assests/ariana-asterisk.svg" alt="" width="10" height="10"></span>
               </h3>
-              <p class="lab__blurb">an exhibition assistant letting people know the project without any person standing, basically a simple voice enabled chat bot</p>
+              <p class="lab__blurb">an exhibition assistant letting people know the project without any person standing,
+                basically a simple voice enabled chat bot</p>
             </a>
           </li>
 
         </ul>
 
-        <p class="playground__more">more vibe coding on the way</p>
+        <!-- ⚠️ "more vibe coding on the way" WAS HERE — Aniket marked it
+             and asked for it out (2026-09-10), then asked for the space
+             it left to go too. So the frame simply ends at the list now,
+             and the gap to Other Stuffs is `.stuffs__group`'s top margin
+             on its own. Put the note back and that margin wants
+             re-measuring, because it used to be read from the note's
+             bottom. `.playground__more` is kept in styles.css as an
+             orphan. -->
 
       </div>
     </section>
@@ -408,19 +563,32 @@
     <section class="section stuffs" id="stuffs">
       <div class="stuffs__frame">
 
-        <img class="petal petal--l4" src="assests/scroll-flower.png"
-             alt="" aria-hidden="true" width="900" height="900">
-        <img class="petal petal--r4" src="assests/scroll-flower.png"
-             alt="" aria-hidden="true" width="900" height="900">
+        <img class="petal petal--l4" src="assests/scroll-flower.png" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="900">
+        <img class="petal petal--r4" src="assests/scroll-flower.png" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="900">
 
         <div class="stuffs__group" data-reveal>
 
-          <img class="stuffs__note" src="assests/postit.png"
-               alt="Other stuffs which I do: posters, branding, illustrations and sketches"
-               width="1419" height="1254">
+          <img class="stuffs__note" src="assests/postit.png" loading="lazy" decoding="async"
+            alt="Other stuffs which I do: posters, branding, illustrations and sketches" width="1419" height="1254">
 
-          <a class="stuffs__more" href="stuffs.html" aria-label="See the posters, branding and sketches">
-            <img src="assests/postit-arrow.png" alt="" width="210" height="117">
+          <!-- Back in on 2026-09-10 — Aniket marked the empty space off
+               the post-it's right edge and asked for the arrow that
+               opens stuffs.html. It had been out since 2026-09-08, which
+               left that page with no way in from here.
+
+               ⚠️ IT IS PLACED AGAINST `.stuffs__group`, NOT THE POST-IT.
+               The group is the frame's full width with the post-it in
+               normal flow inside it, so the group's top IS the post-it's
+               top and the arrow's `top` is simply its Figma offset. Move
+               the section's gap onto the post-it and this origin moves
+               with it.
+
+               ⚠️ The words live on the LINK, not the image — the arrow
+               is a drawn shape with nothing to read, so `alt=""` and an
+               `aria-label` here beats a description of the picture. -->
+          <a class="stuffs__more" href="stuffs.html" aria-label="See my other stuff">
+            <img src="assests/arrow.png" alt="" loading="lazy" decoding="async"
+              width="146" height="89">
           </a>
 
         </div>
@@ -429,53 +597,70 @@
   </main>
 
   <!-- ══════════════════════════════════════════════════
-       FOOTER — "lets connect", the three buttons, the laptop.
+       THE FOOTER WEDGE
 
-       The three buttons are whole PNGs: the icon AND the word are
-       drawn into each one, so their accessible name has to come from
-       the link, not from the picture. Hence alt="" on the img and a
-       real label on the <a>.
+       ⚠️ THIS REPLACED THE ENTIRE CONNECT BAND — Aniket asked for the
+       footer out and this triangle in its place (2026-09-10). What went
+       with it: the cropped laptop, the "lets connect" heading, the three
+       link chips (email / LinkedIn / Behance) and the pen mark at the
+       bottom edge. THE SITE NOW CARRIES NO CONTACT LINKS ANYWHERE. That
+       is the change he asked for, not something overlooked — if they
+       come back, they come back somewhere else.
 
-       ⚠️ All three point at "#". Aniket hasn't sent his email,
-       LinkedIn or Behance yet — see notes.md.
+       ⚠️ `id="connect"` IS KEPT ON PURPOSE. Nothing links to it today,
+       but it is still the page's bottom anchor and costs nothing.
+
+       ⚠️ `%20`, NOT A RAW SPACE, and the file really is spelled
+       "triagle" — that is the asset's own name on disk. Renaming it means
+       renaming it in all ten pages.
        ══════════════════════════════════════════════════ -->
   <footer class="footer" id="connect">
-    <div class="footer__frame" data-reveal>
+    <img class="footer__wedge" src="assests/footer%20triagle.png" alt="" aria-hidden="true"
+         data-reveal loading="lazy" decoding="async" width="4172" height="1182">
 
-      <!-- a broken hand-drawn rule with three crosses on it. It runs
-           off BOTH window edges, like the hero's big loop. -->
-      <div class="footer__rule" aria-hidden="true">
-        <span class="footer__line footer__line--a"></span>
-        <img class="footer__x footer__x--1" src="assests/footer-mark.png" alt="" width="79" height="76">
-        <span class="footer__line footer__line--b"></span>
-        <img class="footer__x footer__x--2" src="assests/footer-mark.png" alt="" width="79" height="76">
-        <span class="footer__line footer__line--c"></span>
-        <img class="footer__x footer__x--3" src="assests/footer-mark.png" alt="" width="79" height="76">
-        <span class="footer__line footer__line--d"></span>
-      </div>
+    <!-- ⚠️ THE TEXT LIES OVER THE PICTURE, and it is placed against the
+         PICTURE, not against the page. Aniket marked two spots on the
+         wedge (2026-09-10): the heading about a third of the way down and
+         the chip row under it, both near the middle. Each is anchored as a
+         PERCENTAGE of the wedge's height in styles.css, so the pair keeps
+         its place on the shape at any window width.
 
-      <p class="footer__title"><span class="footer__lets">lets</span> connect</p>
+         ⚠️ BOTH SIT ON THE WHITE HALF. At this x the blue does not start
+         until ~88% down, so the drawn colours — grey heading, brand
+         labels — still read. Push either much lower or much further right
+         and it crosses the diagonal onto blue, where they will not. -->
+    <p class="footer__title" data-reveal><span class="footer__lets">lets</span> connect</p>
 
-      <ul class="footer__links">
-        <li><a class="footer__link" href="mailto:aniket.sharma@iitg.ac.in" aria-label="Email Aniket">
-          <img src="assests/email.png" alt="" width="348" height="135"></a></li>
-        <li><a class="footer__link" href="https://www.linkedin.com/in/aniket-kumar-sharma-7b370a381/" target="_blank" rel="noopener noreferrer" aria-label="Aniket on LinkedIn">
-          <img src="assests/linkedin.png" alt="" width="438" height="135"></a></li>
-        <li><a class="footer__link" href="https://www.behance.net/aniket-sharma" target="_blank" rel="noopener noreferrer" aria-label="Aniket on Behance">
-          <img src="assests/behance.png" alt="" width="444" height="135"></a></li>
-      </ul>
-
-      <img class="footer__pc" src="assests/footer%20pc.png" alt=""
-           width="2080" height="1564">
-
-      <!-- Figma's `scribble 4` — the same drawing as the hero's big
-           loop, parked just off the frame's bottom-right in both the
-           desktop and the mobile file. Aniket asked for it brought in
-           to the edge. -->
-      <img class="footer__scribble" src="assests/hero-scribble.svg" alt=""
-           aria-hidden="true" width="237" height="207">
-
-    </div>
+    <!-- ⚠️ REAL TEXT, NOT THREE PNGs. Each chip is a glyph, a <span> and
+         an out-arrow, so the link says its own name and the label colours
+         are one line of CSS each. -->
+    <ul class="footer__links" data-reveal>
+      <li>
+        <a class="footer__link footer__link--email" href="mailto:aniket.sharma@iitg.ac.in">
+          <img class="footer__glyph footer__glyph--mail" src="assests/icon-mail.svg" alt="" loading="lazy" decoding="async" width="30" height="30">
+          <span class="footer__label">Email</span>
+          <img class="footer__out" src="assests/icon-out.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" width="24" height="24">
+        </a>
+      </li>
+      <li>
+        <a class="footer__link footer__link--linkedin" href="https://www.linkedin.com/in/aniket-kumar-sharma-7b370a381/" target="_blank" rel="noopener noreferrer">
+          <!-- ⚠️ WRAPPED, because the Figma overscans this one by ~1% to
+               keep the logo's own edge off the box. The other two do not. -->
+          <span class="footer__glyph footer__glyph--linkedin">
+            <img src="assests/icon-linkedin.jpg" alt="" loading="lazy" decoding="async" width="499" height="499">
+          </span>
+          <span class="footer__label">Linkedin</span>
+          <img class="footer__out" src="assests/icon-out.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" width="24" height="24">
+        </a>
+      </li>
+      <li>
+        <a class="footer__link footer__link--behance" href="https://www.behance.net/aniket-sharma" target="_blank" rel="noopener noreferrer">
+          <img class="footer__glyph footer__glyph--behance" src="assests/icon-behance.png" alt="" loading="lazy" decoding="async" width="640" height="640">
+          <span class="footer__label">Behance</span>
+          <img class="footer__out" src="assests/icon-out.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" width="24" height="24">
+        </a>
+      </li>
+    </ul>
   </footer>
 
   <!-- ══════════════════════════════════════════════════
@@ -489,9 +674,28 @@
        link with its own accessible name, and this says nothing a
        keyboard or screen-reader user isn't told twice already.
        ══════════════════════════════════════════════════ -->
-  <img class="view-cursor" src="assests/view.png" alt="" aria-hidden="true"
-       width="328" height="106">
+  <!-- ══ THE PAGE'S OWN POINTER ═════════════════════════════════
+       One element for the whole page — there is only ever one mouse.
+       It is the blue dot you see everywhere, and over a project's
+       cover it grows into this pill. Aniket's ask (2026-09-08): the
+       blue cursor should BECOME the "View Project" state, rather than
+       a second black chip riding along beside it.
+
+       ⚠️ `aria-hidden` and `pointer-events: none` — it is a drawing of
+       the pointer, not content, and it must never eat the click it is
+       advertising. app.js only brings it to life on a desktop with a
+       real mouse; everywhere else the native cursor is untouched. -->
+  <div class="cursor" aria-hidden="true">
+    <span class="cursor__label">View Project</span>
+    <!-- ⚠️ NO `src` HERE ON PURPOSE. app.js fills it from whichever
+         hero tile the pointer is on, and preloads both files at start
+         so the first hover is not a blank blue box waiting on a fetch.
+         An empty `src` attribute would ask the browser for the page
+         itself, so the attribute is left off entirely. -->
+    <img class="cursor__card" alt="">
+  </div>
 
   <script src="app.js"></script>
 </body>
+
 </html>

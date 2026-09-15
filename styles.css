@@ -34,7 +34,7 @@
   --blue: #0071b7;
   --gray: #6f6f6f;
   --accent: #78a9ff;
-  --paper: #ffffff;
+  --paper: #faf9f7;
   --panel: #f2f2f2;
   --rule: rgba(38, 46, 51, 0.12);
 
@@ -47,23 +47,35 @@
   /* 1440 — the Figma desktop frame     */
   --frame-pad: 3.75rem;
   /* 60                                 */
-  --wordmark: 3rem;
-  /* 48 — the doodle matches this height */
-  --nav-h: 3rem;
-  /* the logo row is as tall as the wordmark */
-  --nav-pad-top: 1.25rem;
-  /* 20 — air above the bar             */
-  --nav-link: 1.125rem;
-  /* 18                                 */
-  --nav-gap: 2.25rem;
-  /* 36                                 */
-  --rule-gap: 1.25rem;
-  /* 20 — text-to-line gap (holds the stroke in position while content is raised) */
+  --wordmark: 2rem;
+  /* 32 — the wordmark on its own, no doodle. Aniket asked for the
+     nav contents a little smaller (2026-09-12): was 36. The bar's own
+     height is `--nav-h` and did NOT change, so only the mark shrank. */
+  --nav-h: 3.5rem;
+  /* 56 — the whole bar is this tall    */
+  --nav-pad-top: 0rem;
+  /* the bar is its own height now, no extra air */
+  --nav-pad-bot: 0rem;
+  /* ⚠️ 0 HERE AND IT MUST STAY 0 ON DESKTOP — the desktop bar takes
+     its whole height from `--nav-h`, so any padding would ADD to it.
+     It exists for phones, where the row is shorter than the bar and the
+     air above it has to be matched below to keep the links centred. */
+  --nav-link: 0.875rem;
+  /* 14 — Aniket's number (2026-09-12). Went 12 → 11 → this in one
+     sitting: the trim came first, then he asked for 14 outright, so the
+     desktop links are now BIGGER than they started. The other bands
+     were already at or near 14 and did not move — tablet 16, phone 14,
+     small phone 13. */
+  --nav-gap: 1.5rem;
+  /* 24 — back to the original. It was eased to 22 to suit the 11px
+     type; at 14 the row wants its full spacing again. */
+  --rule-gap: 0rem;
+  /* the rule is now a border on the bar itself, so no gap to hold */
 
   /* the real height of the nav block: bar + rule + a little air.
      Used to reserve space at the top of the page and to stop
      anchor links landing underneath it. */
-  --nav-total: calc(var(--nav-pad-top) + var(--nav-h) + var(--rule-gap) + 0.5rem);
+  --nav-total: calc(var(--nav-pad-top) + var(--nav-h) + var(--nav-pad-bot) + var(--rule-gap) + 0.5rem);
 
   /* ⚠️ THE ONE NUMBER THAT SIZES THE WHOLE HERO COLLAGE. Aniket asked
      for everything in slice 2 a little smaller on desktop
@@ -89,6 +101,23 @@
      `container-type`, so it can't read its own `cqw`, which is why
      this lives up here as a plain token both can share. */
   --hero-w: min(72rem, 80%);
+
+  /* HOW FAR THE WHOLE HERO SITS BELOW THE NAV. Aniket marked the
+     collage on the live page and asked for the whole section to come
+     down a bit (2026-09-08).
+
+     ⚠️ It is a token, not a padding written in one place, because TWO
+     rules have to move together: `.hero`'s own top padding, and
+     `.page-gradient`'s start line — that line IS the stage's bottom
+     edge, measured down from the top of the page, so pushing the
+     stage down without pushing the line down the same amount would
+     leave the grey panel starting partway up the collage.
+
+     Zeroed in the stacked band (max-width: 1023px), where there is no
+     collage to move — the hero is a normal stack under the nav and
+     already carries its own spacing. */
+  --hero-drop: 5rem;
+  /* 80 */
 
   /* motion */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -172,8 +201,8 @@ body {
      `.hero__stage`'s box ends. Written as the nav's height plus the
      stage's, rather than a flat 1018, so it tracks the collage down
      through the laptop band AND follows `--hero-w` whenever the hero
-     is resized: the stage is `--hero-w` wide and 1440 × 874 in shape,
-     so it is 0.60694 of its own width tall.
+     is resized: the stage is `--hero-w` wide and 1440 × 674 in shape,
+     so it is 0.46806 of its own width tall.
 
      ⚠️ `margin-top`, NOT `top`, AND THAT IS NOT A STYLE CHOICE.
      `--hero-w` is `min(72rem, 80%)`, and A PERCENTAGE IN `top`
@@ -191,7 +220,7 @@ body {
      stage's 80% both measure the body's width, because `.hero` is the
      full body width. Don't put horizontal padding on `main`. */
   top: 0;
-  margin-top: calc(var(--nav-total) + var(--hero-w) * 0.60694);
+  margin-top: calc(var(--nav-total) + var(--hero-drop) + var(--hero-w) * 0.46806);
   /* the page's bottom edge — see the note on `body` above */
   bottom: 0;
   background: url('assests/gradient-dekstop.png') no-repeat center / 100% 100%;
@@ -226,6 +255,9 @@ a {
   inset: 0 0 auto 0;
   z-index: 100;
   background: var(--paper);
+  /* one clean hairline, window edge to window edge, in the same
+     colour the hand-drawn rule used (--rule). */
+  border-bottom: 1px solid var(--rule);
   transition: transform 0.45s var(--ease), box-shadow 0.3s ease;
   will-change: transform;
 }
@@ -249,9 +281,12 @@ a {
 .nav__wrap {
   max-width: none;
   width: 100%;
-  /* the logo sits 60px in from the left edge, and the links the same
-     from the right — set once here for the whole bar */
-  padding: var(--nav-pad-top) var(--frame-pad) 0 var(--frame-pad);
+  /* the wordmark sits 16px in from the left edge, the links the same
+     from the right — set once here for the whole bar.
+     ⚠️ THE BOTTOM WAS A HARD 0 and that is what left the phone links
+     sitting low: 16 of air above a 28 row and none under it. It is a
+     variable now, 0 on desktop so nothing there moves. */
+  padding: var(--nav-pad-top) 1rem var(--nav-pad-bot) 1rem;
 }
 
 .nav__inner {
@@ -269,10 +304,12 @@ a {
 }
 
 .nav__row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  /* the bar's whole height lives here */
+  height: var(--nav-h);
 }
 
 /* ── Logo: scanned doodle + handwritten wordmark, as one unit ── */
@@ -304,11 +341,6 @@ a {
   letter-spacing: -0.05em;
   color: var(--purple);
   white-space: nowrap;
-  transition: transform 0.4s var(--ease);
-}
-
-.nav__logo:hover .nav__wordmark {
-  transform: translateY(-2px);
 }
 
 /* ── Links ────────────────────────────────────────────────── */
@@ -316,10 +348,10 @@ a {
 .nav__links {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: var(--nav-gap);
-  font-weight: 500;
-  justify-self: center;
+  font-weight: 400;
+  margin-left: auto;
 }
 
 .nav__link {
@@ -328,7 +360,8 @@ a {
   align-items: center;
   gap: 0.35rem;
   font-size: var(--nav-link);
-  font-weight: 500;
+  font-weight: 400;
+  text-transform: uppercase;
   color: var(--ink);
   transition: color 0.3s ease;
 }
@@ -343,7 +376,7 @@ a {
 }
 
 .nav__link--resume {
-  justify-self: end;
+  justify-self: auto;
 }
 
 .nav__download-icon {
@@ -361,10 +394,9 @@ a {
 
 /* ── The hand-drawn rule underneath ───────────────────────── */
 
+/* retired — the bar's own border-bottom draws the line now */
 .nav__rule {
-  display: block;
-  width: 100%;
-  height: 2px;
+  display: none;
 }
 
 
@@ -406,6 +438,12 @@ a {
      the stage across the bands, or with `--hero-w`, and would drift
      the card. */
   padding-bottom: 0;
+  /* the air between the nav and the top of the collage — see
+     `--hero-drop` in the tokens at the top of this file. Everything
+     below the hero is in normal flow after it, so the quote card and
+     the rest of the page come down by the same amount and keep their
+     spacing. */
+  padding-top: var(--hero-drop);
 }
 
 .hero__stage {
@@ -436,23 +474,81 @@ a {
      ⚠️ `translate`, and a PERCENTAGE one, on purpose. A percentage
      translate measures against the ELEMENT'S OWN size, so this is
      49.5px at 1440 and stays 3.4375% of the collage at every width —
-     it can never drift out of step with `--hero-w`. Same trick the
-     footer's laptop uses for `--pc-cut`. A margin would have to fight
-     the auto-centring; a `left` would measure against the wrong box.
+     it can never drift out of step with `--hero-w`. (The old footer's
+     laptop used the same trick for `--pc-cut`; that footer was replaced
+     on 2026-09-10, so this is the only one left.) A margin would have to
+     fight the auto-centring; a `left` would measure against the wrong
+     box.
 
      ⚠️ The big loop cancels this out again — see `.hero__scribble--loop`.
      It is pinned to the WINDOW's edge, not the collage, so it must not
      ride along. If you change this number, change it there too. */
   --hero-shift: 3.544%;
   translate: var(--hero-shift) 0;
-  /* 1440 wide × 874 tall — the Figma frame from the nav's bottom
-     edge down to where the grey panel starts.
+  /* 1440 wide × 674 tall — the Figma frame from the nav's bottom edge
+     down to where the grey panel starts, less the 200 of dead tail
+     Aniket marked and asked to close (2026-09-08). It was 874.
+
+     ⚠️ THREE NUMBERS MOVE TOGETHER WHEN THIS DOES, and two of them are
+     not in this rule: `.page-gradient`'s multiplier, which IS this
+     shape written as a decimal (674 / 1440 = 0.46806) and draws the
+     line this box ends on; and `.quote__card`'s `top`, which is
+     measured up out of the band BELOW the stage and so has to give
+     back whatever height the stage loses, or the card slides up the
+     page with it. Change one, change all three.
      ⚠️ `aspect-ratio`, so the box gets SHORTER as it gets narrower.
      That is the point: the collage keeps its shape, and the tail
      under it — the empty band the quote card climbs back up into —
      shrinks by the same 10% rather than being left behind as a gap. */
-  aspect-ratio: 1440 / 874;
+  aspect-ratio: 1440 / 674;
   margin: 0 auto;
+
+  /* ⚠️ HOW FAR THE DRAWING SITS DOWN INSIDE THE STAGE. Aniket marked
+     the collage and the big loop together and asked for both down a
+     bit (2026-09-08).
+
+     It is ONE token rather than 40 added to nine Figma numbers,
+     because the collage only works if its pieces keep their exact
+     relationship to each other — nudging them one at a time is how
+     that drifts. Every `top` that moves with it reads
+     `calc(<its Figma number> + var(--collage-drop))`, so the Figma
+     value stays legible and the drop stays a single dial.
+
+     ⚠️ It does NOT move the greeting, the tagline, the IITG mark or
+     the tools row. Those were not in the mark, and they are the half
+     of the hero that reads as type rather than as drawing.
+
+     ⚠️ In cqw, so it scales with the stage like everything else here.
+     Zeroed in the stacked band, where the collage is a small stage of
+     its own and has its own numbers. */
+  --collage-drop: -1.736cqw;
+  /* -20 — ABOVE where the Figma draws the collage. It went 40, 80, 40,
+     20, 0 and then past it (2026-09-08).
+
+     ⚠️ THE LOOP NO LONGER RIDES THIS DIAL. It did, and that is how it
+     ended up 2px off the stage's top edge here; it has `--loop-drop`
+     of its own now, so this number only moves the drawing. */
+
+  /* The same dial for the OTHER half of the hero — the greeting, the
+     tagline, the IITG mark, the tools row and its caption. Aniket
+     marked the copy and asked for it down a bit too (2026-09-08).
+
+     ⚠️ IT MOVES ALL FIVE OR NONE. The tagline's last line clears the
+     tools row by about 18 at rest; drop the type without the tools and
+     the two collide inside 20px. They are one column and they move as
+     one. */
+  --copy-drop: -1.736cqw;
+  /* -20 — always the same as --collage-drop, so the two halves of the
+     hero stay level with each other */
+
+  /* THE BIG LOOP HAS ITS OWN DIAL. It used to ride `--collage-drop`,
+     which is how it ended up 2px off the stage's top edge when the
+     collage was lifted; Aniket then marked the loop on its own and
+     asked for it back down (2026-09-08). It is scenery pinned to the
+     window's right edge, not part of the collage's geometry, so it has
+     no business tracking the drawing's position. */
+  --loop-drop: 1.736cqw;
+  /* 20 */
 }
 
 /* The photo and its doodles move as one group. On desktop this wrapper
@@ -469,12 +565,23 @@ a {
   position: absolute;
   left: 24.450cqw;
   /* 356  */
-  top: 12.592cqw;
+  top: calc(12.592cqw + var(--collage-drop));
   /* 152.5 */
   width: 14.192cqw;
   /* 190  */
   height: auto;
   transition: transform 0.2s var(--ease);
+
+  /* ⚠️ THE PHOTO PAINTS OVER THE DOODLES. Aniket asked for it on top
+     (2026-09-12), after the phone camera and walker were nudged in far
+     enough to sit on it. Everything in the cluster is absolute with no
+     z-index of its own, so DOM order decided it before this, and the
+     doodles come after the photo in index.html — they were winning.
+
+     ⚠️ IT IS ABOVE THE LABELS TOO. They sit clear of the photo at every
+     size, so nothing changes visually; if a label is ever meant to
+     cross the photo it needs its own z-index above this one. */
+  z-index: 2;
 }
 
 /* .hero__photo:hover {
@@ -487,11 +594,11 @@ a {
   position: absolute;
   left: 40.208cqw;
   /* 579   */
-  top: 13.706cqw;
+  top: calc(13.706cqw + var(--copy-drop));
   /* 197.4 */
   margin: 0;
-  font-size: 1.667cqw;
-  /* 24 */
+  font-size: 1.389cqw;
+  /* 20 */
   line-height: 1.31;
   letter-spacing: -0.01em;
   color: var(--ink);
@@ -515,13 +622,28 @@ a {
   position: absolute;
   left: 40.208cqw;
   /* 579 */
-  top: 17.650cqw;
-  /* 228.4 */
-  width: 29.583cqw;
-  /* 426 */
+  /* ⚠️ SET BY EYE AGAINST THE GREETING ABOVE, not by the Figma. The
+     48px handwriting inflates the greeting's line box, which left a
+     hole between the two blocks; Aniket asked for them to read as one
+     paragraph (2026-09-08), so this comes up until the baseline gap
+     is about the tagline's own line-height. Move the greeting and
+     this has to follow. */
+  top: calc(17.094cqw + var(--copy-drop));
+  /* 246 — was 254, tucked up under "Hi I am Aniket" */
+  /* ⚠️ THIS WIDTH IS WHAT MAKES IT FOUR LINES, at the 20px below.
+     Aniket asked for four lines without dropping the size
+     (2026-09-08), so the column grew to the RIGHT instead: 146
+     characters need ~40 per line to land in four, and at 20px that
+     takes this much column. The original 29.583 stopped exactly at
+     the IITG logo's left edge — this one runs past it, so if the
+     first line ever touches the logo, raise the logo rather than
+     narrowing this. Change the width or the size and the line count
+     moves; always check the pair together. */
+  width: 27.500cqw;
+  /* 396 — narrow enough to break the paragraph into four lines */
   margin: 0;
-  font-size: 1.667cqw;
-  /* 24 */
+  font-size: 1.389cqw;
+  /* 20 */
   line-height: 1.44;
   letter-spacing: -0.01em;
   color: var(--ink);
@@ -543,6 +665,10 @@ a {
    stage. That keeps each doodle locked to the photo at any width.
    ───────────────────────────────────────────────────────────── */
 
+/* ⚠️ ORPHAN — the three words are gone from index.html (2026-09-08).
+   Kept, with the three placements below, so they can be put back
+   without re-deriving the Figma numbers. Nothing on the page uses
+   these. */
 .hero__label {
   position: absolute;
   margin: 0;
@@ -560,19 +686,19 @@ a {
 
 .hero__label--photography {
   left: 9.722cqw;
-  top: 21.114cqw;
+  top: calc(21.114cqw + var(--collage-drop));
 }
 
 /* 140,   448   */
 .hero__label--music {
   left: 17.431cqw;
-  top: 31.984cqw;
+  top: calc(31.984cqw + var(--collage-drop));
 }
 
 /* 251,   604.5 */
 .hero__label--walks {
   left: 35.461cqw;
-  top: 32.918cqw;
+  top: calc(32.918cqw + var(--collage-drop));
 }
 
 /* 510.6, 589.1 */
@@ -583,33 +709,212 @@ a {
   height: auto;
 }
 
+/* ⚠️ ONE WIDTH FOR ALL THREE, and that is the change the new artwork
+   asked for. The old doodles were line drawings of three different
+   shapes — 66, 57 and 62 wide — and each width was chosen to make that
+   particular drawing read at the right weight. The tiles that replaced
+   them (2026-09-08) are one set at one size, so three different widths
+   would just render the set unevenly.
+
+   72 rather than the old average: a tile carries padding around its
+   icon, so it needs a little more room to read as strongly as the bare
+   line art did. Their left/top are untouched — each tile still hangs
+   off the Figma corner its drawing did. */
+.hero__doodle--camera,
+.hero__doodle--music,
+.hero__doodle--walks {
+  width: 5cqw;
+  /* 72 */
+  /* ⚠️ A SQUARE BOX AND `contain`, NOT `height: auto`. The three files
+     are 94x86, 109x103 and 115x110 — near-square, but near is not the
+     same, and on a shared width alone they came out 66, 68 and 69 tall.
+     Aniket asked for the cards equal (2026-09-08), so the BOX is the
+     thing that is equal and `contain` fits each drawing inside it
+     without distorting anything.
+
+     ⚠️ RESIZING THESE MEANS RE-DOING THE THREE `left`/`top`s BELOW.
+     They are corners, the marks that placed them were centres, so each
+     one carries half a tile in it — that half changed with this.
+
+     ⚠️ DESKTOP WAS GROWN AND PUT STRAIGHT BACK ON 2026-09-12. It went
+     72 → 86 → 108 → 150 → 200 and Aniket stopped it: the bigger
+     doodles were only ever meant for PHONES. Everything in this rule
+     and the three below is the pre-existing number, restored. The
+     phone sizes live in the 767 block — change them there and leave
+     this rule alone. */
+  height: 5cqw;
+  object-fit: contain;
+}
+
+/* ⚠️ THESE THREE ARE NO LONGER ON THE FIGMA'S COORDINATES. The old
+   numbers placed three line drawings of three different shapes, spread
+   across the left of the collage; the tiles that replaced them are one
+   set, and Aniket marked where each should sit (2026-09-08) — a column
+   down the left of the photo, camera at the top, then music, then the
+   walker. The Figma values they replaced were 225.6/398, 275.4/548.2
+   and 449.9/547.6.
+
+   ⚠️ EACH `left`/`top` IS THE TILE'S TOP-LEFT CORNER, and the marks
+   gave centres — so every number here is the marked centre less half a
+   tile (36 of the 72). Change the tile size and these move with it. */
 .hero__doodle--camera {
-  left: 15.669cqw;
-  top: 17.640cqw;
-  width: 4.583cqw;
+  left: 14.931cqw;
+  /* 215 */
+  top: calc(13.455cqw + var(--collage-drop));
+  /* 194 */
 }
 
-/* 225.6, 398.0 */
 .hero__doodle--music {
-  left: 19.128cqw;
-  top: 28.071cqw;
-  width: 3.958cqw;
-}
+  /* ⚠️ THE ONE TILE THAT IS NOT 72. Aniket asked for this one a little
+     bigger (2026-09-09). It still overrides BOTH width and height
+     together — the shared rule's whole point is that the box stays
+     square, and `object-fit: contain` only behaves if it is.
 
-/* 275.4, 548.2 */
-.hero__doodle--walks>img {
-  display: block;
-  width: 100%;
-  height: auto;
+     ⚠️ The left/top below carry half a tile in them, so they are 4.3
+     less than the marked centre would give at 72 — grow this again and
+     they move again. */
+  width: 5.75cqw;
+  /* 83 */
+  height: 5.75cqw;
+
+  left: 15.625cqw;
+  /* 225 */
+  top: calc(20.139cqw + var(--collage-drop));
+  /* 290 */
 }
 
 .hero__doodle--walks {
-  left: 31.245cqw;
-  top: 32.034cqw;
-  width: 4.306cqw;
+  /* the same step up music got (2026-09-09), and for the same reason
+     the left/top below are half that growth back from the marked
+     centre. Camera is now the only tile still at the shared 72. */
+  width: 5.75cqw;
+  /* 83 */
+  height: 5.75cqw;
+
+  left: 17.795cqw;
+  /* 256 */
+  top: calc(27.691cqw + var(--collage-drop));
+  /* 399 */
 }
 
 /* 449.9, 547.6 */
+/* ── THE TILES' HOVER CARDS ──────────────────────────────────
+   The blue cards Aniket drew behind two of the doodles (2026-09-09):
+   "my records" behind Long Walks, "check out my photocrowd" behind
+   the camera. They are pictures, not content — the words are baked
+   into the PNGs — so they are `aria-hidden` and there is nothing here
+   to position on top of them.
+
+   ⚠️ BOTH OPEN TO THE LEFT, INTO THE GUTTER, and that is the only
+   place either fits. The cards are two to three times the width of the
+   tile that opens them: below the walker is the stage's bottom edge,
+   above the camera is the nav, and to the right of both is the
+   polaroid. The band left of the collage is empty at every desktop
+   width, so that is where they go.
+
+   ⚠️ `pointer-events: none` IS WHAT STOPS THEM FLICKERING. A card is
+   bigger than the tile that opens it — let it take the pointer and
+   moving onto it would close the hover that is drawing it, which
+   reopens it, which closes it, forever.
+
+   ⚠️ EACH SCALES FROM THE CORNER NEAREST ITS OWN TILE, which is what
+   makes it read as unfolding out of the doodle rather than fading in
+   beside it. The two tiles sit differently against their cards, so the
+   two origins are different — see each placement below.
+
+   ╔══════════════════════════════════════════════════════════
+   ║ ⚠️ ORPHANED — NOTHING ON THE PAGE CARRIES `.hero__record` ANY
+   ║ MORE. Aniket asked for the CURSOR to become these cards instead
+   ║ (2026-09-10), so they are drawn inside `.cursor` now and the zone
+   ║ table in app.js decides which one. Everything below still works;
+   ║ put the two <img>s back in index.html, each immediately after its
+   ║ own tile, and drop the two card rows from `viewZones`.
+   ╚══════════════════════════════════════════════════════════ */
+.hero__record {
+  position: absolute;
+  height: auto;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.94;
+  transition:
+    opacity 0.18s ease,
+    scale 0.22s ease;
+}
+
+/* the camera tile sits beside this card's middle, so it opens from the
+   right edge, halfway down */
+.hero__record--camera {
+  left: 0;
+  top: calc(12.891cqw + var(--collage-drop));
+  /* 186 — centred on the camera tile */
+  width: 13.889cqw;
+  /* 200 */
+  transform-origin: right center;
+}
+
+/* the walker sits beside this card's TOP — the card is the taller of
+   the two and hangs below its tile — so it opens from that corner */
+.hero__record--walks {
+  left: 2.865cqw;
+  /* 41 */
+  top: calc(27.691cqw + var(--collage-drop));
+  /* 399 — level with the top of the walker tile */
+  width: 13.889cqw;
+  /* 200 */
+  transform-origin: top right;
+}
+
+
+/* ── The tiles under the cursor ──────────────────────────────
+   A small zoom, nothing else. Aniket's ask (2026-09-09).
+
+   ⚠️ `transform`, NOT the `scale` property, AND THAT IS DELIBERATE.
+   The hero's entrance keyframes animate `scale` and `translate` as
+   individual properties (see `hero-settle`), and every doodle carries
+   `hero-fade` with `both` — an animation holds its properties after it
+   ends, so a hover written in `scale` would be fighting the animation
+   for the same one. `transform` is a different property entirely and
+   composes with them instead.
+
+   ⚠️ Scaled from the CENTRE, which is what keeps each tile on the spot
+   it was placed at. These are absolutely positioned by their corner,
+   so a corner origin would slide them as they grew.
+
+   `ease` at 200ms: a hover change, and the tiles are small — this is
+   the textbook micro-interaction, not something that wants the page's
+   --ease (an ease-out quint built for arrivals).
+
+   ⚠️ `(hover: hover) and (pointer: fine)` — a tap on a touchscreen
+   fires hover and would leave a tile stuck zoomed. */
+@media (hover: hover) and (pointer: fine) {
+
+  .hero__doodle--camera,
+  .hero__doodle--music,
+  .hero__doodle--walks {
+    transition: transform 200ms ease;
+    will-change: transform;
+  }
+
+  .hero__doodle--camera:hover,
+  .hero__doodle--music:hover,
+  .hero__doodle--walks:hover {
+    transform: scale(1.08);
+  }
+
+  /* two of the tiles have a second thing to show — see the cards
+     above. The `~` needs each card to be a LATER sibling of its tile;
+     both are, and index.html says so at the elements.
+
+     ⚠️ THE MODIFIER IN EACH SELECTOR IS DOING REAL WORK. `~` matches
+     every later sibling, so a bare `.hero__record` here would have the
+     camera open the walker's card too. */
+  .hero__doodle--camera:hover ~ .hero__record--camera,
+  .hero__doodle--walks:hover ~ .hero__record--walks {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
 .hero__doodle--grass {
   /* Tucked into the photo's top-right corner, keeping the Figma
      relationship: the grass starts 42.3px left of that corner and
@@ -622,7 +927,7 @@ a {
      off the corner instead of touching it. The visible corner sits at
      501/570 of the width, at the very top: 24.450 + 0.879 x 14.192. */
   left: 36.016cqw;
-  top: 10.790cqw;
+  top: calc(10.790cqw + var(--collage-drop));
   width: 3.264cqw;
 }
 
@@ -688,7 +993,7 @@ a {
      Both terms are percentages of the stage's width — `right` resolves
      against the containing block — so this cancels exactly. */
   right: calc((100% - 100vw) / 2 + var(--hero-shift));
-  top: 1.924cqw;
+  top: calc(1.924cqw + var(--loop-drop));
   width: 16.458cqw;
 }
 
@@ -710,22 +1015,31 @@ a {
 
 .hero__tools {
   position: absolute;
-  left: 63.542cqw;
-  /* 915 = 917 - the 2px border */
-  top: 28.653cqw;
+  left: 63.681cqw;
+  /* 917 — the Figma's own x, now that there is no 2px border to sit
+     back from */
+  top: calc(28.653cqw + var(--copy-drop));
   /* 513.36 */
   display: flex;
-  gap: 0.694cqw;
-  /* 10 — with the 2px borders that keeps the 74 pitch */
+  gap: 0.833cqw;
+  /* 12 — the borders used to make up the other 2 of the 74 pitch */
 }
 
+/* ⚠️ NO BRACKETS ANY MORE. Each icon used to carry a hand-drawn
+   top-left corner bracket — two straight 2px lines in --ink, done as a
+   border-top + border-left rather than another SVG to load. Aniket
+   marked the row and asked for them off (2026-09-08).
+
+   ⚠️ THE ROW'S `left` AND `gap` ABOVE WERE BOTH SIZED AROUND THOSE 2px,
+   and both were corrected when the borders came off — 915 back to the
+   Figma's 917, and the gap from 10 to 12, so the icons keep the 74
+   pitch the Figma draws. Put a border back and those two numbers have
+   to come back with it. */
 .hero__tool {
   box-sizing: content-box;
   width: 4.306cqw;
   /* 62 */
   height: 4.306cqw;
-  border-top: 0.139cqw solid var(--ink);
-  border-left: 0.139cqw solid var(--ink);
   /* the icons are transparent PNGs; in Figma they sit on white */
   background: var(--paper);
 }
@@ -734,7 +1048,7 @@ a {
   position: absolute;
   left: 65.625cqw;
   /* 945 */
-  top: 34.069cqw;
+  top: calc(34.069cqw + var(--copy-drop));
   /* 591.36 */
   margin: 0;
   font-family: var(--font-hand);
@@ -785,12 +1099,16 @@ a {
 
 .hero__iitg {
   position: absolute;
-  left: 69.962cqw;
-  /* 978.7 */
-  top: 10.379cqw;
-  /* 163.9 */
-  width: 7.200cqw;
-  /* 105.4 */
+  /* ⚠️ GROWN FROM ITS CENTRE, not its corner. Aniket asked for a
+     bigger mark (2026-09-08): width 7.2 → 9.6cqw, so `left` and `top`
+     each come back by half the growth to keep it sitting exactly
+     where the Figma put it. Move all three together or it drifts. */
+  left: 68.762cqw;
+  /* 978.7, less half the growth */
+  top: calc(9.394cqw + var(--copy-drop));
+  /* 163.9, less half the growth */
+  width: 9.600cqw;
+  /* 140.5 */
   height: auto;
   /* the Figma layer is set to Darken — it's a scan on white */
   mix-blend-mode: darken;
@@ -827,15 +1145,73 @@ a {
   container-type: inline-size;
   width: min(90rem, 100%);
   margin: 0 auto;
+  /* ⚠️ THE FRAME HOLDS ITS OWN HEIGHT NOW, AND THIS IS THE GAP BETWEEN
+     THE HERO AND PROJECTS — the one number that sets it. The card used
+     to be the only thing in here and its box is what made this band 137
+     tall; the card went `absolute` when it moved up beside the hero
+     (2026-09-08), which would have collapsed this to nothing and pulled
+     Projects 137 up the page. So the band it used to make is written
+     here as a shape, and it scales with the frame exactly as the old
+     cqw margins did.
+
+     ⚠️ EVERYTHING BELOW RIDES ON IT. Projects, the playground and
+     Other Stuffs are all in normal flow under this, so shortening the
+     band lifts the whole lower half of the page together — which is
+     what Aniket asked for (2026-09-10): 137 → 85, so the page comes up
+     52 at 1440 and proportionally less as the frame narrows.
+
+     ⚠️ IT DOES NOT MOVE THE QUOTE CARD. That is absolute against this
+     frame's TOP edge (`top: -28.889cqw`), and only the bottom edge
+     moves when this changes — so the card stays beside the collage
+     where it was marked. */
+  aspect-ratio: 1440 / 85;
 }
 
+/* ⚠️ THE CARD IS OUT OF FLOW AND SITS BESIDE THE HERO, NOT UNDER IT.
+   Aniket marked the empty space down the left of the collage and asked
+   for the card to move there (2026-09-08). It used to be centred in
+   this frame on a negative top margin, tucked into the hero's tail.
+
+   ⚠️ THE 62 THAT HANGS OFF THE SCREEN IS THE POINT, and it is measured
+   from the WINDOW's edge, not the frame's — the same trick
+   `.hero__scribble--loop` uses on the right, and the same reading of
+   the sign: `(100% - 100vw) / 2` is NEGATIVE, the gutter beside the
+   frame written as an outward push, so subtracting on top of it pushes
+   further out. That keeps exactly 62 hidden at every width instead of
+   letting the amount grow as the gutter closes.
+
+   ⚠️ IT ONLY WORKS BECAUSE THE CARD IS 317 WIDE. At the 410 it used to
+   be, a window-pinned left drove it straight through the "Photography"
+   label at 1440 — the gutter closes as the window narrows but the
+   collage does not move with it, and there was not room for both. At
+   317 the card clears the label by ~30 even at 1024. Widen the card
+   again and check that clearance before trusting this. */
 .quote__card {
+  position: absolute;
+  left: calc((100% - 100vw) / 2 - 4.306cqw);
+  /* 62 of the card past the window's left edge — Aniket marked the
+     strip he wanted hidden (2026-09-08). `body`'s `overflow-x: hidden`
+     clips it, so this never adds sideways scroll. */
+  top: -28.889cqw;
+  /* -416 — 200 less negative than it was, giving back exactly the
+     height the stage lost when its tail was trimmed: this is measured
+     from the top of the band BELOW the stage, and that band just moved
+     200 up the page.
+
+     It also moves with the collage beside it, so this tracks
+     `--collage-drop` by hand: 40 down when the collage went down, 40
+     back up when it came back (2026-09-08). Level with the TOP OF THE
+     POLAROID,
+     which is the topmost thing in the collage beside it. It was 130
+     higher than this, hanging above everything with nothing to line up
+     against; Aniket asked for it down (2026-09-08) and the photo's top
+     edge is the line worth landing on. */
   display: block;
-  width: 28.5cqw;
-  /* 410.4 — reduced to match the 80% hero scale */
+  width: 22cqw;
+  /* 316.8 — Aniket brought it down from 410 when it moved out here
+     (2026-09-08); beside the collage it does not need the weight it had
+     when it sat centred under it */
   height: auto;
-  margin: -14cqw auto 1.573cqw;
-  /* tucked cleanly under the hero */
   transition:
     opacity 0.35s var(--ease),
     translate 0.35s var(--ease),
@@ -901,6 +1277,70 @@ a {
   margin: 0 auto;
 }
 
+/* The section title, in Aniket's own handwriting font — the text
+   version of the tag PNG that used to sit here.
+
+   ⚠️ IT IS THE SAME BOX AS `.projects__list`, and that is the whole
+   trick to "align it left with the covers": same 886 width, same
+   `margin: auto`, so its left edge and the first cover's left edge are
+   the same line by construction, at every width and in every band. Do
+   NOT swap this for a `margin-left` calculation — that has to be kept
+   in step by hand and drifts the moment the column changes. */
+.projects__head {
+  /* ⚠️ IT IS THE SAME BOX AS `.projects__list`, and that is the whole
+     trick to "align it with the covers": same 886 width, same
+     `margin: auto`, so the title's left edge and "more coming soon"'s
+     right edge land on the first cover's two edges by construction, at
+     every width and in every band. Do NOT swap this for `margin-left`
+     arithmetic — that has to be kept in step by hand and drifts the
+     moment the column changes. */
+  width: 61.528cqw;
+  /* 886 — the projects column */
+  margin: 0 auto 2.083cqw;
+  /* 30 down to the first cover */
+  display: flex;
+  /* baseline, not centre: the two are the same size today, but if one
+     is ever retuned they must still sit on one written line */
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.389cqw;
+  /* 20 — only ever reached if the column gets very narrow */
+}
+
+/* One type spec for both ends of the row. IBM Plex Sans at 24, not
+   the handwriting font the title started as — Aniket's call
+   (2026-09-08). Same face as the project names under the covers, so
+   the row reads as part of the same set rather than as another drawn
+   element. */
+.projects__title,
+.projects__soon,
+.playground__title {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 1.667cqw;
+  /* 24 */
+  line-height: 1.458;
+  /* 35, the same as .project__meta */
+  letter-spacing: -0.05em;
+  /* -5% */
+  /* #262e33 — the page's ink, already a token. Written as the token so
+     it stays in step if the ink is ever retuned. */
+  color: var(--ink);
+}
+
+.projects__soon {
+  /* 70%. `opacity`, not a 70% ink, because Aniket asked for the whole
+     thing knocked back rather than for a second grey to maintain. */
+  opacity: 0.7;
+  /* it is a note, not a heading — never let it wrap mid-phrase and
+     push the row two lines tall */
+  white-space: nowrap;
+}
+
+/* ⚠️ ORPHAN — the element is gone from index.html (2026-09-08), kept
+   only so the tag can be put back without re-deriving the Figma
+   numbers. Nothing on the page uses this. */
 .projects__tag {
   display: block;
   width: 9.653cqw;
@@ -920,8 +1360,12 @@ a {
   /* 886 */
   display: flex;
   flex-wrap: wrap;
-  gap: 4.583cqw 2.778cqw;
-  /* 66 between blocks, 40 between the two bottom cards */
+  gap: 2.083cqw 1.111cqw;
+  /* 30 between blocks, 16 between acsp and Google Maps — Aniket's
+     numbers (2026-09-08), down from the Figma's 66 and 40.
+     ⚠️ THE 16 IS ALSO IN THE CARD WIDTHS BELOW. The pair is sized as
+     "half the column, less the gutter", so the two numbers have to be
+     the same one — change this and change that. */
   align-items: flex-start;
 }
 
@@ -931,8 +1375,10 @@ a {
 
 .project--acsp,
 .project--gmaps {
-  /* 423 of the 886 — the two of them plus the 40 gutter */
-  flex: 0 0 calc((100% - 2.778cqw) / 2);
+  /* 435 of the 886 — the two of them plus the 16 gutter. Was 423 on a
+     40 gutter; closing the gutter to 16 is what widens them, and the
+     covers scale up with the card because they are `width: 100%`. */
+  flex: 0 0 calc((100% - 1.111cqw) / 2);
 }
 
 /* Roopak is the same 423-wide card, but on a line of its own with
@@ -940,20 +1386,33 @@ a {
    auto` inside a wrapping flex row is what does the centring — the
    card is the only item on that line. */
 .project--roopak {
-  flex: 0 0 calc((100% - 2.778cqw) / 2);
+  /* the same width as the pair above it, so the three read as one
+     grid — it grew with them */
+  flex: 0 0 calc((100% - 1.111cqw) / 2);
   margin-inline: auto;
 }
 
 .project__link {
   display: block;
+  /* ⚠️ FILLS ITS `<li>`, and the hover depends on it. acsp and Google
+     Maps share a row, so the shorter card's list item is stretched
+     taller than its own content — and `.project:hover` is what drives
+     the zoom out below. Without this the strip of empty li under the
+     shorter card would shrink it from outside the card itself. */
+  height: 100%;
   text-decoration: none;
   color: inherit;
-  /* --rd is the reveal's stagger, set per card below. `transform` is
-     left out of it so the hover never waits for the stagger. */
+  /* --rd is the reveal's stagger, set per card below.
+     ⚠️ ASTERIX OPTS OUT of all of this by not carrying `data-reveal` —
+     see the note in index.html. This rule still applies to it, but with
+     no hidden state to leave there is nothing for it to animate. */
+  /* ⚠️ `transform` is deliberately LEFT OUT of the `--rd` delay — that
+     delay belongs to the arrival, and carrying it here would leave the
+     last card sitting still for a beat before it answered the cursor. */
   transition:
     opacity 0.6s var(--ease) var(--rd, 0s),
     translate 0.6s var(--ease) var(--rd, 0s),
-    transform 0.35s var(--ease);
+    transform 220ms ease;
 }
 
 /* acsp and Google Maps scroll into view together, so the second one
@@ -963,82 +1422,289 @@ a {
   --rd: 0.12s;
 }
 
-/* Aniket's call: no tilt on the project cards — they just grow a
-   little under the cursor. `transform` is free for this because the
-   reveal moves things with `translate`. */
-.project__link:hover {
-  transform: scale(1.025);
+/* THE PROJECT CARD HOVER — the WHOLE CARD zooms out.
+
+   History, so the shape of it is clear: the card used to grow,
+   `scale(1.025)` on `.project__link`, which Aniket turned down twice
+   — growing overlaps the neighbours, and the name and the blurb grew
+   with the picture (2026-09-08). It became a 20% white wash, then a
+   zoom OUT on the cover alone, and then this (2026-09-10): the same
+   pull-back, but the whole card doing it together — picture, name,
+   year and blurb — rather than the artwork sliding inside a frame
+   that stays put.
+
+   ⚠️ THE HOVER IS ON THE `<li>`, THE SCALE IS ON THE CARD, AND THAT
+   IS NOT A STYLE CHOICE — IT IS THE WHOLE REASON THIS DOES NOT
+   FLICKER. Put `:hover` on the same element you shrink and the edge
+   of it pulls out from under the pointer: hover ends, the card springs
+   back to full size, the pointer is inside again, hover starts — a
+   loop, several times a second, at every border of the card. `.project`
+   is the list item around the link; a child's `transform` never moves
+   it, so it holds the pointer steady while the card inside pulls in.
+
+   ⚠️ NOTHING HERE REFLOWS. `transform` is painted, not laid out, so
+   the grid the Figma draws never shifts — the card just gets smaller
+   inside the space it already owns.
+
+   ℹ The text IS scaled now, and that is what Aniket asked for. It is
+   re-rasterised while it moves, so a card mid-hover is very slightly
+   softer than one at rest. `will-change: transform` below is what
+   keeps that smooth rather than steppy.
+
+   ⚠️ `(hover: hover) and (pointer: fine)` — on a touchscreen a tap
+   fires hover, and the card would stay shrunk until you tapped
+   somewhere else. */
+@media (hover: hover) and (pointer: fine) {
+
+  .project__link {
+    /* from the centre, so the card pulls in evenly on all four sides
+       and stays on the spot the grid put it */
+    transform-origin: center;
+    /* gives the card its own layer, so the browser scales a picture of
+       it instead of re-laying the text out frame by frame */
+    will-change: transform;
+  }
+
+  /* 3% — the number the playground cards use too. Change them together
+     or the page grows two different hovers. */
+  .project:hover .project__link {
+    transform: scale(0.97);
+  }
 }
 
 
-/* ── The "View Project" cursor ─────────────────────────────────
+/* ── THE PAGE'S OWN POINTER ────────────────────────────────────
 
-   `view.png` rides the pointer on a desktop. One shared element for
-   the whole page — there is only ever one pointer.
+   A blue dot that follows the mouse and GROWS INTO the "View
+   Project" pill over a project's cover. One element for the whole
+   page — there is only ever one pointer.
 
-   WHERE IT FIRES (Aniket's call, 2026-09-02) — and the two are
-   deliberately opposite:
-     · project cards — ONLY over the cover image
+   History, because this replaced something: `view.png`, a black chip,
+   used to ride along BESIDE the native cursor. Aniket asked for the
+   blue cursor itself to become that state instead (2026-09-08), and
+   a native `cursor:` cannot animate — the browser swaps one image for
+   another with nothing in between. So the pointer had to become a real
+   element before it could morph at all. `assests/view.png` is now
+   unused.
+
+   WHERE IT CHANGES (Aniket's call, 2026-09-02, and still true) — and
+   the two are deliberately opposite:
+     · project cards — the pill shows ONLY over the cover image
      · vibe-coding cards — everywhere EXCEPT the video/still, i.e. over
        the name and the blurb
    That split lives in app.js, next to the rest of the gating.
 
-   ⚠️ THE ARROW STAYS. An earlier version hid it with `cursor: none`
-   and replaced it with the pill; Aniket wants the two together. So
-   the pill is OFFSET down-and-right of the hotspot instead of centred
-   on it — sitting under the arrow the way a tooltip does, rather than
-   with the arrow parked in the middle of the word "View".
-
    ⚠️ DESKTOP-AND-MOUSE ONLY, AND app.js DECIDES THAT. Nothing here
-   needs a media query: with no `is-on` the image is transparent and
-   `pointer-events: none`, so on a phone it is inert.               */
+   needs a media query: without `.is-live` the element is transparent
+   and `pointer-events: none`, and the native cursor below is never
+   hidden unless app.js has put `has-cursor` on <html>. If the script
+   never runs, the page keeps the ordinary blue cursor and nothing is
+   missing. */
 
-.view-cursor {
+.cursor {
   position: fixed;
   left: 0;
   top: 0;
-  /* under the nav (100) so it slides beneath the bar, over everything
-     else on the page */
-  z-index: 90;
-  width: 6.5rem;
-  /* 104. The PNG is a 2× export at 328 wide, so this is well inside
-     its own resolution. Was 164 — Aniket asked for it smaller. */
-  height: auto;
+  /* ⚠️ OVER THE NAV (100), NOT UNDER IT. It sat at 90 and slid
+     beneath the bar — but the bar has an opaque `--paper` background
+     and `html.has-cursor *` has already hidden the native pointer, so
+     the top of the page was left with no visible cursor at all
+     (Aniket, 2026-09-10). `pointer-events: none` below is what makes
+     riding on top harmless: the nav links still take their own
+     clicks. */
+  z-index: 200;
   /* it must never swallow the click it is advertising */
   pointer-events: none;
+
+  display: grid;
+  place-items: center;
+  /* the dot, the same 20 the native cursor was drawn at */
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: var(--blue);
+  /* keeps the label folded away inside the dot until it is wanted */
+  overflow: hidden;
   opacity: 0;
-  scale: 0.82;
 
-  /* ⚠️ `--vx`/`--vy` ARE VIEWPORT COORDINATES, straight off the
-     pointer event, and the element is `fixed` so that is the same
-     coordinate space — no scroll maths anywhere, and it stays with
-     the cursor if the page scrolls mid-hover.
+  /* ⚠️ `--cx`/`--cy` ARE VIEWPORT COORDINATES, straight off the pointer
+     event, and the element is `fixed` so that is the same coordinate
+     space — no scroll maths anywhere. The -50% centres it on the
+     hotspot, and because a percentage translate measures the ELEMENT'S
+     OWN size, it stays centred while the dot grows into the pill.
 
-     The offsets are what keep the arrow readable: the pill's top-left
-     sits just below and right of the hotspot, clear of the arrow's
-     own 12×19 or so. The default parks it off-screen left so it can
-     never flash at 0,0 before the first pointer event lands. */
-  translate:
-    calc(var(--vx, -50vw) + 1.125rem)
-    calc(var(--vy, 0px) + 0.875rem);
+     The default parks it off-screen left so it can never flash at 0,0
+     before the first pointer event lands. */
+  translate: calc(var(--cx, -50vw) - 50%) calc(var(--cy, 0px) - 50%);
 
-  /* ⚠️ NO TRANSITION ON `translate`. It is rewritten every frame the
-     pointer moves, and the SMOOTHING IS DONE IN JS — an eased chase,
-     the same trick the scroll flowers use. A CSS transition here
-     fights that loop instead of helping it: every frame restarts a
-     new interpolation from a moving start point, which reads as a
-     lag that never quite settles. Only the arrival is eased here. */
+  /* ⚠️ NOTHING EASES `translate`, AND THAT IS THE WHOLE POINT. This is
+     the pointer: any lag between the mouse and the drawing of it reads
+     as the page being broken, not as smoothing. The old black chip
+     could afford an eased chase because it was a label following the
+     cursor; a cursor cannot. Only the MORPH is timed. */
   transition:
-    opacity 0.22s var(--ease),
-    scale 0.28s var(--ease);
+    width 0.26s var(--ease),
+    height 0.26s var(--ease),
+    /* the hero cards are a slightly different blue from the dot — see
+       `.cursor.is-card` — so the colour has to travel with the morph
+       rather than switching under it */
+    background-color 0.26s var(--ease),
+    /* ⚠️ THE RADIUS ANIMATES TOO, and only because of the hero
+       cards. A pill is a stadium and 999px reads as one at any size,
+       but a card is a rounded rectangle — without this the corners
+       would snap square the instant the state changed and the morph
+       would break in the middle. */
+    border-radius 0.26s var(--ease),
+    opacity 0.15s ease;
   will-change: translate;
 }
 
-.view-cursor.is-on {
+/* app.js sets this on the first real mouse move, so the dot never
+   appears on a page nobody has pointed at yet */
+.cursor.is-live {
   opacity: 1;
-  scale: 1;
 }
 
+/* a size up over anything clickable — the same step the native cursor
+   used to make, kept so nothing was lost in the swap */
+.cursor.is-over {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+/* ⚠️ THE PILL IS THE SAME ELEMENT, JUST BIGGER. Width and height are
+   what animate, which is why the dot appears to unfold into it rather
+   than being replaced by it. That does cost a layout on this one fixed
+   element per frame of the morph — acceptable for 260ms on a single
+   element with nothing else in its containing block, and there is no
+   way to get a circle to a pill on transform alone.
+
+   ⚠️ `--pill-w` IS SET BY app.js, MEASURED FROM THE WORDING. The pill
+   says different things in different places — "View Project" over a
+   cover, "IIT GUWAHATI" over the mark in the hero — and a width that
+   fits one crops the other. A `width: auto` cannot be transitioned, so
+   the measurement has to come from script; the 7.5rem here is only the
+   fallback for the instant before the first one lands. */
+.cursor.is-view {
+  width: var(--pill-w, 7.5rem);
+  height: 2.5rem;
+  /* 40 */
+}
+
+.cursor__label {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  /* 13 */
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+  white-space: nowrap;
+  opacity: 0;
+  /* it fades in behind the growth, so the words never appear squashed
+     inside a box still on its way open */
+  transition: opacity 0.18s ease 0.06s;
+}
+
+.cursor.is-view .cursor__label {
+  opacity: 1;
+}
+
+
+/* ── THE CURSOR AS A HERO CARD ────────────────────────
+
+   Over the camera or the walker the dot unfolds into the very card
+   that used to open in the gutter beside the tile — "check out my
+   photocrowd", and the walking records. Aniket's ask, 2026-09-10:
+   *"i want the current hover state ... as the hover state"*.
+
+   ⚠️ IT IS THE SAME MORPH THE PILL USES, JUST TO A BIGGER BOX. Width
+   and height are what move; `--card-w` / `--card-h` come from app.js,
+   which reads them off the zone table so a redrawn card is two numbers
+   there and nothing here.
+
+   ⚠️ THE PNGs ARE ALREADY `--blue`, WHICH IS THE WHOLE ILLUSION. The
+   dot's own background is that blue, so the picture fading in over it
+   reads as the dot filling out rather than as an image appearing. Give
+   the cards a different ground and this stops working — you would see
+   a blue box grow and a foreign card land inside it.
+
+   ⚠️ IT STAYS CENTRED ON THE POINTER, like every other state, which
+   means an open card covers the tile that opened it. That is the
+   trade for the cursor BEING the card rather than sitting beside it.
+   ───────────────────────────────────────── */
+.cursor.is-card {
+  /* ⚠️ THE FALLBACKS ARE THE CAMERA CARD'S SIZE, and they only ever
+     show for the frame before app.js's first write lands. */
+  width: var(--card-w, 10.125rem);
+  height: var(--card-h, 5.125rem);
+  /* ⚠️ 8 IS A MEASURED COMPROMISE, not a round number. The corner is
+     drawn into each PNG at its own resolution — 15px in the camera's
+     267-wide file, 13px in the walker's 276-wide one — and at the 162
+     they both ride at those come out as 9.1 and 7.6. One radius has to
+     serve both, and 8 splits them. Resize a card by much and this
+     wants re-figuring, or the blue box's corner stops tracking the
+     picture's. */
+  border-radius: 0.5rem;
+  /* 8 */
+
+  /* ⚠️ THE CARDS ARE NOT `--blue`. They are drawn #2567b3, a softer
+     blue than the page's #0071b7, so the dot was one colour and the
+     card it opened into was another — a small pop at the end of the
+     morph. Matching it here is what keeps the two reading as one
+     object. If a card is ever redrawn, sample its fill and put it
+     here; there is no token for it because nothing else on the page
+     uses this blue. */
+  background: #2567b3;
+}
+
+.cursor__card {
+  display: block;
+
+  /* ⚠️ ABSOLUTE, AND NOT FOR LAYOUT TIDINESS — THIS IS WHAT MAKES
+     THE CARD FIT ITS BOX. `.cursor` is a grid, and a grid track sized
+     `auto` takes its width from its items' INTRINSIC width: a
+     percentage on a grid item counts as `auto` while the track is
+     being measured. So `width: 100%` on this image made the track as
+     wide as the PNG really is — 276px for the walker — inside a
+     162px cursor, and `overflow: hidden` cropped the picture to its
+     middle. You saw a slice of a card, not a card.
+
+     Out of flow it has no say in any track, and `inset: 0` measures
+     against `.cursor`'s padding box, which is the size app.js set. The
+     label stays a grid item and stays centred, which is all it ever
+     needed. */
+  position: absolute;
+  inset: 0;
+  /* the box is set to the file's own pixel size, so this only guards
+     against a card whose numbers have drifted from its drawing */
+  object-fit: contain;
+  opacity: 0;
+  /* fades in behind the growth, the same beat as the pill's words, so
+     the picture is never seen squashed inside a box still opening */
+  transition: opacity 0.18s ease 0.06s;
+}
+
+.cursor.is-card .cursor__card {
+  opacity: 1;
+}
+
+
+/* ── THE TILES' ANSWER ON PHONES ──────────────────────
+   The phone stand-in for the cursor-as-card above: tap a hero tile and
+   this box opens on it for 5 seconds with that tile's card or wording
+   (Aniket, 2026-09-12). app.js fills it and places it; the look is
+   copied from `.cursor.is-card` / `.cursor.is-view` on purpose, so the
+   two readings of the same idea cannot drift apart.
+
+   ⚠️ OFF WHEREVER THE CURSOR RUNS. Desktop has the real thing and
+   showing both would be two answers to one hover. The element only
+   becomes a box inside the 1023 band below — which is where the tiles'
+   mobile layout lives too — and app.js binds the taps on exactly the
+   inverse of the cursor's own media query. */
+.doodle-pop {
+  display: none;
+}
 
 .project__cover {
   display: block;
@@ -1057,8 +1723,8 @@ a {
   /* 7 — the gap either side of the dot */
   margin: 0.556cqw 0 0;
   /* 8 below the cover */
-  font-size: 1.667cqw;
-  /* 24 */
+  font-size: 1.389cqw;
+  /* 20 */
   line-height: 1.458;
   /* 35 */
   color: var(--ink);
@@ -1079,10 +1745,13 @@ a {
 
 .project__blurb {
   margin: 0;
-  font-size: 1.389cqw;
-  /* 20 */
+  font-size: 1.250cqw;
+  /* 18 */
+  font-weight: 400;
   line-height: 1.5;
-  color: #000;
+  /* the ink at 70%, so the description sits back from the project's
+     name above it without going faint */
+  color: rgba(38, 46, 51, 0.7);
 }
 
 /* ⚠️ This USED to be tucked up into the gap Roopak's shorter column
@@ -1090,6 +1759,9 @@ a {
    its own and there is no gap to tuck into, so it simply sits BELOW the
    last card — Aniket's ask (2026-09-02). It keeps its right alignment
    and its 69.4 inset from the 886 column, as the Figma draws it. */
+/* ⚠️ ORPHAN — the note is gone from index.html (2026-09-08); the
+   right-hand end of `.projects__head` carries the message now. Kept
+   for its Figma numbers only. */
 .projects__more {
   width: 100%;
   margin: 2.778cqw auto 0;
@@ -1143,6 +1815,9 @@ a {
 
 /* the tag sits on the card row's content edge (Figma x=153), not the
    frame's — the same trick the Projects tag uses */
+/* ⚠️ ORPHAN — removed from index.html with the Projects tag
+   (2026-09-08); the 213 top margin below now lives on
+   `.playground__list`. Kept for the Figma numbers only. */
 .playground__tag {
   display: block;
   width: 18.611cqw;
@@ -1161,8 +1836,36 @@ a {
      (2026-09-02) — a 6.695 swing, taken straight off here. */
 }
 
+/* The section title, the twin of `.projects__title` — see the shared
+   type rule up in the projects block.
+
+   ⚠️ IT IS THE SAME BOX AS `.playground__list`: same 1142 width, same
+   `margin: auto`, so its left edge and the first card's left edge are
+   the same line by construction, in every band.
+
+   ⚠️ THE 213 ON TOP IS THE GAP BETWEEN THIS SECTION AND PROJECTS. It
+   used to live on the removed `.playground__tag`, then briefly on the
+   list; it sits on whatever element comes first in this frame, and
+   that is now the title. It is measured from the PROJECTS LIST's
+   bottom — which is now literally true: `.projects__more` used to sit
+   under that list and add its own 40 + line on top of this, and it
+   was removed the same day, so this number stands on its own. */
+.playground__title {
+  width: 79.306cqw;
+  /* 1142 — the playground column */
+  margin: 10.417cqw auto 2.083cqw;
+  /* 150 below projects — Aniket marked the band and asked for it
+     tighter (2026-09-08), down from the Figma's 213. 30 down to the
+     first card. */
+}
+
 .playground__list {
   list-style: none;
+  /* ⚠️ NO BOTTOM MARGIN, AND THAT IS A DECISION. When "more vibe
+     coding on the way" came out (2026-09-10) this briefly carried the
+     6.866cqw the note's box had occupied, so nothing below moved.
+     Aniket then marked the band and asked for it reduced, so it went:
+     the gap to Other Stuffs is now `.stuffs__group`'s margin alone. */
   margin: 0 auto;
   padding: 0;
   width: 79.306cqw;
@@ -1170,16 +1873,21 @@ a {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 2.847cqw 2.778cqw;
-  /* 41 between the rows, 40 between the two top cards */
+  gap: 2.847cqw 1.111cqw;
+  /* 41 between the rows, 16 between the two top cards — Aniket's
+     number (2026-09-08), the same gutter the projects pair got.
+     ⚠️ THE 16 IS ALSO IN `.lab`'s WIDTH BELOW: a card is "half the
+     column, less the gutter", so the two are one number. */
   align-items: flex-start;
 }
 
-/* 551 of the 1142 — the two of them plus the 40 gutter. Ariana gets
-   the same width and, being alone on the second line, `justify-content`
-   centres it exactly where the Figma puts it (x=445 of 1440). */
+/* 563 of the 1142 — the two of them plus the 16 gutter. Was 551 on a
+   40 gutter; closing the gutter is what widens them, and the videos
+   scale up with the card because they are `width: 100%`. Ariana gets
+   the same width and, being alone on the second line,
+   `justify-content` centres it exactly where the Figma puts it. */
 .lab {
-  flex: 0 0 calc((100% - 2.778cqw) / 2);
+  flex: 0 0 calc((100% - 1.111cqw) / 2);
 }
 
 /* ⚠️ `box-sizing` is border-box globally, so the 1px rule is eaten out
@@ -1198,24 +1906,57 @@ a {
      every child 1px right; an inset shadow paints the same line and
      costs no layout at all. */
   box-shadow: inset 0 0 0 1px #e0e0e0;
-  border-radius: 0.694cqw;
-  /* 10 */
-  background: var(--paper);
-  /* `transform` is deliberately LEFT OUT of the stagger's `--rd` delay
-     — otherwise the last card would sit still for a quarter second
-     before answering the cursor. Same split the project cards use. */
+  /* ⚠️ SQUARE — Aniket's call, 2026-09-10. The Figma drew 10 here and
+     5 on the picture inside (concentric), and BOTH went to 0 together:
+     a rounded picture sitting in a square box reads as a mistake. It
+     also puts these in step with the project covers above, which have
+     never had a radius. The old numbers are in this comment if the
+     corners are ever wanted back. */
+  border-radius: 0;
+  /* ⚠️ WHITE, AND DELIBERATELY NOT `--paper` — Aniket, 2026-09-10.
+     `--paper` is #faf9f7, the page's own ground, so the card was the
+     same colour as everything behind it and only the 1px inset rule
+     said where it ended. #fff lifts it off the page. There is no token
+     for it because nothing else on the page is pure white. */
+  background: #fff;
+  /* ⚠️ `transform` is deliberately LEFT OUT of the stagger's `--rd`
+     delay — otherwise the last card would sit still for a quarter
+     second before answering the cursor. Same split the project cards
+     use. */
   transition:
     opacity 0.6s var(--ease) var(--rd, 0s),
     translate 0.6s var(--ease) var(--rd, 0s),
-    transform 0.35s var(--ease);
+    transform 220ms ease;
 }
 
-/* The same hover the project cards have — Aniket's call, 2026-09-01:
-   they grow a little under the cursor, no tilt. `transform` is free to
-   do this because the arrival above moves things with `translate`,
-   which is a separate property and composes instead of fighting. */
-.lab__card:hover {
-  transform: scale(1.025);
+/* THE VIBE-CODING CARD HOVER — the same zoom out the project cards
+   have, on the same terms. Aniket's call, 2026-09-10.
+
+   History: these grew, `scale(1.025)` on the card (2026-09-01); then
+   for an afternoon only the video pulled back; now the whole card
+   does, which is what he actually meant by "same as the projects".
+
+   ⚠️ THE HOVER IS ON `.lab`, THE `<li>`, AND THE SCALE IS ON THE
+   CARD — for exactly the reason spelled out over the project cards
+   above. Shrink the element that carries `:hover` and its edge pulls
+   out from under the pointer, which flickers. Read that note before
+   touching either of these.
+
+   ⚠️ `(hover: hover) and (pointer: fine)` — a tap on a touchscreen
+   fires hover and would leave a card stuck shrunk. */
+@media (hover: hover) and (pointer: fine) {
+
+  .lab__card {
+    transform-origin: center;
+    /* its own layer, so the name and the blurb scale as a picture
+       rather than being re-laid-out every frame */
+    will-change: transform;
+  }
+
+  /* 3% — the project cards' number, and they are meant to match */
+  .lab:hover .lab__card {
+    transform: scale(0.97);
+  }
 }
 
 /* the cards arrive one after another rather than all at once */
@@ -1236,8 +1977,8 @@ a {
   height: auto;
   aspect-ratio: 541 / 286;
   object-fit: cover;
-  border-radius: 0.347cqw;
-  /* 5 — reads as concentric inside the card's 10 */
+  /* square with the card around it — see `.lab__card` */
+  border-radius: 0;
   background: var(--panel);
 }
 
@@ -1252,8 +1993,8 @@ a {
 .lab__name {
   margin: 1.111cqw 1.25cqw 0 1.111cqw;
   /* 16 below the media, 16 in from the left, 18 on the right */
-  font-size: 1.667cqw;
-  /* 24 */
+  font-size: 1.389cqw;
+  /* 20 — matched to the project names above */
   line-height: 1.25;
   font-weight: 400;
   letter-spacing: 0.01em;
@@ -1312,14 +2053,21 @@ a {
      CENTRED in a fixed box that is ~4.4 taller than the text it holds
      — 2 lines occupy 50.8 in a 55.2 box, 3 lines 76.2 in an 80.2. Drop
      this and every card comes out 4 short. */
-  font-size: 1.389cqw;
-  /* 20 */
+  font-size: 1.250cqw;
+  /* 18 — matched to the project descriptions above */
+  font-weight: 400;
   line-height: 1.27;
   letter-spacing: -0.03em;
-  color: #000;
+  /* the ink at 70%, the same step back the project blurbs take */
+  color: rgba(38, 46, 51, 0.7);
 }
 
-/* ⚠️ Not the green of "more projects coming soon" — this one is
+/* ⚠️ ORPHAN — the element is gone from index.html (2026-09-10);
+   Aniket marked the line and asked for it out. Kept so the note can
+   come back without re-deriving any of this. If it does, take the
+   matching bottom margin off `.playground__list`.
+
+   ⚠️ Not the green of "more projects coming soon" — this one is
    MAGENTA and a size bigger (37.4 against 34). Both are Aniket's
    handwriting font; they are deliberately different notes.
    The word gaps are wide and the letters tight, the same split the
@@ -1380,10 +2128,30 @@ a {
 
 .stuffs__group {
   position: relative;
-  margin-top: 11.598cqw;
-  /* 167. Figma's gap is 170, but the "more vibe coding" line above
-     boxes 36.1 tall against the Figma's 34, so 3 comes off here.
-     MEASURED against the running page — re-probe if that note moves. */
+  margin-top: 5.556cqw;
+  /* 80 — THE WHOLE GAP between the last playground card and the
+     post-it, and THE ONE KNOB for it. Aniket marked the section and
+     asked it up (2026-09-11): 167, then 127, then this.
+
+     ⚠️ 80 IS GETTING TIGHT. The sections above each other on this page
+     run 130-170 apart, so this one now reads noticeably closer than the
+     rest. That is the ask, not a mistake — but if the post-it starts
+     looking attached to Ariana's card rather than separate from it,
+     this is why.
+
+     Where the 167 came from: Figma's gap was 170, less 3 because "more
+     vibe coding on the way" boxed 36.1 tall against the Figma's 34.
+     That line came out on 2026-09-10 and the number was left alone, so
+     it was being read from Ariana's card instead. It is just a gap now.
+
+     ⚠️ `cqw`, SO IT MEASURES `.stuffs__frame` — which caps at 90rem.
+     1cqw is 14.4 up to 1440 and stays there above it, which is why this
+     holds at 127 on a wide monitor instead of growing.
+
+     ⚠️ IT MOVES THE FOOTER TOO. The footer's own `margin-top` is
+     measured from THIS section's bottom, so everything below the
+     post-it travels with it and the document simply gets shorter. That
+     is why the wedge did not need touching. */
   transition:
     opacity 0.6s var(--ease),
     translate 0.6s var(--ease);
@@ -1391,11 +2159,23 @@ a {
 
 .stuffs__note {
   display: block;
-  width: 32.847cqw;
-  /* 473 */
+  /* ⚠️ THE ONE NUMBER THAT SIZES THE POST-IT. Aniket asked it smaller
+     (2026-09-11); it was 32.847cqw / 473, the Figma's own width. The
+     height follows on the picture's 1419 × 1254, so 420 wide is 371.2
+     tall against the 418 it was — the section is 46.8 shorter and the
+     footer, which hangs off this section's bottom, rides up with it.
+
+     ⚠️ `.stuffs__more` IS PINNED TO THIS BOX'S RIGHT EDGE AND DOES NOT
+     READ THIS NUMBER. Both of its offsets are hard-coded Figma pixels,
+     so they have to be re-derived by hand every time this changes:
+     `left` is 382 + this width, and `top` is 157 scaled by this width
+     over 473. Change one and change all three. */
+  width: 29.167cqw;
+  /* 420, from 473 — Aniket's number */
   height: auto;
   margin-left: 26.528cqw;
-  /* 382 */
+  /* 382 — the LEFT edge is the fixed one, so the paper shrinks to the
+     right and keeps the Figma's placement on that side. */
   transition: transform 0.35s var(--ease);
 }
 
@@ -1408,17 +2188,32 @@ a {
   transform: rotate(-1.5deg);
 }
 
+/* The arrow off the post-it's right edge, and the only way into
+   stuffs.html from this page. It was out between 2026-09-08 and
+   2026-09-10, when Aniket marked the gap and asked for it back — the
+   rules below were kept through that, so the Figma placement never had
+   to be re-derived. */
 .stuffs__more {
   position: absolute;
-  left: 59.375cqw;
-  /* 855 — hard against the post-it's right edge */
-  top: 10.903cqw;
-  /* 157 down from the post-it's top */
+  left: 55.694cqw;
+  /* 802 — hard against the post-it's right edge: 382 + its 420.
+     ⚠️ Was 855 when the paper was 473 wide. Re-derive this whenever
+     `.stuffs__note`'s width changes; nothing computes it for you. */
+  top: 9.681cqw;
+  /* 139.4 down from the post-it's top — the Figma's 157 scaled by
+     420/473, so the arrow keeps the same spot ON the paper rather than
+     the same distance down the page. */
   display: block;
   width: 4.861cqw;
-  /* 70 */
-  border-radius: 0.469cqw;
-  /* 6.75, matching the drawn pill, so the focus ring hugs it */
+  /* 70 — the link keeps its drawn footprint; the picture inside is
+     `height: auto`, so swapping the art for a different shape changes
+     how tall it is and nothing else. */
+  border-radius: 0.333cqw;
+  /* 4.8, matching the drawn pill, so the focus ring hugs it.
+     ⚠️ MEASURED OFF THE ART: `arrow.png` is 146 wide with a 10px
+     corner, and it rides at 70, so 10 × 70/146. It was 6.75 for
+     `postit-arrow.png`, which is no longer in assests/ (2026-09-10).
+     Swap the picture again and re-measure. */
   transition: transform 0.25s var(--ease);
 }
 
@@ -1435,286 +2230,372 @@ a {
 
 
 /* ══════════════════════════════════════════════════════════
-   SLICE 7 — FOOTER
+   SLICE 7 — FOOTER   (the wedge; 2026-09-10)
 
-   Off the Figma's bottom: a broken blue rule at y=5320 with three
-   crosses on it, "lets connect" at x=749 / y=5470, the three buttons
-   at x=669 / y=5585, and the laptop filling the bottom-left corner.
+   ONE PICTURE. The page ends on `footer triagle.png` — a blue triangle
+   cut corner to corner, white above the diagonal and blue below it —
+   laid full-bleed across the bottom.
 
-   ⚠️ THE LAPTOP AND THE TEXT OVERLAP VERTICALLY (the laptop starts at
-   y=5396, the heading at 5470), so this section is POSITIONED, not
-   stacked — `.footer__frame` is a fixed-proportion box like
-   `.hero__stage`, 608.3 tall on the 1440 frame, and everything inside
-   sits at its Figma coordinate. Phones stack in normal flow instead;
-   see the band at the bottom.
+   ⚠️ THIS REPLACED THE WHOLE CONNECT BAND and none of it survived.
+   Aniket asked for the footer removed and the triangle put in its place
+   (2026-09-10). Gone with it: the cropped laptop, the "lets connect"
+   heading, the three link chips and the pen mark — some 400 lines of
+   absolute layout, a container query and a phone stack, all of which
+   existed to arrange pieces that are no longer on the page. They are
+   NOT kept here as orphans; git and the backup have them.
 
-   ⚠️ TWO ASSETS HERE WERE RASTERISED FROM ENORMOUS FIGMA SVGS.
-   `footer-mark.png` (the cross) was a 408 KB SVG, `footer-rule.png`
-   (the line) a 205 KB one — both hand-traced outlines with hundreds
-   of thousands of path points. They are 4.3 KB and 8.2 KB as PNGs.
-   See notes.md. The rule is ONE segment stretched to four different
-   lengths; at 3px tall the stretch does not read.
+   ⚠️ SO THE SITE CARRIES NO CONTACT LINKS ANY MORE. `icon-mail.svg`,
+   `icon-linkedin.jpg`, `icon-behance.png`, `icon-out.svg`,
+   `footer-laptop.png` and `footer-mark2.svg` went unused with the band;
+   they are all still in assests/.
+
+   ⚠️ THERE IS NO CONTAINER QUERY LEFT IN THIS SLICE. Every `cqw` in
+   the old band measured against its own 1340 frame. Paste any of those
+   numbers back in from git and they will silently measure the VIEWPORT
+   instead — nothing here carries `container-type` any more.
    ══════════════════════════════════════════════════════════ */
 
-/* ⚠️ THIS `overflow: hidden` IS WHAT LETS THE LAPTOP BLEED OFF THE
-   BOTTOM OF THE PAGE. Without it the laptop's overhang simply GROWS
-   THE DOCUMENT — you scroll a little further and there it is, whole,
-   which is the opposite of the ask. The footer is the last thing on
-   the page, so its bottom edge IS the page's bottom edge, and clipping
-   here cuts the laptop off against it.
-
-   It clips nothing else: the footer box is the full window width, so
-   the laptop's and the scribble's left/right breakouts still reach the
-   window's edges, and the scribble's bottom sits well inside the frame
-   at every width (checked at 1440, 1280 and 390).
-
-   ⚠️ Side effect worth knowing: `overflow` makes this a BFC, so
-   `.footer__frame`'s top margin no longer collapses out through here.
-   Nothing moves — the 137 gap is the same either way — but the
-   footer's own BOX now starts above the frame instead of at it. */
 .footer {
+  /* ⚠️ THE POSITIONING CONTEXT FOR THE TEXT. "lets connect" and the chip
+     row are laid OVER the wedge and anchored to percentages of this box's
+     height — which is the wedge's height, since the picture is the only
+     thing left in normal flow. Take this off and both jump to the page. */
+  position: relative;
+  /* ⚠️ THE OVERLAP MADE THIS A CLICK-EATER, AND THIS IS THE CURE.
+     `margin-top` is negative, so the footer sits ON TOP of the last 168
+     of whatever comes above it — and because it is positioned, it paints
+     over non-positioned content. On a case page that is exactly where
+     `.case__back` lives, so the bottom back arrow could not be clicked
+     at all (Aniket reported it, 2026-09-11). The wedge is transparent
+     there, so nothing LOOKED wrong; the box was still catching the
+     pointer. `pointer-events` is inherited, so this one line clears the
+     whole footer and the two rules below hand it back to the parts that
+     actually need it. Undo this and the back arrow dies again. */
+  pointer-events: none;
+  /* kept through every footer this page has had: it guards the bottom
+     edge against anything that ever bleeds past it.
+     ⚠️ It also CLIPS the text above, which is the backstop that stops a
+     squeezed tablet width from spilling type out past the wedge. */
   overflow: hidden;
+  /* ⚠️ THE ONLY SPACING IN THE SLICE — the gap ABOVE the wedge, and
+     the one number that moves the whole footer up or down the page.
+     Aniket marked a band in this gap and asked the footer up to it
+     (2026-09-10): it was `min(9.535vw, 8.58rem)`, the 137.3 the old
+     connect band sat below the post-it, and the mark put it at 74.
+
+     ⚠️ IT IS NEGATIVE NOW, AND THAT IS NOT A TYPO. Aniket asked the
+     footer up by 200 (2026-09-10) and there was only 32 of gap left to
+     give, so the remaining 168 is an OVERLAP: the wedge is pulled up
+     OVER the bottom of the post-it section.
+
+     ⚠️ IT ONLY WORKS BECAUSE THE PICTURE IS MOSTLY TRANSPARENT.
+     `footer triagle.png` is RGBA and everything above the diagonal has
+     alpha 0 — only the blue is painted. So the overlap hides nothing;
+     the post-it shows straight through it. Swap in a flat-white version
+     of this asset and 168px of the page above vanishes behind it.
+
+     ⚠️ BUT THE TEXT IS NOT TRANSPARENT. "lets connect" is anchored a
+     third of the way down the wedge, which now lands about 33 above the
+     post-it's bottom edge — and that PNG only carries 10 of clear
+     padding down there, so the heading crosses the drawing by roughly
+     20. That is the thing to look at, not the blue.
+
+     ⚠️ THE `min()` IS GONE with the sign change. A `vw` that scales an
+     overlap is a different and much sharper trap than one that scales a
+     gap: on a narrow window the wedge is shorter, so the same 168 puts
+     the heading proportionally further up the page above it. A flat
+     value at least misbehaves predictably. Phones never see this — the
+     media query at the bottom sets its own positive margin.
+
+     ⚠️ WHY THIS KEEPS WANTING TO BE SMALLER. The wedge's own top-left
+     corner is WHITE — the blue only fills in toward the bottom-right —
+     so the picture opens with a band of nothing and reads as gap even
+     when this number is small. Judge the space by eye against where the
+     BLUE starts, not against the top of the image. 0 is a perfectly
+     legitimate value here for the same reason.
+
+     ⚠️ THERE IS NO BOTTOM MARGIN, and moving this up leaves no blank
+     behind: `body` has margin 0, the cursor and the gradient are both
+     out of flow, and the wedge is the last thing in it — so the page's
+     bottom edge IS the wedge's bottom edge, and shortening this simply
+     makes the document shorter. */
+  margin-top: -10.5rem;
+  /* -168 — 137.3, then 74, then 32, then up by 200 from there
+     (2026-09-10). 32 - 200 = -168. */
 }
 
-.footer__frame {
-  position: relative;
-  container-type: inline-size;
-  /* ⚠️ 80% OF THE OTHER SECTIONS' FRAME, and that is the ONE number
-     that sizes this whole footer. Aniket asked for everything down
-     here smaller on desktop (2026-09-01). Every piece inside is in
-     `cqw` against this box, so shrinking the box shrinks the rule,
-     the heading, the buttons, the laptop and the corner scribble
-     together, in proportion. To dial it, change these two numbers
-     and nothing else.
+/* ── the wedge ──
+   ⚠️ FULL-BLEED, AND THAT IS THE ONE REAL DECISION HERE. The old band
+   was inset 50 from the left, right and bottom of the window. This is a
+   shape whose whole point is a diagonal running corner to corner, so an
+   inset would leave white OUTSIDE the blue and it would read as a
+   picture of a triangle rather than as the page ending in one. It
+   touches all three edges on purpose.
 
-     Why `min(72rem, 80%)` and not a flat width: the other sections
-     are `min(90rem, 100%)`, and 72rem is 0.8 × 90rem while 80% is
-     0.8 × 100%. min(0.8a, 0.8b) = 0.8 × min(a, b), so this stays
-     exactly 80% of them at EVERY width instead of drifting between
-     the bands. */
-  width: min(72rem, 80%);
-  /* 1440 wide × 608.3 tall — the Figma from the rule down to the
-     page's bottom edge.
-     ⚠️ `aspect-ratio`, NOT a cqw height. A CHILD CAN'T QUERY ITS OWN
-     CONTAINER, and this element carries the `container-type` — so a
-     `height: 42.243cqw` here silently measured against something else
-     and left the frame 6px too tall, which dropped the laptop below
-     the page's bottom edge. Same pattern as `.hero__stage`. */
-  aspect-ratio: 1440 / 608.3;
-  margin: min(9.535vw, 8.58rem) auto 0;
-  /* 137.3 below the post-it — measured, not the Figma's 138.7.
-     ⚠️ `vw`, NOT `cqw`, and capped. This element carries the
-     `container-type`, so a `cqw` here could never measure against its
-     own box — it silently fell back to the viewport, which happens to
-     be right up to 1440 and then keeps growing past it. On a 1920
-     monitor the gap was 183 instead of 137. The `min()` holds it. */
+   ⚠️ `aspect-ratio`, NOT A FIXED HEIGHT. The file is 4172 × 1182, so
+   the wedge is ~3.53 times as wide as it is tall and the diagonal holds
+   its drawn angle at every window width. THIS IS THE ONE NUMBER TO TURN
+   if it reads too tall: a wider ratio (`6 / 1`, say) gives a shallower,
+   thinner wedge. `object-fit: cover` is what makes that safe — it crops
+   the picture to the new ratio instead of squashing it, and on a
+   straight diagonal a crop is invisible. */
+.footer__wedge {
+  display: block;
+  width: 100%;
+  /* ⚠️ the global `img { max-width: 100% }` caps pictures at their own
+     size; this says the width out loud so the wedge reaches both edges
+     whatever the window. */
+  max-width: none;
+  height: auto;
+  aspect-ratio: 4172 / 1182;
+  object-fit: cover;
+  object-position: center;
+  /* `[data-reveal]` holds only the start and end states — every element
+     declares its own transition. */
   transition:
     opacity 0.8s var(--ease),
     translate 0.8s var(--ease);
 }
 
-/* ── the broken rule ── */
 
-.footer__rule {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 3.527cqw;
-  /* 50.8 — tall enough to hold the third cross, which hangs BELOW
-     the line where the other two straddle it */
-}
+/* ── "lets connect" and the three chips, laid OVER the wedge ──
 
-.footer__line,
-.footer__x {
-  position: absolute;
-}
+   ⚠️ ANCHORED IN PERCENT, AND THAT IS THE WHOLE TRICK. Aniket marked two
+   spots on the picture (2026-09-10) — the heading at 32.75% down, the
+   chip row at 60.1%, both about halfway across — and then, once the
+   footer was pulled up 200 over the post-it, drew a box round the pair
+   and asked them down a bit. BOTH MOVED BY THE SAME 7.75% (40px), so
+   they are at 40.5% and 67.85% now and the spacing between them is
+   untouched. Move one without the other and the pair drifts apart.
 
-/* the line is one 740 x 9 image stretched to each segment's length */
-.footer__line {
-  top: 0.729cqw;
-  /* 10.5 down, so it runs through the middle of the first two crosses */
-  height: 0.208cqw;
-  /* 3 */
-  background: url('assests/footer-rule.png') no-repeat center / 100% 100%;
-}
+   ⚠️ THEN THE HEADING MOVED AGAIN ON ITS OWN, and the pair is no
+   longer locked. Aniket drew round the heading alone and asked it
+   further down (2026-09-11), so it went 40.5% -> 46.3% while the chips
+   stayed at 67.85%. The gap between them is 61 now, from 91.
 
-/* ⚠️ A and D bleed to the WINDOW edge, not the frame's — the same
-   call Aniket made for the hero's big loop ("as I told you earlier,
-   always"). `right`/`left` of `calc((100% - 100vw) / 2)` reaches back
-   across the gutter beside the centred 90rem frame. `body` already
-   has `overflow-x: hidden`, so this never causes sideways scrolling. */
-.footer__line--a {
-  left: calc((100% - 100vw) / 2);
-  right: calc(100% - 29.514cqw);
-  /* ends at x=425 */
-}
+   ⚠️ WHY THE CHIPS DID NOT FOLLOW IT DOWN: they are wider than the
+   heading, so their right-hand corner meets the diagonal sooner. The
+   Behance chip's label is #0043ce and it would vanish the moment that
+   corner crossed onto the blue.
 
-.footer__line--b {
-  left: 31.528cqw;
-  width: 17.130cqw;
-  /* 454 → 700.7 */
-}
+   ⚠️ TWO CEILINGS, AND THE NEARER ONE HAS CHANGED. Against the blue
+   — measured where it starts under each one's own right edge — the
+   heading can reach about 72.1% and the chip row about 72.6%; past that
+   the type is dark blue on blue.
 
-.footer__line--c {
-  left: 51.667cqw;
-  width: 29.514cqw;
-  /* 744 → 1169 */
-}
+   BUT THE HEADING NOW RUNS OUT ON THE CHIPS FIRST. At 52.1% (Aniket
+   asked it down again, 2026-09-11, from 46.3) its bottom edge is 31
+   above the row. It can reach about 58.1% before the two touch, and
+   that is the limit that bites now — not the blue. Past it, either the
+   chips move down as well or the pair needs re-locking.
 
-.footer__line--d {
-  left: 84.514cqw;
-  /* 1217 */
-  right: calc((100% - 100vw) / 2);
-}
+   ⚠️ THE 46.3 ALSO CLEARS THE POST-IT: at 32.75% the heading's top
+   edge sat 33 above that PNG's bottom and crossed the drawing; at 40.5%
+   it cleared by 7, which still read as crowded. If the footer's own
+   `margin-top` changes again, re-check this number against it. The wedge holds an `aspect-ratio`, so its height tracks its
+   width; measuring the anchors against that height keeps the pair on the
+   same part of the shape at every window size. A `rem` or `px` top would
+   slide up the wedge as the window widened.
 
-.footer__x {
-  height: auto;
-}
+   ⚠️ EACH `top` SUBTRACTS HALF THE ELEMENT'S OWN HEIGHT, because the
+   mark named where the MIDDLE should sit and `top` sets the TOP edge.
+   That is the `- 2.125rem` and the `- 1.008rem` below — half of 68.03
+   and half of 32.26. Change a font size and its half changes with it.
 
-.footer__x--1 {
-  left: 29.514cqw;
-  top: 0;
-  width: 1.788cqw;
-  /* 425, 25.74 */
-}
+   ⚠️ CENTRED WITH `left: 0; right: 0`, NOT WITH `translate`. The reveal
+   animates `translate` on anything carrying `data-reveal`, and both of
+   these do — a centring translate here would be wiped the moment the
+   element scrolled into view.
 
-.footer__x--2 {
-  left: 48.658cqw;
-  top: 0;
-  width: 1.788cqw;
-  /* 700.7 */
-}
+   ⚠️ BOTH SIT ON THE WHITE HALF, which is what makes the colours below
+   legible. At the middle of the picture the blue does not begin until
+   ~88% down. Move either much lower, or much further right, and it
+   crosses the diagonal onto blue — where a #585858 heading and a #0043ce
+   label both disappear.
 
-/* the odd one out: it sits BELOW the line, not on it */
-.footer__x--3 {
-  left: 82.410cqw;
-  top: 1.739cqw;
-  width: 1.690cqw;
-  /* 1186.7 / 25 down / 24.34 */
-}
+   ⚠️ 768 IS THE FLOOR, AND IT IS NOT A COMFORTABLE ONE. At that width
+   the wedge is only 218 tall and the two boxes close to within ~10px of
+   each other. Below it the phone rules take over and stack them in
+   normal flow instead. Make the heading bigger and check that gap. */
 
-/* ── "lets connect" ── */
-
-/* ⚠️ The two words are tracked DIFFERENTLY in Figma — "lets" at
-   -13.44px and "connect" at -9.6px, both at 96. That is why there is
-   a span around the first word rather than one letter-spacing. */
 .footer__title {
   position: absolute;
-  left: 52.014cqw;
-  top: 11.175cqw;
-  /* 749 / 5469.6 */
+  left: 0;
+  right: 0;
+  top: calc(52.1% - 2.125rem);
+  /* centre 52.1% down, less half of its own 68.03 */
+  text-align: center;
+  /* ⚠️ `rotate`, NOT `transform`. It is its own property in CSS now, so
+     it composes with the reveal's `translate` instead of fighting it —
+     the same reason the old band used it. */
+  rotate: -1.98deg;
   margin: 0;
   font-family: var(--font-hand);
-  font-size: 6.667cqw;
-  /* 96 */
-  line-height: 1.058;
+  font-size: 4rem;
+  /* 64. ⚠️ `rem`, so the type holds its size on any monitor while its
+     POSITION scales with the wedge. That split is deliberate: Aniket
+     asked twice for this heading to stop growing with the window. */
+  line-height: 1.063;
+  /* 68.03 — the number the `top` above takes half of */
   letter-spacing: -0.1em;
   word-spacing: 0.1em;
-  /* ⚠️ This cancels the tracking on the SPACE, and it is not
-     optional. Figma tracks "lets" at -13.44 and "connect" at -9.6 but
-     leaves the space between them at 0. `letter-spacing` tightens
-     every character including the space, so without this the two
-     words touch and it reads "letsconnect". */
+  /* ⚠️ This cancels the tracking on the SPACE, and it is not optional.
+     Figma leaves the gap between the words at 0 while tracking both words
+     in; `letter-spacing` tightens every character including the space, so
+     without this it reads "letsconnect". */
   color: #585858;
   white-space: nowrap;
+  transition:
+    opacity 0.8s var(--ease),
+    translate 0.8s var(--ease);
+}
+
+/* ⚠️ THE ONLY TWO THINGS IN THE FOOTER THAT TAKE THE POINTER — see
+   `pointer-events: none` on `.footer`. The links need it to be clickable
+   at all; the heading needs it to stay selectable. Everything else in
+   there is the transparent half of a picture. */
+.footer__title,
+.footer__links {
+  pointer-events: auto;
 }
 
 .footer__lets {
+  /* the two words are tracked DIFFERENTLY in Figma — "lets" at -8.96px
+     and "connect" at -6.4px — which is why there is a span around the
+     first word rather than one letter-spacing on the line. */
   letter-spacing: -0.14em;
 }
 
-/* ── the three buttons ── */
-
-/* Each button is a whole PNG — icon and word together — so they are
-   sized by HEIGHT and left to keep their own widths (116 / 146 / 148).
-   Height 45 + two 30 gaps is exactly the Figma's 470. */
 .footer__links {
   position: absolute;
-  left: 46.458cqw;
-  top: 19.188cqw;
-  /* 669 / 5585 */
+  left: 0;
+  right: 0;
+  top: calc(67.85% - 1.008rem);
+  /* centre 67.85% down, less half of a chip's own 32.26 */
   display: flex;
-  gap: 2.083cqw;
-  /* 30 */
+  justify-content: center;
+  gap: 0.9375rem;
+  /* 20 of the Figma, taken down with the chips */
   margin: 0;
   padding: 0;
   list-style: none;
+  transition:
+    opacity 0.8s var(--ease),
+    translate 0.8s var(--ease);
 }
 
 .footer__link {
-  display: block;
-  border-radius: 0.556cqw;
-  transition: transform 0.25s var(--ease);
+  /* ⚠️ THIS IS THE ONE NUMBER THAT SIZES A CHIP. Everything inside is in
+     `em`, so it all measures off this: the label, both glyphs, the arrow,
+     the padding, the gap and the corner. Turn this and the whole chip
+     follows in proportion, instead of six numbers being nudged out of
+     step with each other. ⚠️ Then fix the `- 1.008rem` on the row above,
+     which is half of the height this produces. */
+  font-size: 1.125rem;
+  /* 18 */
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+  /* 6 of the Figma's 24 */
+  padding: 0.25em 0.333em;
+  /* 6 / 8 — with the 1.292 label line this makes the chip 32.26 tall */
+  border-radius: 0.167em;
+  /* 4 */
+  /* 32% white. On the wedge's white half it is nearly nothing — which is
+     what the Figma draws. */
+  background: rgba(255, 255, 255, 0.32);
+  text-decoration: none;
+  transition:
+    transform 0.25s var(--ease),
+    background-color 0.25s var(--ease);
 }
 
-.footer__link img {
-  display: block;
-  height: 3.125cqw;
-  /* 45 */
-  width: auto;
-}
-
+/* the lift the old PNG buttons had, kept: they rise rather than grow, so
+   the row stays put. The chip firms up at the same time, which is the
+   only way it answers the cursor on a white ground. */
 .footer__link:hover {
-  transform: translateY(-0.139cqw);
-  /* 2 — they lift rather than grow, so the row stays put */
+  transform: translateY(-0.125rem);
+  /* 2 */
+  background: rgba(255, 255, 255, 0.75);
 }
 
-/* ── the laptop ── */
-
-/* ⚠️ `footer pc.png` is the FRAME-CLIPPED export, not the whole
-   drawing: 693 x 521 where the Figma node's own box is 771 x 690. The
-   left hand and the bottom are already cut off in the file, because
-   in the design they run off the page. So it MUST sit flush against
-   the window's left edge and flush with the page's bottom — anywhere
-   else and you see a hand sliced off in mid-air.
-   ⚠️ Filename has a space: `footer%20pc.png`. */
-/* ⚠️ The SAME drawing as the hero's big loop, reused — Figma's
-   `scribble 4` has identical node dimensions (312 × 202) to the hero's
-   `scribble`, so it is one asset at one scale, not a second export.
-
-   Figma parks it OUTSIDE the frame (x=1495 on a 1440 page, and again
-   off the right of the mobile frame), which is why it wasn't built the
-   first time. Aniket marked the footer's empty bottom-right on the
-   live page (2026-09-01) and asked for it AT THE EDGE, so it hugs the
-   window's right edge the way the hero loop does. */
-.footer__scribble {
-  position: absolute;
-  right: calc((100% - 100vw) / 2);
-  top: 22.944cqw;
-  /* 330 below the rule — the empty corner under the buttons */
-  width: 16.458cqw;
-  /* 237, the SVG's own viewBox width, exactly like the hero loop */
-  height: auto;
+/* ⚠️ THE THREE GLYPHS ARE NOT ONE SIZE — the Figma draws the mail at 30
+   and the two logos at 28, so they get a rule each rather than one shared
+   `.footer__glyph { width: ... }`. */
+.footer__glyph {
+  display: block;
+  flex: none;
 }
 
-/* The laptop runs off the LEFT of the window and off the BOTTOM of the
-   page. `.footer` clips both — see the note up there.
+.footer__glyph--mail {
+  width: 1.25em;
+  height: 1.25em;
+  /* 30 of the Figma's 24 */
+}
 
-   ⚠️ --pc-cut IS THE ONE NUMBER TO TOUCH. It is a `translate`, and a
-   percentage translate measures against the ELEMENT'S OWN SIZE, so it
-   reads literally: the fraction of the laptop hidden below the page's
-   bottom edge. Half of it is off the page at 50%. Same property drives
-   the phone, so the two stay in step — change it here and both move.
+.footer__glyph--behance {
+  width: 1.167em;
+  height: 1.167em;
+  /* 28 */
+  object-fit: cover;
+}
 
-   It replaces a `bottom: -15cqw`, which was the same idea in a unit
-   that hid what it meant: the laptop is 43.087cqw tall (48.140 wide
-   ÷ the PNG's own 2315/2072), so that 15 was 34.8% — where this
-   started before Aniket asked for it lower (2026-09-02). */
-.footer__pc {
-  --pc-cut: 10.7%;
-  /* ⚠️ ANIKET'S NUMBER. He boxed the empty space above the laptop on the
-     live page at 1110 wide (2026-09-02) and asked for the laptop moved
-     UP to fill it — 10.7% puts its top on that box's top edge. So only
-     the bottom tenth runs off the page: the mouse hand's fingers and
-     the very bottom of the keyboard. Went 50% → 65% → this; 65% was
-     him saying it had gone too far down. Phone reads the same
-     property, so it moved with it. */
+/* ⚠️ THE ODD ONE OUT. Figma overscans this logo by ~1% inside its 28 box
+   — `icon-linkedin.jpg` has the mark hard against its own edge, and the
+   overscan is what keeps that edge off the corner. The other two sit in
+   their boxes at 100%. */
+.footer__glyph--linkedin {
+  position: relative;
+  width: 1.167em;
+  height: 1.167em;
+  /* 28 */
+  overflow: hidden;
+}
+
+.footer__glyph--linkedin img {
   position: absolute;
-  left: calc((100% - 100vw) / 2);
-  bottom: 0;
-  translate: 0 var(--pc-cut);
-  width: 48.140cqw;
-  /* 693.22 */
-  height: auto;
+  left: -0.61%;
+  top: -0.41%;
+  width: 101.01%;
+  height: 101.42%;
+  max-width: none;
+  display: block;
+}
+
+.footer__label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  /* ⚠️ inherits the chip's size on purpose — see `.footer__link` */
+  font-size: 1em;
+  line-height: 1.292;
+  /* 23.26 at 18 — this is what sets the chip's height */
+  white-space: nowrap;
+}
+
+/* each brand keeps its own colour — the whole point of the words being
+   text rather than baked into a picture */
+.footer__link--email .footer__label {
+  color: #646464;
+}
+
+.footer__link--linkedin .footer__label {
+  color: #2567b3;
+}
+
+.footer__link--behance .footer__label {
+  color: #0043ce;
+}
+
+/* ⚠️ THE ARROW IS DRAWN POINTING UP-LEFT and turned a quarter to point
+   out of the page. That is how the node uses it — one asset, rotated, in
+   all three chips. */
+.footer__out {
+  display: block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  /* 24 — the same as the label, which is how the Figma draws it */
+  rotate: 90deg;
 }
 
 
@@ -1793,16 +2674,22 @@ a {
 }
 
 /* the <picture> one needs the size passed through to its <img> */
-picture.petal > img {
+picture.petal>img {
   width: 100%;
   height: auto;
 }
 
-.petal--l1, .petal--l2, .petal--l3, .petal--l4 {
+.petal--l1,
+.petal--l2,
+.petal--l3,
+.petal--l4 {
   left: calc((100% - 100vw) / 2 - var(--w) * var(--off));
 }
 
-.petal--r1, .petal--r2, .petal--r3, .petal--r4 {
+.petal--r1,
+.petal--r2,
+.petal--r3,
+.petal--r4 {
   right: calc((100% - 100vw) / 2 - var(--w) * var(--off));
 }
 
@@ -2016,6 +2903,17 @@ main {
     /* 24 */
     --rule-gap: 0.625rem;
     /* 10 */
+    /* ⚠️ IT IS 0 AND IT IS MEANT TO BE. There is no collage to push
+       down here — the hero is a normal stack under the nav.
+
+       ⚠️ IT WENT 0 → 24 → 44 → 56 AND BACK TO 0 on 2026-09-12. Aniket
+       wanted the hero's WORDS lower, and this token moves the whole
+       hero — photo, doodles, gradient panel and all — so it was the
+       wrong dial. The right one is the `margin-top` on
+       `.hero__greeting` further down this block: the words follow the
+       cluster in normal flow, so pushing the first of them pushes all
+       of them and leaves the collage where it is. */
+    --hero-drop: 0rem;
   }
 
   /* Aniket's small-screen nav is the three links on their own,
@@ -2118,6 +3016,14 @@ main {
      specificity, later in the file. Doubling the class outranks it and
      keeps the fix here, beside the rest of the flower, instead of
      stranded in the middle of the hero block. */
+  /* the collage is a stage of its own down here with its own numbers —
+     the desktop drop must not ride along */
+  .hero__stage {
+    --collage-drop: 0cqw;
+    --copy-drop: 0cqw;
+    --loop-drop: 0cqw;
+  }
+
   .hero__stage.hero__stage {
     position: relative;
   }
@@ -2166,6 +3072,23 @@ main {
     container-type: normal;
     width: 100%;
     padding: 0 var(--frame-pad);
+  }
+
+  /* the carousel below runs edge to edge, so there is no cover edge to
+     line up with — the row simply spans the padded frame, title on the
+     left and the note on the right */
+  .projects__head {
+    width: auto;
+    margin: 0 0 1.875rem;
+    /* 30 down to the track */
+    gap: 1rem;
+  }
+
+  .projects__title,
+  .projects__soon,
+  .playground__title {
+    font-size: 1.5rem;
+    /* 24 */
   }
 
   .projects__tag {
@@ -2217,15 +3140,9 @@ main {
     display: none;
   }
 
-  /* The card frame is Aniket's own drawing, not a CSS line —
-     `project border.png` is a hollow 326 x 618 rectangle (the exact
-     card box from the Figma) with a transparent middle.
-
-     It's stretched to the card rather than sliced, because the cards
-     are all pushed to the height of the tallest one. The uprights keep
-     their weight either way (their thickness runs across the x axis,
-     which isn't being scaled), and the top and bottom lines are thin
-     enough that the vertical stretch doesn't read. */
+  /* Project card frame: clean CSS stroke (`border: 1px solid var(--rule);`)
+     replacing the hand-drawn `project border.png` outer lines per Aniket's ask (2026-09-12).
+     Inner margins removed per Aniket's ask (2026-09-12): cover is flush to card borders. */
   .project,
   .project--acsp,
   .project--gmaps,
@@ -2235,28 +3152,10 @@ main {
        Roopak's centring are both switched off */
     margin-inline: 0;
     scroll-snap-align: start;
-    border: 0;
-    /* ⚠️ The drawn rectangle is NOT centred inside the PNG. Measured off
-       its alpha: the uprights sit 5px in from the image's left edge and
-       7px in from its right (and there is no top line at all — the frame
-       is open at the top, by design). Centre the image and the two sides
-       read 2px apart, so it's nudged 1px right, which puts both uprights
-       a matching 6px in from the card's edge. */
-    background: url('assests/project%20border.png') no-repeat calc(50% + 1px) 50% / 100% 100%;
-    /* ⚠️ 12 at the sides is what makes the frame VISIBLE. At the old 5
-       the cover ran to x=321 — straight over the right-hand upright, and
-       flush against the left one — so the drawing was there but buried.
-       12 clears both by 6px.
-
-       The 40 at the bottom stretches the image down. The baseline sits
-       at 98.5% of the card's height whatever that height is, so padding
-       is the only thing that moves it away from the description: at the
-       old 12 it cleared the last line of text by 3px. */
-    padding: 0.5rem 0.75rem 1.75rem;
-    /* ⚠️ was 40 at the bottom. That was air the card no longer needs
-       now it is smaller; 28 still clears the last line of the blurb
-       comfortably, and the drawn frame's baseline follows the card's
-       height so it comes with it. */
+    border: 1px solid #e0e0e0;
+    padding: 0 0 1.25rem;
+    /* 20px inner margin at bottom per Aniket's ask (2026-09-12) */
+    background: #fff;
   }
 
   /* ⚠️ Every card must be there from the moment you arrive, NOT fade in
@@ -2312,7 +3211,9 @@ main {
     line-height: 1.45;
   }
 
-  .project__link:hover {
+  /* the belt to the hover query's braces: a phone that reports
+     `hover: hover` must still never leave a card stuck shrunk */
+  .project:hover .project__link {
     transform: none;
   }
 
@@ -2448,6 +3349,14 @@ main {
     /* 38 below the carousel arrow, 36 down to the first card */
   }
 
+  /* the title spans the padded frame down here — the cards stack full
+     width, so there is no column edge to line up with */
+  .playground__title {
+    width: auto;
+    margin: 2.375rem 0 1.875rem;
+    /* 38 below the projects carousel, 30 down to the first card */
+  }
+
   .playground__list {
     width: auto;
     flex-direction: column;
@@ -2464,11 +3373,14 @@ main {
   .lab__card {
     padding: 0.3125rem 0.3125rem 1.3125rem;
     /* 5 / 5 / 21 */
-    border-radius: 0.625rem;
+    /* square down here too — the desktop rule is in cqw and this band
+       turns the container query off, so it needs saying again. The
+       10/5 the Figma drew are in the note on `.lab__card` above. */
+    border-radius: 0;
   }
 
   .lab__media {
-    border-radius: 0.3125rem;
+    border-radius: 0;
   }
 
   .lab__name {
@@ -2498,7 +3410,7 @@ main {
 
   /* no hover on a touch screen — it sticks on after a tap. Same as
      `.project__link:hover` in this band. */
-  .lab__card:hover {
+  .lab:hover .lab__card {
     transform: none;
   }
 
@@ -2558,158 +3470,88 @@ main {
     width: 4.375rem;
     /* 70, its drawn size */
     margin: 0.625rem auto 0;
-    border-radius: 0.422rem;
+    /* 4.8, the same corner as desktop — see the note up there */
+    border-radius: 0.3rem;
   }
 
   .stuffs__more:hover {
     transform: none;
   }
 
-  /* ═════════════════════════════════════════════════
-     FOOTER — phones
+  /* ══ FOOTER — phones ═════════════════════
 
-     Nothing overlaps down here, so it drops out of absolute
-     positioning and simply stacks. The laptop still runs off the
-     LEFT edge and still sits flush at the bottom: the PNG has its
-     left hand cut off, so that edge has to be the screen's edge.
-     ⚠️ The mobile Figma centres a WHOLE laptop; our file is the
-     desktop's left-clipped crop, so centring it would show a hand
-     sliced off in the middle of the screen. Flush left instead.
-     ═════════════════════════════════════════════════ */
+     ⚠️ THE TEXT COMES OFF THE PICTURE DOWN HERE, and it has to. On a 390
+     screen the wedge is only 110px tall — it keeps its 3.53 ratio — and
+     the heading alone is 46. There is no room to lay one over the other,
+     so the two stack ABOVE the wedge in normal flow and the picture goes
+     back to being just the shape that ends the page.
 
-  .footer__frame {
-    container-type: normal;
-    width: 100%;
-    height: auto;
-    aspect-ratio: auto;
-    padding: 0 var(--frame-pad);
+     ⚠️ `order`, NOT `column-reverse`. The picture is first in the markup
+     and the text follows it, so a plain reverse would put the chips above
+     the heading. These say the three positions outright.
+     ══════════════════════════════════════ */
+
+  .footer {
     margin-top: 4.25rem;
-    /* 68 below the post-it */
+    /* 68 below the post-it — the same gap the band had down here */
+    display: flex;
+    flex-direction: column;
+    padding-top: 2rem;
   }
 
-  .footer__rule {
-    position: relative;
-    height: 1.75rem;
-    /* 28 */
-    margin: 0 calc(var(--frame-pad) * -1);
-    /* back out to the screen's edges */
+  .footer__wedge {
+    order: 3;
+    margin-top: 2.5rem;
+    /* 40 under the chips */
   }
 
-  .footer__line {
-    top: 0.75rem;
-    height: 0.1875rem;
-    /* 3 */
-  }
-
-  /* two segments and one small cross on phones, against desktop's
-     four and three — straight off the mobile frame */
-  .footer__line--a {
-    left: 0;
-    right: calc(100% - 11.68rem);
-    /* runs to x=186.9 of 390 */
-  }
-
-  .footer__line--b {
-    left: 12.93rem;
-    /* 206.9 */
-    right: 0;
-    width: auto;
-  }
-
-  .footer__line--c,
-  .footer__line--d,
-  .footer__x--3 {
-    display: none;
-  }
-
-  .footer__x--1 {
-    left: 11.68rem;
-    top: 0.31rem;
-    width: 0.926rem;
-    /* 14.8 — the mobile frame draws a smaller cross */
-  }
-
-  .footer__x--2 {
-    display: none;
-  }
-
+  /* ⚠️ `static` UNDOES THE DESKTOP ANCHORS. Both carry a percentage `top`
+     measured against the wedge's height, and that height is meaningless
+     once they are no longer sitting on it. */
   .footer__title {
+    order: 1;
     position: static;
-    margin: 1.5rem 0 0;
+    top: auto;
+    margin: 0 auto;
     font-size: 2.875rem;
-    /* 46 */
-    text-align: center;
+    /* 46 — the size the old mobile frame drew this at, and it still fits
+       the line on a 390 screen with `nowrap` on */
   }
 
   .footer__links {
+    order: 2;
     position: static;
-    justify-content: center;
-    gap: 1.197rem;
-    /* 19.15 */
-    margin-top: 1.375rem;
+    top: auto;
+    /* ⚠️ `nowrap`, AND IT IS WHAT THE SMALLER CHIP IS FOR. Aniket asked
+       for the three on one line (2026-09-12); at 16 they did not fit a
+       390 screen and the third dropped under the other two. Wrapping is
+       what hid that — with it off, a chip too big to fit overflows
+       instead, so the size below is load-bearing. */
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    /* 8 — 12 before; the row is tighter now that it has to hold three */
+    margin-top: 1.5rem;
+    padding: 0 var(--frame-pad);
   }
 
-  .footer__link img {
-    height: 1.807rem;
-    /* 28.9 */
+  /* ⚠️ ONE NUMBER SIZES THE WHOLE CHIP — label, both glyphs, the arrow,
+     the padding and the corner are all `em`, so this is the only thing
+     to turn. 16 → 13 (Aniket, 2026-09-12) to get Email, Linkedin and
+     Behance onto one line: the three come to roughly 20em of chip plus
+     two 8px gaps, which is ~279 of the 350 a 390 phone leaves inside
+     the frame padding. */
+  .footer__link {
+    font-size: 0.8125rem;
+    /* 13 */
   }
 
+  /* no hover on a touch screen — it sticks on after a tap */
   .footer__link:hover {
     transform: none;
+    background: rgba(255, 255, 255, 0.32);
   }
 
-  /* Aniket marked it on the live page (2026-09-01) and asked for it
-     CENTRED on phones, which is what the mobile Figma draws. It was
-     flush left before, so the crop's cut edge sat on the screen's
-     edge — his call, and the mobile frame agrees with him.
-
-     ⚠️ Centre the LAPTOP, not the box — the third time this file has
-     needed that (see `note.png` and `postit.png`). `footer pc.png`
-     carries 96 of its 2080 as transparent space on the RIGHT, so the
-     drawing sits 2.3% left of the image's own middle. Written against
-     the same width the box uses, so it scales instead of drifting. */
-  /* phones: the mobile frame draws it at 51% of the desktop size, and
-     it goes to the screen's edge past the frame padding */
-  .footer__scribble {
-    top: 10rem;
-    /* 160. ⚠️ It must clear the BUTTON ROW, which ends at 151.6.
-       At the Figma-derived 120 it ran straight over the Behance
-       button — a decorative doodle on top of the one thing down here
-       you can actually click. It clears the laptop already: the
-       laptop's right edge is 283 and this starts at 289. */
-    right: 0;
-    /* ⚠️ 0, not a negative frame-pad. An absolutely positioned child
-       measures against its ancestor's PADDING box, and that already
-       spans the full frame width — so 0 IS the screen's edge, and
-       pulling it further put the page into horizontal overflow. */
-    width: min(26%, 7.55rem);
-    /* 120.9 = 237 × 0.51 is the mobile frame's scale, but it has to
-       give way on narrow phones. ⚠️ The laptop is sized as a
-       PERCENTAGE and this was a fixed rem, so below 390 the scribble
-       took a bigger and bigger share and cut across the laptop at
-       375, 360 and 320. The 26% keeps ~6px of clearance from the
-       laptop's right edge at every width. */
-  }
-
-  .footer__pc {
-    --pc-w: 48.14%;
-    position: relative;
-    bottom: auto;
-    display: block;
-    width: var(--pc-w);
-    margin: 1.44rem auto 0;
-    /* 23 below the buttons */
-    left: calc(var(--pc-w) * 0.023);
-    /* Off the bottom here too. --pc-cut is inherited from the desktop
-       rule above, so the same fraction of the laptop is hidden on a
-       phone as on a monitor. `translate` and not a negative margin on
-       purpose: it doesn't touch layout, so the frame still ends where
-       the whole laptop would have, and `.footer`'s clip does the rest.
-       ⚠️ The laptop is the LAST in-flow thing on the page down here —
-       if anything is ever added after it, the clip line moves. */
-    translate: 0 var(--pc-cut);
-  }
-
+  /* ⚠️ ORPHAN down here too — see the desktop rule. */
   .playground__more {
     width: 100%;
     margin: 2rem auto 0;
@@ -2731,9 +3573,15 @@ main {
     container-type: normal;
     width: 100%;
     padding: 0 var(--frame-pad);
+    /* no collage to sit beside down here — the card is back in flow, so
+       the frame is sized by it again */
+    aspect-ratio: auto;
   }
 
   .quote__card {
+    position: static;
+    left: auto;
+    top: auto;
     width: 100%;
     max-width: 22.5rem;
     /* 360 */
@@ -2769,7 +3617,7 @@ main {
 
   .hero__stage {
     container-type: normal;
-    position: static;
+    position: relative;
     width: 100%;
     aspect-ratio: auto;
     /* ⚠️ CANCEL THE DESKTOP'S OPTICAL-CENTRING NUDGE. `--hero-shift`
@@ -2821,6 +3669,20 @@ main {
     font-size: 1rem;
     /* 16 */
     white-space: normal;
+
+    /* ⚠️ THIS IS THE GAP BETWEEN THE COLLAGE AND THE WORDS, and it is
+       here rather than on `.hero__stage` or `--hero-drop` because those
+       move the photo and the doodles too — which is exactly what Aniket
+       did NOT want (2026-09-12). Everything from the greeting down is
+       in normal flow, so this one margin carries the tagline, the IITG
+       mark, the tools and their caption with it.
+
+       ⚠️ IT IS THE STAGE'S OWN `gap` PLUS THIS. The stage is a flex
+       column with a gap of its own, so the space you see is the two
+       added together; read the measured number off the page, not off
+       this line. */
+    margin-top: 3.5rem;
+    /* 56 */
   }
 
   .hero__name {
@@ -2834,9 +3696,27 @@ main {
     /* 16 */
   }
 
-  /* Aniket's mobile frame has no IITG logo — it's a desktop-only mark */
-  .hero__iitg {
-    display: none;
+  /* IITG logo on phone (2026-09-12): moved more left and up onto the photo layer per Aniket's ask */
+  .hero__stage .hero__iitg {
+    display: block;
+    position: absolute;
+    left: calc(50% + 0.5rem);
+    /* ⚠️ THE TARGET IS THE PHOTO'S BOTTOM-RIGHT CORNER, and it is the
+       logo's CENTRE that is meant to land on it (Aniket, 2026-09-12).
+       So this `top` is that corner LESS HALF THE LOGO'S OWN HEIGHT —
+       the mark is 60 wide and all but square (248x247), so ~30. Resize
+       the logo and this has to come back by half the difference.
+
+       Measured on a 390 phone: the photo's box is 33.128% of a 350
+       cluster, starting 2.449% down, and the cluster itself starts at
+       the stage's 2rem of top padding — which puts the bottom of the
+       picture around 183 from the top of the stage. */
+    top: 10rem;
+    /* 152 — from 136, so the centre lands on ~182 */
+    width: 3.75rem;
+    height: auto;
+    mix-blend-mode: normal;
+    z-index: 10;
   }
 
   /* The three connecting scribbles and the two blue guide lines are
@@ -2932,27 +3812,234 @@ main {
     width: 6.890cqw;
   }
 
+  /* ── THE TAP CARD ────────────────────────────────────────
+     ⚠️ IT IS A CHILD OF `.hero__cluster`, which is the phone band's
+     own positioning context and container — so `left`/`top` written by
+     app.js are cluster pixels, the same space the tiles' own cqw
+     resolve into. Move this element out of the cluster and every
+     number app.js writes is measured against the wrong box.
+
+     ⚠️ `z-index: 3` IS ABOVE THE PHOTO'S 2. The photo was lifted over
+     the doodles the same day (see `.hero__photo`), and a card that
+     opens on a tile overlapping the photo has to clear both.
+
+     ⚠️ NOT `display: none` WHEN CLOSED — `opacity` is what hides it.
+     app.js MEASURES this box to centre it on the tile and to keep it
+     inside the cluster, and a `display: none` box measures zero.
+
+     ── THE MOTION ──────────────────────────────────────────
+     ⚠️ IT SCALES FROM 0.95, NOT FROM 0. A box growing out of nothing
+     reads as a thing being built; one that is nearly there already
+     reads as a thing arriving. This is an ENTRANCE, so it eases OUT —
+     `--ease` is the page's own ease-out and the nav and the hero
+     already move on it.
+
+     ⚠️ ONLY `opacity` AND `scale` ARE ANIMATED. Both skip layout and
+     paint, so this runs on the GPU on a phone that may already be
+     scrolling. Do not animate the width or the `top` to make it slide.
+
+     ⚠️ THE EXIT IS FASTER THAN THE ENTRANCE — 160 against 200. The
+     entrance is the answer and wants to be seen; the exit is only
+     tidying up, and a slow one makes the tile feel sticky. The base
+     rule below IS the exit; opening overrides its duration. */
+  /* ⚠️ THE TILES ARE TAP TARGETS DOWN HERE, so they get a phone's two
+     usual courtesies: no grey flash on touch, and no 300ms wait for a
+     double-tap that means nothing on a decorative image. */
+  .hero__doodle--camera,
+  .hero__doodle--music,
+  .hero__doodle--walks {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .doodle-pop {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    /* it advertises, it never takes the tap */
+    pointer-events: none;
+
+    /* ⚠️ THESE THREE ARE THE CLOSED STATE AND ALSO THE EXIT, because a
+       transition runs both ways. 0.16s here, overridden to 0.2s on
+       `.is-open` below — and app.js holds the same two numbers, which
+       is how it knows when the exit has finished. Change them in one
+       place and they must change in the other. */
+    opacity: 0;
+    scale: 0.95;
+    /* it rises the last 4px into place rather than only growing */
+    translate: 0 0.25rem;
+    transition:
+      opacity 0.16s var(--ease),
+      scale 0.16s var(--ease),
+      translate 0.16s var(--ease);
+
+    /* ⚠️ THE HINT HAS TO BE STANDING BEFORE THE CLASS LANDS. Put
+       `will-change` on `.is-open` and the browser is told to prepare a
+       layer in the same frame it is asked to animate one, which is the
+       frame it cannot afford. This box is 130px and idle almost all the
+       time; the layer is cheap. */
+    will-change: opacity, transform;
+  }
+
+  .doodle-pop.is-open {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+    transition-duration: 0.2s;
+  }
+
+  /* ⚠️ THE CARD STILL OPENS, IT JUST DOES NOT MOVE. Someone who has
+     asked for less motion still needs the answer the tap was for, so
+     this kills the transition, not the element. */
+  @media (prefers-reduced-motion: reduce) {
+    .doodle-pop {
+      scale: 1;
+      translate: 0 0;
+      transition: none;
+    }
+  }
+
+  /* ⚠️ THE SAME #2567b3 THE CURSOR CARD USES, and for the same reason:
+     it is the blue the two PNGs are drawn in. Sample any redrawn card
+     and change both. */
+  .doodle-pop.is-card {
+    background: #2567b3;
+    border-radius: 0.5rem;
+    /* 8 — measured against the card art, see the note on
+       `.cursor.is-card` */
+  }
+
+  .doodle-pop.is-view {
+    background: var(--blue);
+    border-radius: 999px;
+    min-height: 2.125rem;
+    /* 34 — the cursor's pill is 40; this came down with the card
+       (2026-09-12) so the two answers stay the same weight as each
+       other. */
+    padding: 0 0.875rem;
+  }
+
+  .doodle-pop__card,
+  .doodle-pop__label {
+    display: none;
+  }
+
+  .doodle-pop.is-card .doodle-pop__card {
+    display: block;
+    width: 8.125rem;
+    /* 130 — SMALLER THAN THE CURSOR'S 162 (Aniket, 2026-09-12). The
+       desktop card rides over a 1440 collage; this one sits on a 390
+       cluster, where 162 was a third of the screen. Height comes from
+       the picture, so a redrawn card needs nothing here. */
+    height: auto;
+  }
+
+  .doodle-pop.is-view .doodle-pop__label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    /* 12 — 13 on the cursor, a size down here with the pill */
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--paper);
+    white-space: nowrap;
+  }
+
+  /* one width for the set down here too — same reasoning as the
+     desktop rule, see the note there.
+
+     ⚠️ BIGGER TWICE NOW, both at Aniket's ask: 10.5 → 13.5cqw
+     (2026-09-11), then 13.5 → 25.641 (2026-09-12) — 41 to 52.7 to 100
+     of the 390 cluster.
+
+     ⚠️ AND THE THREE CORNERS BELOW MOVED WITH IT. `left`/`top` are the
+     tile's TOP-LEFT, but the marks that placed these gave CENTRES, so
+     every corner carries half a tile inside it. Growing the box by 3
+     without touching them would have slid the whole set down and right.
+     Each one is its old value LESS HALF THE GROWTH — 1.5cqw for the
+     first step, 6.0705 for the second — so the three tiles stay exactly
+     where they were drawn and simply get bigger around their own
+     middles. Resize again and do the same arithmetic; this is the same
+     trap the desktop rule warns about. */
+  .hero__doodle--camera,
+  .hero__doodle--music,
+  .hero__doodle--walks {
+    width: 25.641cqw;
+    /* 100 of the 390 cluster — Aniket asked the PHONE doodles bigger
+       (2026-09-12), from 52.7. Near enough double.
+
+       ⚠️ HE ASKED FOR 200 AND 200 DOES NOT FIT. The cluster is 390
+       wide, so 200 is 51.28cqw — over half the screen per tile. Held to
+       their marked centres the three would start at -5.5, -5.2 and
+       54.3cqw, i.e. two off the left edge and the walker off the right.
+       100 is the largest that keeps all three on screen and clear of
+       each other. If it has to be bigger, the CENTRES have to move too.
+
+       ⚠️ DESKTOP DOES NOT FOLLOW THIS. It was grown to match on
+       2026-09-12 and put straight back — the big doodles are phone
+       only. */
+    height: 25.641cqw;
+    object-fit: contain;
+  }
+
   .hero__doodle--camera {
-    left: 15.432cqw;
-    top: 13.075cqw;
-    /* 60.19, 173.52 */
-    width: 10.062cqw;
+    left: 12.9295cqw;
+    /* 50.4 — nudged toward the photo twice on 2026-09-12, 10 then 12,
+       from 7.2885 / 28. That 28 was the marked centre less half a tile;
+       these nudges deliberately leave the centre, so the mark is no
+       longer where this tile sits. */
+    top: -6.2985cqw;
+    /* -24.6 — see the warning below, this is no longer a sub-pixel */
+    /* Aniket marked a new spot for this tile (2026-09-11); it was
+       13.932 / 11.575. The mark's centre was 20.109 / 6.522 cqw and
+       these are that less half a tile, the same corner-from-centre
+       arithmetic the size note above describes.
+
+       ⚠️ THE NEGATIVE `top` IS DELIBERATE, AND IT IS NO LONGER TINY.
+       It was -0.228cqw, under a pixel; at 100 the tile grew upward
+       around its own middle and the corner is now ~25px ABOVE the
+       cluster. Nothing clips — `.hero__cluster` has no `overflow` — but
+       it does reach up into whatever sits above it. To sit the tile on
+       the cluster's top edge instead, set this to 0 and accept that the
+       tile is then ~25 lower than the mark. */
   }
 
   .hero__doodle--music {
-    left: 15.144cqw;
-    top: 27.725cqw;
-    /* 59.06, 230.66 */
-    width: 8.423cqw;
+    /* ⚠️ THE ONE PHONE TILE WITH ITS OWN SIZE. Aniket asked for music at
+       70 (2026-09-12) while the other two stay on the shared 100.
+
+       ⚠️ BOTH WIDTH AND HEIGHT, TOGETHER. The box has to stay square or
+       `object-fit: contain` starts letterboxing the drawing. */
+    width: 17.9487cqw;
+    /* 70 of the 390 cluster — it went 100 → 130 → 50 → this in one
+       sitting, so music sits noticeably under the other two. */
+    height: 17.9487cqw;
+
+    left: 11.42cqw;
+    /* 44.5 — the marked centre (20.394) less half of 70 */
+    top: 26.0523cqw;
+    /* 101.6 — nudged 8 DOWN (2026-09-12). It was 24.001 / 94, the
+       marked centre less half a tile; like the camera and the walker,
+       this tile now sits off its mark on purpose. */
+    /* was 15.144 / 27.725 */
   }
 
-  /* the phone walker is a different, more compact drawing — see the
-     <picture> in index.html */
   .hero__doodle--walks {
-    left: 75.938cqw;
-    top: 24.354cqw;
-    /* 296.16, 217.51 */
-    width: 11.795cqw;
+    left: 61.4295cqw;
+    /* 239.6 — nudged toward the photo twice on 2026-09-12, 10 then 12,
+       from 67.0705 / 262 — the mirror of what the camera got, and off
+       its marked centre for the same reason. */
+    top: 10.8205cqw;
+    /* 42 — 16.891 less the same half */
+    /* Aniket marked this one too (2026-09-11); it was 74.438 / 22.854.
+       Mark centre 79.891 / 23.641 cqw, less half a tile.
+       ⚠️ Right edge lands at 92.7cqw now (it was 86.6 at the old size),
+       so there is only ~7 of cluster left before it runs off the side.
+       This is the tile that decides how much bigger the set can go. */
   }
 
   /* ── The tools row on phones ──
@@ -2964,8 +4051,8 @@ main {
      with a rounded corner — in the mobile frame they're inset ~2px
      from the icon's corner and curve round it. */
   .hero__tools {
-    gap: 0.4rem;
-    /* 6.4 — with the borders that keeps the 48.7 pitch */
+    gap: 0.5rem;
+    /* 8 — the 1.5px borders used to make up the rest of the 48.7 pitch */
     margin-top: 2.8rem;
     /* Figma leaves 69px under the tagline; the stage gap gives 20 */
   }
@@ -2974,9 +4061,6 @@ main {
     width: 2.55rem;
     /* 40.8 */
     height: 2.55rem;
-    border-top-width: 1.5px;
-    border-left-width: 1.5px;
-    border-top-left-radius: 0.25rem;
   }
 
   .hero__tools-caption {
@@ -2998,16 +4082,109 @@ main {
   :root {
     --frame-pad: 1.25rem;
     /* 20 — matches the mobile frame inset */
-    --nav-pad-top: 1rem;
-    /* 16 */
-    --nav-h: 1.75rem;
-    /* 28 */
+    /* ⚠️ THESE THREE SET THE BAR'S HEIGHT AND IT IS A REAL 60 NOW.
+       Aniket asked for a 60px phone bar (2026-09-12) — the block used
+       to SAY 60 while rendering 45, because the old sum counted the
+       hand-drawn rule and its gap, and that rule is `display: none`.
+       The bar is exactly what these three plus the 1px border add to:
+
+           12  --nav-pad-top
+         + 35  --nav-h
+         + 12  --nav-pad-bot
+         +  1  .nav border-bottom
+         ────
+           60
+
+       Do not touch them to change spacing BETWEEN the links;
+       `--nav-gap` is the one that does it without resizing the bar. */
+    --nav-pad-top: 0.75rem;
+    /* 12 */
+    --nav-pad-bot: 0.75rem;
+    /* 12 — the matching half. ⚠️ THE PAIR MUST STAY EQUAL or the links
+       stop sitting in the middle of the bar (they were 8/8 with a 28
+       row before, which is the 45 this replaces). */
+    --nav-h: 2.1875rem;
+    /* 35 — the row the links centre in. Taller than the 28 it was
+       purely to make the 60 up; the links themselves did not grow. */
     --nav-link: 0.875rem;
     /* 14 */
-    --nav-gap: 1.25rem;
-    /* 20 */
+    --nav-gap: 1rem;
+    /* 16 — the space BETWEEN the four links, and the ONLY number here
+       that is not part of the 60. Went 20 → 12 → this: 12 closed them
+       up too far, so Aniket asked for a little back. */
     --rule-gap: 0.875rem;
     /* 14 */
+  }
+
+  /* ══ THE PHONE NAV BAR — 2026-09-08 ══════════════════════
+     The 2026-09-08 spec: 60px tall, 14px links, no download icon, the
+     row hard right. The row is CENTRED now and the links sit 16 apart
+     (2026-09-11) — but the 60 is unchanged and is meant to stay.
+
+     ⚠️ THE 60 IS A SUM, NOT A HEIGHT. There is deliberately no
+     `height: 60px` on `.nav` — the bar is built out of the numbers in
+     the `:root` block directly above: 12 + 35 + 12 + the 1px border.
+
+     ⚠️ THE OLD SUM HERE COUNTED TWO THINGS THAT NO LONGER RENDER —
+     `--rule-gap` (14) and `.nav__rule` (2). The rule is a `display:
+     none` image now and the line under the bar is `.nav`'s own
+     `border-bottom`, so those 16px were never on screen and the bar
+     measured 45, not the 60 this comment promised. `--rule-gap` is
+     left at 14 only because `--nav-total` reads it; it draws nothing.
+
+     ⚠️ `--nav-gap` IS NOT IN THAT SUM, which is exactly why it is the
+     right knob for how far apart the links sit. Reaching for the other
+     three to space them out resizes the bar — that was tried on
+     2026-09-11 and reverted the same hour.
+
+     ⚠️ `--nav-total` READS THREE OF THE FOUR and reserves the top of
+     the page from them, so changing any of them silently moves every
+     section down the page. Change one and the bar stops being 60.
+
+     Forcing a height instead would just push the rule off the bottom or
+     leave it floating short of it, because the rule is a flex child of
+     `.nav__content`, not a border.
+     ═════════════════════════════════════════════════════════ */
+
+  /* ⚠️ CENTRED, AND THIS LINE IS A REVERSAL. It said `flex-end` —
+     "hard right", from the 2026-09-08 phone spec — and Aniket asked for
+     the row centred instead (2026-09-11).
+
+     ⚠️ IT IS STILL WRITTEN OUT even though the 1023 block above already
+     says `center` and simply deleting this rule would work. Two media
+     queries both match a phone, this one is the later of the two, and
+     the next person reading the phone block should not have to know
+     that to find out where the row sits.
+
+     The logo is hidden up in the 1023 block, so the row is only the
+     three links + Resume. `--frame-pad` on `.nav__wrap` still holds
+     them 20 off each window edge; they simply centre inside it now. */
+  .nav__row {
+    justify-content: center;
+  }
+
+  /* The word on its own — no download arrow on phones. */
+  .nav__link--resume .nav__download-icon {
+    display: none;
+  }
+
+  /* Regular, not medium. Desktop runs the nav at 500; on a 14px phone
+     link that extra weight reads as slightly heavy, so all four items
+     — the three sections and Resume — drop to 400.
+
+     Set on `.nav__link` rather than `.nav__links`, because Resume is a
+     sibling of that list, not a child of it. `.is-active` only ever
+     changes colour, so the current section stays regular too.
+     IBM Plex Sans 400 is already in the Google Fonts request — this
+     costs no extra download. */
+  .nav__link {
+    font-weight: 400;
+    /* ⚠️ NOT UPPERCASE DOWN HERE. `.nav__link` sets `uppercase` for the
+       whole site; Aniket asked for the phone links in plain case
+       (2026-09-12), so they read exactly as they are written in the
+       HTML — Intro, Projects, Other Stuffs, Resume. Desktop and tablet
+       are untouched and stay in caps. */
+    text-transform: none;
   }
 
   /* ── HERO on phones ──
@@ -3044,6 +4221,122 @@ main {
     /* 16 */
   }
 
+  /* ⚠️ THIS LINE IS WHY THE PHONE TEXT DID NOT MOVE. The 1023 block
+     gives the greeting a `margin-top` to push the WORDS down away from
+     the collage — and this rule, further down the file and matching the
+     same element, replaced it outright on phones. A -10 nudge and a +56
+     drop were being asked for at the same element on the same day; the
+     one written last won, silently.
+
+     So the asks are ADDED UP HERE instead of fighting: 56 down from the
+     collage, less the 10 Aniket had asked the greeting up by earlier,
+     less another 16 when the 46 came out too low — all 2026-09-12.
+     Change the 56 in the 1023 block and this number has to follow it;
+     it is not a calc, because the asks are independent and a reader
+     should see each of them. */
+  .hero__greeting {
+    margin-top: 1.875rem;
+    /* 30 = 56 − 10 − 16 */
+
+    /* ⚠️ 16 BETWEEN THE GREETING AND THE TAGLINE, and it is written as
+       a negative against the stage's own `gap: 1.25rem` (20) because
+       that gap sits between EVERY child of the hero stack — there is no
+       way to set one of them on its own. -4 leaves 16.
+
+       ⚠️ THIS IS THE CSS GAP, NOT THE AIR YOU SEE. `.hero__name` is 32
+       inside a 16 line, so the greeting's line box is ~42 tall and
+       carries ~15 of empty space under its baseline; the white space
+       reads as roughly 31 whatever this says. Aniket asked for 16 after
+       being told that (2026-09-12), so 16 is the gap, not the look.
+
+       It went 20 → 2 → -28 → back to 20 → this, all the same day. */
+    margin-bottom: -0.25rem;
+    /* -4, leaving 16 of the 20 */
+  }
+
+  /* ⚠️ A PHONE-ONLY OVERRIDE, ON PURPOSE. The 24 these come from is
+     set in the 1023 block, which TABLETS ALSO READ — editing it there
+     would have shrunk the tablet headings too. Aniket marked this row
+     at 423 and asked it smaller (2026-09-11), so the smaller size is
+     stated down here where only phones see it.
+
+     ⚠️ ALL THREE SELECTORS MOVE TOGETHER and that is deliberate — one
+     type spec for both ends of the Projects row and for the Playground
+     title, so the two sections keep reading as one set. Splitting them
+     is what makes the two headings drift apart. */
+  .projects__title,
+  .projects__soon,
+  .playground__title {
+    font-size: 1.125rem;
+    /* 18 — Aniket asked for "Projects" and "Vibe-coding my ideas" at 18
+       (2026-09-12); it was 20, and 24 before that. "more coming soon"
+       comes with them, as the note above says it must. */
+  }
+
+  /* Aligns "Projects" heading to the first project card's left edge (19px, Yellow Mark A2)
+     and "more coming soon" to the frame right edge inset (20px, Green Mark A3) (2026-09-12).
+     Breaks out of .projects__frame with margin-inline so .projects__head spans edge-to-edge. */
+  .projects__head {
+    margin-inline: calc(var(--frame-pad) * -1);
+    padding-left: 1.1875rem;
+    /* 19 — matches first project card's left edge */
+    padding-right: var(--frame-pad);
+    /* 20 — matches frame right edge inset */
+  }
+
+  /* Project card content spacing on phones per Aniket's ask (2026-09-12):
+     - thumbnail cover to content: 8px (0.5rem), down from 30px
+     - title to description: 4px (0.25rem), down from 12px
+     - description font size: 16px (1rem) */
+  .project__meta {
+    margin-top: 0.5rem;
+    /* 8px */
+  }
+
+  .project__blurb {
+    font-size: 1rem;
+    /* 16 */
+    margin-top: 0.25rem;
+    /* 4px */
+  }
+
+  /* Vibe-coding cards spacing on phones per Aniket's ask (2026-09-12):
+     - media to title: 8px (0.5rem), down from 12px
+     - title to description: 4px (0.25rem), up from 0px
+     Card margins and padding are left untouched. */
+  .lab__name {
+    margin-top: 0.5rem;
+    /* 8px */
+  }
+
+  .lab__blurb {
+    margin-top: 0.25rem;
+    /* 4px */
+  }
+
+  /* Vibe-coding titles on phones: IBM Plex Sans at 16px (same as project names) per Aniket's ask (2026-09-12) */
+  .lab__name,
+  .lab__name--markit,
+  .lab__name--fisshy,
+  .lab__name--ariana {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    /* 16 */
+    font-style: normal;
+    color: var(--ink);
+    line-height: 1.4375;
+    padding-top: 0;
+    letter-spacing: normal;
+  }
+
+  .lab__name--ariana .lab__wordmark-i {
+    font-size: inherit;
+  }
+
+  .lab__name--ariana .lab__asterisk {
+    display: none;
+  }
+
   /* The stage puts a 20px gap between every item. On desktop the
      tagline sits flush against the greeting — Figma has "Hi I am"
      ending at y=372.36 and the tagline starting at y=372.36 — so
@@ -3062,10 +4355,54 @@ main {
   .stub__label {
     font-size: 1.75rem;
   }
+
+  /* Fill all cards to white with 100% #E0E0E0 stroke on phones per Aniket's ask (2026-09-12) */
+  .project,
+  .project--acsp,
+  .project--gmaps,
+  .project--roopak {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+  }
+
+  .lab__card {
+    background-color: #fff;
+    box-shadow: inset 0 0 0 1px #e0e0e0;
+  }
+
+  /* Other Stuffs on phones per Aniket's ask:
+     - moved section down from playground card
+     - arrow reduced size from 70px (4.375rem) to 48px (3rem)
+     - moved further down below the post-it (margin-top: 1.5rem / 24px, from 10px) */
+  .stuffs__group {
+    margin-top: 4.75rem;
+    /* 76 — moved down on phone from 2.75rem (44) */
+  }
+
+  .stuffs__more {
+    width: 3rem;
+    /* 48px */
+    margin: 1.5rem auto 0;
+    /* 24px below post-it note */
+  }
+
+  .footer {
+    margin-top: 1.75rem;
+    /* 28 — moved footer section up on phone from 4.25rem (68) */
+  }
 }
 
 /* Very small phones — 320px and similar */
 @media (max-width: 359px) {
+  /* ⚠️ THE FOOTER ROW HAS NO SLACK LEFT AT 13. Three chips come to ~279
+     and a 320 screen leaves 280 inside the frame padding — one pixel,
+     which any font fallback would eat. A size down here keeps the one
+     line Aniket asked for on the smallest phones too. */
+  .footer__link {
+    font-size: 0.75rem;
+    /* 12 */
+  }
+
   :root {
     --nav-link: 0.8125rem;
     /* 13 */
@@ -3293,6 +4630,13 @@ main {
 
 /* the row holds two things at the LEFT, not one at each end like
    the home page's logo and links */
+/* ⚠️ THE BAR IS JUST THE ARROW NOW. `.case-nav__title` — the project's
+   name beside it — came out on 2026-09-11 at Aniket's ask, along with its
+   phone override. The name still exists on the page itself as
+   `.case__name`, so nothing was lost, and the back link's `aria-label`
+   already carries its own name. The `gap` below now separates the arrow
+   from nothing; it is left in because the row is still a flex row and
+   anything added here would want it. */
 .case-nav .nav__row {
   display: flex;
   justify-content: flex-start;
@@ -3304,33 +4648,63 @@ main {
      the bar is shorter than the padding reserved for it. */
 }
 
+/* ⚠️ A PICTURE, NOT THE `←` CHARACTER — `nav_arrow.png` (Aniket named
+   it, 2026-09-11; it briefly used `more-phone-back.png`, the circled
+   arrow off the phone carousel, and that is still what the BOTTOM back
+   button carries). `color` and `font-size` do nothing to an <img>, so
+   the hover fades and slides instead of recolouring.
+
+   ⚠️ THE NEGATIVE MARGIN IS BACK, FOR A NEW REASON. The old `←` glyph
+   needed pulling left because a character carries side bearing inside
+   its em box. This file carries the same problem as artwork: the arrow
+   is drawn 32 wide on a 48 canvas, so there is 8 of clear space — 16.7%
+   — down each side. Without the pull the arrow sits visibly inset from
+   the wordmark's left edge on the home page, which is the line it is
+   supposed to share. The circled icon needed no pull because its ink
+   ran edge to edge.
+
+   ⚠️ WHICH IS WHY THE SIZE IS A VARIABLE. The pull has to stay 16.7%
+   of whatever the box is, so phones override `--back-size` alone and
+   the margin follows. Swap in art with different padding and 0.167 is
+   the number to re-measure. */
 .case-nav__back {
+  --back-size: 1.5rem;
+  /* 24, so the arrow's ink draws at 16. Asked down twice on 2026-09-11:
+     42, then 36, then this. ⚠️ THE ONE KNOB — the pull-back below is
+     written against it, so turning this alone keeps the arrow flush with
+     the wordmark's left edge. */
+  --back-pad: 0.625rem;
+  /* 10. ⚠️ THE HIT AREA, NOT THE LOOK. The arrow got small enough that
+     the link itself was becoming a hard target, so the box is padded
+     back out to 44 × 44 while the picture stays 24. Shrink `--back-size`
+     further and raise this to match, or the link gets harder to hit
+     every time the arrow gets smaller.
+     ⚠️ It fits because `--nav-h` is 56 here. On phones that row is only
+     28 tall, so the override below runs this at 0 — padding it out there
+     would push the bar taller than `--nav-total` reserves for it. */
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  margin-left: -0.5rem;
-  /* the glyph carries its own side bearing, so it needs pulling
-     back to sit on the same left edge as the home page's doodle */
-  font-size: 1.75rem;
-  line-height: 1;
-  color: var(--ink);
-  transition: color 0.3s ease, transform 0.3s var(--ease);
+  /* ⚠️ `border-box` is global, so the padding has to be written INTO
+     the width or it would eat the picture instead of surrounding it. */
+  width: calc(var(--back-size) + 2 * var(--back-pad));
+  height: calc(var(--back-size) + 2 * var(--back-pad));
+  padding: var(--back-pad);
+  /* the pull is now BOTH offsets: the padding, plus the 16.7% of clear
+     space the artwork carries down its own left side */
+  margin-left: calc((var(--back-pad) + var(--back-size) * 0.167) * -1);
+  transition: opacity 0.3s ease, transform 0.3s var(--ease);
+}
+
+.case-nav__back img {
+  display: block;
+  width: var(--back-size);
+  height: auto;
 }
 
 .case-nav__back:hover {
-  color: var(--blue);
+  opacity: 0.65;
   transform: translateX(-3px);
-}
-
-.case-nav__title {
-  margin: 0;
-  font-size: 1.5rem;
-  /* 24 */
-  font-weight: 500;
-  line-height: 1.2;
-  color: var(--ink);
 }
 
 /* ── The page ─────────────────────────────────────────────── */
@@ -3341,28 +4715,94 @@ main {
   padding-bottom: 3.5rem;
 }
 
+/* ── the header row ──
+   ⚠️ THE NAME AND THE DESCRIPTION SHARE A LINE. Aniket marked the name
+   at the left edge of the content frame and the description at the right
+   (2026-09-11); they were two centred blocks before.
+
+   ⚠️ IT LINES UP WITH THE PICTURES BELOW IT, NOT WITH THE SITE FRAME.
+   Aniket drew a guide down the image's left edge and asked the name onto
+   it (2026-09-11). It used to sit on the site's own `min(90rem, 100%)`
+   + `--frame-pad`, which put it ~20 inside the picture.
+
+   ⚠️ WHICH MEANS THE WIDTH IS PER PAGE, and that is the awkward part:
+   `.case__shots` is 80rem for every page now, with `--narrow` (67rem,
+   markit) and `--full` (the whole window, stuffs) still opting out. The modifier lives on the pictures, which are this
+   row's SIBLING, so the overrides below reach it with `:has()` on the
+   shared parent. Add a new `.case__shots--*` and it gets no matching row
+   until you add one here too.
+
+   ⚠️ `calc(100% - 2 * var(--frame-pad))` IS THE FLOOR, AND IT IS WHY
+   THERE IS NO `padding-inline` ANY MORE. The pictures go edge to edge
+   once the window is narrower than they are; text must not. So the row
+   takes the picture's width while there is room and falls back to the
+   frame padding below that — which is also why the two stop agreeing
+   under ~1400. That is deliberate.
+
+   ⚠️ `--full` (Other Stuffs) IS LEFT ON THE DEFAULT ON PURPOSE, AND
+   THIS IS NOT AN OVERSIGHT. Its mosaic runs the whole window, so the
+   only thing a title could "align" to there is the glass itself. Asked
+   directly on 2026-09-11 — un-bleed the mosaic, leave it, or push the
+   title to x=0 — Aniket chose to LEAVE IT. That page's row is inset
+   from its picture and is meant to be. Every other page lines up at 272
+   on a 1823 window; markit.html has no row at all to align.
+
+   ⚠️ `baseline`, NOT `center`. The two are 32 and 18, so centring them
+   would leave neither sitting on a shared line. */
+.case__head {
+  width: min(80rem, calc(100% - 2 * var(--frame-pad)));
+  margin: 0 auto 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2rem;
+}
+
+.case:has(.case__shots--narrow) .case__head {
+  width: min(67rem, calc(100% - 2 * var(--frame-pad)));
+  /* 1072 — markit.html, which has no header row today; the rule is here
+     so it lands correctly if that page ever gets one back. */
+}
+
 .case__name {
-  margin: 0 auto 0.5rem;
-  padding-inline: var(--frame-pad);
-  font-size: 2.5rem;
-  /* 40 */
+  margin: 0;
+  /* ⚠️ the centring `auto` margins and the padding both moved up to
+     `.case__head`; leaving them here fights the flex row. */
+  text-align: left;
+  font-size: 1.5rem;
+  /* 24 — asked down twice on 2026-09-11: 40, then 32, then this.
+     ⚠️ IT SHARES A BASELINE WITH THE 18 DESCRIPTION beside it, so the
+     two are only 6 apart now. Much closer and the row stops reading as
+     a title with a subtitle and starts reading as two sentences. */
   font-weight: 500;
   line-height: 1.2;
-  text-align: center;
+  white-space: nowrap;
+  /* ⚠️ the name is one or two short words and it is the row's LEFT
+     end — letting it wrap would drag the description off the right */
   color: var(--ink);
 }
 
 /* the project's description — the same sentence as the card's
    `.project__blurb`. If one changes, change the other. */
 .case__title {
-  width: min(48rem, 100%);
-  margin: 0 auto 2.5rem;
-  padding-inline: var(--frame-pad);
-  font-size: 1.5rem;
-  /* 24 */
+  /* ⚠️ A CAP, NOT A WIDTH. As a flex item it shrinks to its text; the
+     34rem stops a long description running back across the row toward
+     the name. 544 is about what Aniket's mark measured. */
+  max-width: 34rem;
+  margin: 0;
+  text-align: left;
+  /* ⚠️ LEFT-ALIGNED TEXT IN A RIGHT-HAND BLOCK, and the two are not the
+     same thing. `justify-content: space-between` on `.case__head` is what
+     parks this block at the row's right end; this only decides how the
+     lines sit INSIDE it, so a wrapped description now has a straight left
+     edge and a ragged right one. Aniket asked for it (2026-09-11). Set
+     this back to `right` and the block does not move. */
+  font-size: 1.125rem;
+  /* 18, from 24 (2026-09-11) — the page's own body size, which is also
+     what `.project__blurb` uses for this same sentence on the card.
+     ⚠️ The phone override still says 16 and was left alone. */
   font-weight: 400;
   line-height: 1.4;
-  text-align: center;
   color: var(--ink);
 }
 
@@ -3378,14 +4818,30 @@ main {
   width: 3rem;
   height: 3rem;
   margin: 3rem auto 0;
-  font-size: 2rem;
-  line-height: 1;
-  color: var(--ink);
-  transition: color 0.3s ease, transform 0.3s var(--ease);
+  /* ⚠️ SAME PICTURE AS THE NAV'S — `nav_arrow.png` here too as of
+     2026-09-11; it briefly carried the circled `more-phone-back.png`.
+     See the nav rule for why `color` and `font-size` came off with the
+     old `←` glyph.
+
+     ⚠️ NO NEGATIVE MARGIN DOWN HERE, and that is not an omission. The
+     nav's arrow needs one because the artwork carries 16.7% of clear
+     space down each side and it has to sit flush on a LEFT edge. This
+     one is centred by `auto` margins, and symmetric padding centres
+     just fine — pulling it left would push it off centre.
+
+     ⚠️ WHICH ALSO MEANS IT LOOKS SMALLER THAN IT MEASURES: the box is
+     48 but the ink inside it is 32. */
+  transition: opacity 0.3s ease, transform 0.3s var(--ease);
+}
+
+.case__arrow {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .case__back:hover {
-  color: var(--blue);
+  opacity: 0.65;
   transform: translateX(-4px);
 }
 
@@ -3403,7 +4859,15 @@ main {
    be invisible. */
 
 .case__shots {
-  width: min(90rem, 100%);
+  /* ⚠️ 80rem / 1280 IS NOW THE DEFAULT FOR EVERY WRITE-UP. It was
+     90rem / 1440, with asterix.html alone opting down to 80 through a
+     `--tight` class; Aniket asked for every project to match Asterix
+     (2026-09-11), so the 80 moved here and that class is gone. The
+     exports are 1440 wide, so this draws them down 11% — which costs
+     nothing, a downscale only ever sharpens.
+     ⚠️ `.case__head` CARRIES THE SAME 80rem so the title keeps sitting
+     on the picture's left edge. Change one and change the other. */
+  width: min(80rem, 100%);
   margin-inline: auto;
   font-size: 0;
 }
@@ -3440,12 +4904,22 @@ main {
       The three numbers below take that to about 112 on both, with the
       back arrow living inside the gap rather than floating in it.
 
-   ⚠️ The `.footer__frame` override beats the phone band's own
-   `margin-top` on specificity, not on order — so ONE rule does both
-   bands. Don't split it into two. */
+   ⚠️ The `.case-page--gallery .footer` override beats the phone
+   rule's own `margin-top` on specificity, not on order — so ONE rule
+   does both widths. Don't split it into two. (It was written against
+   `.footer__frame`; that element went with the old band, 2026-09-10.) */
 
 .case__shots--full {
   width: 100%;
+}
+
+/* ⚠️ CAPPED AT THE FILE'S OWN WIDTH, so it is never upscaled.
+   `.case__shots` caps at 90rem (1440) and stretches whatever is in
+   it to fill — right for a 1440-wide write-up, but MarkIT's export
+   is 1072, so the default was blowing it up 34% and softening it.
+   67rem IS 1072. Re-export wider and this number moves with it. */
+.case__shots--narrow {
+  width: min(67rem, 100%);
 }
 
 .case-page--gallery .case {
@@ -3457,9 +4931,13 @@ main {
   /* 24, from 48 */
 }
 
-.case-page--gallery .footer__frame {
+/* ⚠️ `.footer`, NOT `.footer__frame` — the frame went with the old band
+   (2026-09-10) and the gap now lives on the footer element itself. */
+.case-page--gallery .footer {
   margin-top: 2.5rem;
-  /* 40, from 137 on desktop and 68 on phones */
+  /* 40, from 74 on desktop and 68 on phones. ⚠️ The desktop gap was
+     137 when this was written; Aniket took it to 74 (2026-09-10). This
+     still has to be the SMALLER of the two to be worth having. */
 }
 
 .case__coming-soon {
@@ -3485,15 +4963,16 @@ main {
   }
 
   .case-nav__back {
-    width: 1.75rem;
-    height: 1.75rem;
-    margin-left: -0.375rem;
-    font-size: 1.375rem;
-  }
-
-  .case-nav__title {
-    font-size: 1.125rem;
-    /* 18 */
+    --back-size: 1.625rem;
+    /* 26 — the ink lands at 17.3. It does NOT follow the desktop box all
+       the way down: the picture IS the whole tap target here. (The row
+       was 28 when that was written; it is 35 since the bar went to a
+       real 60 on 2026-09-12, so there is a little room now if the
+       arrow ever wants padding.) */
+    --back-pad: 0rem;
+    /* ⚠️ SIZES ONLY. The desktop rule's `margin-left` is written
+       against both variables, so it re-scales itself and must not be
+       repeated here. */
   }
 
   .case {
@@ -3501,24 +4980,119 @@ main {
     padding-bottom: 2.5rem;
   }
 
+  /* Title and description aligned as desktop (left and right), sized to 12px with equal left/right margins */
+  .case__head {
+    width: 100%;
+    padding-inline: var(--frame-pad, 1.25rem);
+    box-sizing: border-box;
+    margin: 0 0 1.5rem 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
   .case__name {
-    font-size: 1.75rem;
-    /* 28 */
+    font-size: 0.75rem;
+    /* 12px */
+    text-align: left;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .case__title {
-    margin-bottom: 1.75rem;
-    font-size: 1rem;
-    /* 16 */
+    max-width: 18rem;
+    font-size: 0.75rem;
+    /* 12px */
+    text-align: right;
   }
 
   .case__back {
     margin-top: 2rem;
-    font-size: 1.75rem;
+    width: 1.875rem;
+    height: 1.875rem;
+    /* 30 — reduced by 10px from 40 (2.5rem) */
   }
 
   .case__coming-soon {
     margin: 4.5rem auto;
     font-size: 2.25rem;
   }
+
+  /* MarkIT case study image left/right margin on phones per Aniket's ask */
+  .case__shots--narrow {
+    width: calc(100% - 2 * var(--frame-pad, 1.25rem));
+    margin-inline: auto;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ⚠️ TEMPORARY — FLORALS OFF
+   Aniket asked for every scroll flower disabled (2026-09-08).
+   Delete this block to bring them all back exactly as they were.
+   ═══════════════════════════════════════════════════════════ */
+.petal {
+  display: none !important;
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════
+   THE CURSOR
+
+   The page's own pointer: a hollow blue ring that fills in
+   solid over anything clickable. Both are inline SVG data
+   URIs — no file to load, so there is no first-move flicker
+   while an image fetches.
+
+   ⚠️ THE TWO NUMBERS AFTER THE url() ARE THE HOTSPOT — the
+   pixel inside the drawing that actually points. They are the
+   circle's centre (10 10 in a 20×20 box). Change the SVG size
+   and you must change them too, or the click lands off-centre.
+
+   `auto` / `pointer` at the end is the fallback for anything
+   that refuses the custom one (some Linux builds, and any
+   browser that caps cursor size).
+   ═══════════════════════════════════════════════════════════ */
+
+body {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='8' fill='%230071b7'/%3E%3C/svg%3E") 10 10, auto;
+}
+
+/* ⚠️ THE NATIVE CURSOR IS ONLY HIDDEN ONCE THE DRAWN ONE IS RUNNING.
+   `has-cursor` goes on <html> from app.js, on the first move of a real
+   mouse on a desktop-width screen — so a phone, a stylus, a keyboard
+   user or a browser with no JS keeps the blue cursor above and never
+   ends up with no pointer at all.
+
+   ⚠️ THE UNIVERSAL SELECTOR IS LOAD-BEARING. `cursor` inherits, but
+   the rule below sets it explicitly on every link and button, and
+   `html.has-cursor *` (0,1,1) is what outranks that (0,1,0) without
+   reaching for `!important`. */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none;
+}
+
+/* a size up over anything you can click */
+a,
+button,
+summary,
+[role="button"],
+.project-card,
+.lab__card {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='14' cy='14' r='12' fill='%230071b7'/%3E%3C/svg%3E") 14 14, pointer;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   ⚠️ THE PAGE GRADIENT IS OFF
+   Aniket asked for the grey wash under the hero removed
+   (2026-09-08), so the page sits on flat --paper all the way
+   down. The element and all its positioning maths are left
+   intact above — delete this one rule to bring the wash back
+   on desktop and phone together.
+   ═══════════════════════════════════════════════════════════ */
+.page-gradient {
+  display: none;
 }

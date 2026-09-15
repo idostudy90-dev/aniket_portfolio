@@ -39,9 +39,8 @@
         <div class="nav__content">
           <div class="nav__row">
             <a class="case-nav__back" href="index.html#playground" aria-label="Back to playground">
-              <span aria-hidden="true">&#8592;</span>
+              <img src="assests/nav_arrow.png" alt="" aria-hidden="true" width="48" height="48" decoding="async">
             </a>
-            <p class="case-nav__title">Ariana</p>
           </div>
           <img class="nav__rule" src="assests/nav-rule.svg" alt="" aria-hidden="true">
         </div>
@@ -54,11 +53,18 @@
        ══════════════════════════════════════════════════ -->
   <main class="case">
 
-    <h1 class="case__name">Ariana</h1>
+    <!-- ⚠️ ONE ROW, NOT TWO STACKED LINES. Aniket marked the name at
+         the LEFT edge of the content frame and the description at the
+         RIGHT (2026-09-11), so these are flex items in `.case__head`
+         now rather than two centred blocks. They stack again on phones,
+         where a row this wide cannot work. -->
+    <div class="case__head">
+      <h1 class="case__name">Ariana</h1>
 
-    <!-- The project's own description, exactly as it reads on the card
-         in the projects section. If one changes, change the other. -->
-    <p class="case__title">an exhibition assistant letting people know the project without any person standing, basically a simple voice enabled chat bot</p>
+      <!-- The project's own description, exactly as it reads on the card
+           in the projects section. If one changes, change the other. -->
+      <p class="case__title">an exhibition assistant letting people know the project without any person standing, basically a simple voice enabled chat bot</p>
+    </div>
 
     <!-- ⚠️ NO PICTURES YET. `assests/ariana/` is empty — drop the
          write-up's slices in there (1.png, 2.png, … in the order they
@@ -69,47 +75,72 @@
 
 
     <a class="case__back" href="index.html#playground" aria-label="Back to playground">
-      <span class="case__arrow" aria-hidden="true">&#8592;</span>
+      <img class="case__arrow" src="assests/nav_arrow.png" alt="" aria-hidden="true" width="48" height="48" loading="lazy" decoding="async">
     </a>
 
   </main>
 
   <!-- ══════════════════════════════════════════════════
-       FOOTER — the same one as the home page.
-       ⚠️ It is a COPY. If index.html's footer changes, change
-       it here too. All three links still point at `#`.
+       THE FOOTER WEDGE — the same one as the home page.
+       ⚠️ It is a COPY. If index.html's footer changes, change it here
+       too, or the next regenerate quietly undoes it.
+
+       ⚠️ THIS REPLACED THE WHOLE CONNECT BAND — Aniket asked for the
+       footer out and this triangle in its place (2026-09-10). The
+       laptop, "lets connect", the three link chips and the pen mark all
+       went with it, so THE SITE CARRIES NO CONTACT LINKS ANY MORE. That
+       is the change, not an oversight.
+
+       ⚠️ `%20`, NOT A RAW SPACE, and the file really is spelled
+       "triagle" — that is the asset's own name on disk.
        ══════════════════════════════════════════════════ -->
   <footer class="footer" id="connect">
-    <div class="footer__frame" data-reveal>
+    <img class="footer__wedge" src="assests/footer%20triagle.png" alt="" aria-hidden="true"
+         data-reveal loading="lazy" decoding="async" width="4172" height="1182">
 
-      <div class="footer__rule" aria-hidden="true">
-        <span class="footer__line footer__line--a"></span>
-        <img class="footer__x footer__x--1" src="assests/footer-mark.png" alt="" width="79" height="76">
-        <span class="footer__line footer__line--b"></span>
-        <img class="footer__x footer__x--2" src="assests/footer-mark.png" alt="" width="79" height="76">
-        <span class="footer__line footer__line--c"></span>
-        <img class="footer__x footer__x--3" src="assests/footer-mark.png" alt="" width="79" height="76">
-        <span class="footer__line footer__line--d"></span>
-      </div>
+    <!-- ⚠️ THE TEXT LIES OVER THE PICTURE, and it is placed against the
+         PICTURE, not against the page. Aniket marked two spots on the
+         wedge (2026-09-10): the heading about a third of the way down and
+         the chip row under it, both near the middle. Each is anchored as a
+         PERCENTAGE of the wedge's height in styles.css, so the pair keeps
+         its place on the shape at any window width.
 
-      <p class="footer__title"><span class="footer__lets">lets</span> connect</p>
+         ⚠️ BOTH SIT ON THE WHITE HALF. At this x the blue does not start
+         until ~88% down, so the drawn colours — grey heading, brand
+         labels — still read. Push either much lower or much further right
+         and it crosses the diagonal onto blue, where they will not. -->
+    <p class="footer__title" data-reveal><span class="footer__lets">lets</span> connect</p>
 
-      <ul class="footer__links">
-        <li><a class="footer__link" href="mailto:aniket.sharma@iitg.ac.in" aria-label="Email Aniket">
-          <img src="assests/email.png" alt="" width="348" height="135"></a></li>
-        <li><a class="footer__link" href="https://www.linkedin.com/in/aniket-kumar-sharma-7b370a381/" target="_blank" rel="noopener noreferrer" aria-label="Aniket on LinkedIn">
-          <img src="assests/linkedin.png" alt="" width="438" height="135"></a></li>
-        <li><a class="footer__link" href="https://www.behance.net/aniket-sharma" target="_blank" rel="noopener noreferrer" aria-label="Aniket on Behance">
-          <img src="assests/behance.png" alt="" width="444" height="135"></a></li>
-      </ul>
-
-      <img class="footer__pc" src="assests/footer%20pc.png" alt=""
-           width="2080" height="1564">
-
-      <img class="footer__scribble" src="assests/hero-scribble.svg" alt=""
-           aria-hidden="true" width="237" height="207">
-
-    </div>
+    <!-- ⚠️ REAL TEXT, NOT THREE PNGs. Each chip is a glyph, a <span> and
+         an out-arrow, so the link says its own name and the label colours
+         are one line of CSS each. -->
+    <ul class="footer__links" data-reveal>
+      <li>
+        <a class="footer__link footer__link--email" href="mailto:aniket.sharma@iitg.ac.in">
+          <img class="footer__glyph footer__glyph--mail" src="assests/icon-mail.svg" alt="" loading="lazy" decoding="async" width="30" height="30">
+          <span class="footer__label">Email</span>
+          <img class="footer__out" src="assests/icon-out.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" width="24" height="24">
+        </a>
+      </li>
+      <li>
+        <a class="footer__link footer__link--linkedin" href="https://www.linkedin.com/in/aniket-kumar-sharma-7b370a381/" target="_blank" rel="noopener noreferrer">
+          <!-- ⚠️ WRAPPED, because the Figma overscans this one by ~1% to
+               keep the logo's own edge off the box. The other two do not. -->
+          <span class="footer__glyph footer__glyph--linkedin">
+            <img src="assests/icon-linkedin.jpg" alt="" loading="lazy" decoding="async" width="499" height="499">
+          </span>
+          <span class="footer__label">Linkedin</span>
+          <img class="footer__out" src="assests/icon-out.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" width="24" height="24">
+        </a>
+      </li>
+      <li>
+        <a class="footer__link footer__link--behance" href="https://www.behance.net/aniket-sharma" target="_blank" rel="noopener noreferrer">
+          <img class="footer__glyph footer__glyph--behance" src="assests/icon-behance.png" alt="" loading="lazy" decoding="async" width="640" height="640">
+          <span class="footer__label">Behance</span>
+          <img class="footer__out" src="assests/icon-out.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" width="24" height="24">
+        </a>
+      </li>
+    </ul>
   </footer>
 
   <script src="app.js"></script>

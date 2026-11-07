@@ -47,13 +47,13 @@
        ══════════════════════════════════════════════════════════════ -->
   <link rel="preload" as="image" type="image/webp" media="(min-width: 1024px)" href="assests/asterix-desktop.webp">
   <link rel="preload" as="image" type="image/webp" media="(min-width: 1024px)" href="assests/kiwi-dekstop.webp">
-  <link rel="preload" as="image" type="image/webp" media="(min-width: 1024px)" href="assests/acsp-desktop.webp">
   <link rel="preload" as="image" type="image/webp" media="(min-width: 1024px)" href="assests/gmaps-desktop.webp">
+  <link rel="preload" as="image" type="image/webp" media="(min-width: 1024px)" href="assests/acsp-desktop.webp">
   <link rel="preload" as="image" type="image/png" media="(min-width: 1024px)" href="assests/roopak-dekstop.png">
   <link rel="preload" as="image" type="image/png" media="(max-width: 1023px)" href="assests/asterix-phone.png">
   <link rel="preload" as="image" type="image/png" media="(max-width: 1023px)" href="assests/kiwi-phone.png">
-  <link rel="preload" as="image" type="image/webp" media="(max-width: 1023px)" href="assests/acsp-phone.webp">
   <link rel="preload" as="image" type="image/webp" media="(max-width: 1023px)" href="assests/gmaps-phone.webp">
+  <link rel="preload" as="image" type="image/webp" media="(max-width: 1023px)" href="assests/acsp-phone.webp">
   <link rel="preload" as="image" type="image/webp" media="(max-width: 1023px)" href="assests/roopak-phone.webp">
 
   <!-- This one line has to run BEFORE the page draws, which is why it's
@@ -261,7 +261,7 @@
     <!-- ══════════════════════════════════════════════════
          PROJECTS
          Two quite different layouts. On desktop: Asterix full width,
-         Kiwi full width, then acsp and Google Maps side by side, then
+         Kiwi full width, then Google Maps and acsp side by side, then
          Roopak on its own centred row. On phones the same five become a
          swipeable carousel — see the phone block in styles.css. The
          covers are different crops per band, hence the <picture> on
@@ -351,21 +351,6 @@
               <p class="project__blurb">a tool to help early stage founders manage there finances</p>
             </a>
           </li>
-          <li class="project project--acsp">
-            <a class="project__link" href="acsp.html" data-reveal>
-              <picture class="project__cover">
-                <source media="(max-width: 1023px)" type="image/webp" srcset="assests/acsp-phone.webp">
-                <source media="(max-width: 1023px)" srcset="assests/acsp-phone.png">
-                <source type="image/webp" srcset="assests/acsp-desktop.webp">
-                <img src="assests/acsp-%20dekstop.png" alt="" decoding="async" fetchpriority="high" width="423" height="515">
-              </picture>
-              <p class="project__meta">
-                <span class="project__name">acsp</span>
-                <span class="project__year">2026</span>
-              </p>
-              <p class="project__blurb">Exploring a future shaped by extremely short human attention spans</p>
-            </a>
-          </li>
           <li class="project project--gmaps">
             <a class="project__link" href="gmaps.html" data-reveal>
               <picture class="project__cover">
@@ -386,6 +371,21 @@
                    generator's old "a redesign of google maps". -->
               <p class="project__blurb">One platform. Every mode. Any situation.
                 Make urban mobility, legible, honest, and adaptive.</p>
+            </a>
+          </li>
+          <li class="project project--acsp">
+            <a class="project__link" href="acsp.html" data-reveal>
+              <picture class="project__cover">
+                <source media="(max-width: 1023px)" type="image/webp" srcset="assests/acsp-phone.webp">
+                <source media="(max-width: 1023px)" srcset="assests/acsp-phone.png">
+                <source type="image/webp" srcset="assests/acsp-desktop.webp">
+                <img src="assests/acsp-%20dekstop.png" alt="" decoding="async" fetchpriority="high" width="423" height="515">
+              </picture>
+              <p class="project__meta">
+                <span class="project__name">acsp</span>
+                <span class="project__year">2026</span>
+              </p>
+              <p class="project__blurb">Exploring a future shaped by extremely short human attention spans</p>
             </a>
           </li>
           <li class="project project--roopak">

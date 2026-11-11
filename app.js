@@ -333,7 +333,10 @@
 
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav__link'));
   var sections = links
-    .map(function (link) { return document.querySelector(link.getAttribute('href')); })
+    .map(function (link) {
+      var href = link.getAttribute('href');
+      return (href && href.charAt(0) === '#') ? document.querySelector(href) : null;
+    })
     .filter(Boolean);
 
   function setActive(id) {
@@ -458,7 +461,7 @@
        value and no fifth, the same shape as the IITG mark above. Draw a
        card for it one day and the swap is: wording out, `{ src, w, h }`
        in. A zone is one or the other, never both. */
-    ['.hero__doodle--camera', null, true, null,
+    ['.hero__doodle--camera, .hero__doodle-wrap--camera', null, true, null,
       { src: 'assests/camera hover.png', w: 162, h: 82 }],
     ['.hero__doodle--walks',  null, true, null,
       { src: 'assests/long walk hover.png', w: 162, h: 122 }],
@@ -466,9 +469,7 @@
   ];
 
   if (cursor) {
-    var deskMq = window.matchMedia(
-      '(min-width: 1024px) and (hover: hover) and (pointer: fine)'
-    );
+    var deskMq = window.matchMedia('(min-width: 1024px)');
     var CLICKABLE = 'a, button, summary, [role="button"]';
     var root = document.documentElement;
 
@@ -597,7 +598,7 @@
     }
 
     function follow(event) {
-      if (!deskMq.matches || event.pointerType !== 'mouse') { hide(); return; }
+      if (!deskMq.matches || event.pointerType === 'touch') { hide(); return; }
 
       /* ⚠️ WRITTEN STRAIGHT FROM THE EVENT, EVERY MOVE, WITH NO
          SMOOTHING. The old chip was a label chasing the cursor and an
@@ -691,21 +692,13 @@
        works if `.cursor` is ever taken out of index.html. Change one of
        these two strings and you open a gap with no answer in it, or an
        overlap with two. */
-    var popDeskMq = window.matchMedia(
-      '(min-width: 1024px) and (hover: hover) and (pointer: fine)'
-    );
+    var popDeskMq = window.matchMedia('(min-width: 1024px)');
     var popLabel = pop.querySelector('.doodle-pop__label');
     var popCard = pop.querySelector('.doodle-pop__card');
     var popStage = pop.parentElement;
 
-    /* Aniket's number: 5s at first, 3s the same day (2026-09-12). The
-       card goes up on the tap and comes down on its own — there is
-       nothing to dismiss.
-
-       ⚠️ IT IS THE TIME THE CARD IS READABLE, not the time it is on
-       screen. The 200ms it takes to arrive runs inside this, and the
-       160ms exit runs after it. */
-    var POP_MS = 3000;
+    /* Card stays visible for 2 seconds on tap, then disappears */
+    var POP_MS = 2000;
     var popTimer = null;
 
     /* ⚠️ THE CARDS ARE ALREADY IN THE CACHE BY NOW — the probe up in
@@ -788,8 +781,10 @@
 
       /* the tile's middle, in cluster pixels — both are absolute
          children of the cluster, so these offsets share one origin */
-      var midX = tile.offsetLeft + tile.offsetWidth / 2;
-      var midY = tile.offsetTop + tile.offsetHeight / 2;
+      var stageRect = popStage.getBoundingClientRect();
+      var tileRect = tile.getBoundingClientRect();
+      var midX = (tileRect.left - stageRect.left) + tileRect.width / 2;
+      var midY = (tileRect.top - stageRect.top) + tileRect.height / 2;
 
       /* ⚠️ CLAMPED, OR THE WALKER'S CARD HANGS OFF THE RIGHT. That tile
          sits at about 83% of the cluster, so a card centred on it would
@@ -842,20 +837,27 @@
     }
 
     popZones.forEach(function (zone) {
-      var tile = document.querySelector(zone[0]);
+      var sel = zone[0].split(',')[0].trim();
+      var tile = document.querySelector(sel);
       if (!tile) return;
 
       /* ⚠️ `click`, NOT `pointerdown`. A tap that turns into a scroll
          fires pointerdown and would leave a card open behind the
-         moving page; click waits to see that the finger stayed put.
-
-         The tiles already take pointer events — desktop needs them to
-         for the cursor's zones — and nothing else on the page listens
-         to them, so there is no click of their own to protect. */
-      tile.addEventListener('click', function () {
+         moving page; click waits to see that the finger stayed put. */
+      function handleTap(e) {
         if (popDeskMq.matches) { return; }
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
         openPop(tile, zone);
-      });
+      }
+
+      tile.addEventListener('click', handleTap);
+      var wrap = tile.closest('.hero__doodle-wrap');
+      if (wrap) {
+        wrap.addEventListener('click', handleTap);
+      }
     });
 
     /* widening into the cursor's range mid-card: the cursor takes over
@@ -878,7 +880,10 @@
     link.addEventListener('click', function () {
       nav.classList.remove('is-hidden');
 
-      var target = document.querySelector(link.getAttribute('href'));
+      var href = link.getAttribute('href');
+      if (!href || href.charAt(0) !== '#') return;
+
+      var target = document.querySelector(href);
       if (!target) return;
 
       // let screen readers and keyboards follow along too

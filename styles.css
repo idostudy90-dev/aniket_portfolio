@@ -804,6 +804,20 @@ a {
    tile's rotated shape. Each is absolutely positioned to sit
    exactly on top of its tile, pointer-events: none so they
    never steal clicks. */
+.hero__doodle-wrap {
+  display: contents;
+}
+
+.hero__stage picture,
+.hero__cluster picture {
+  display: contents;
+}
+
+.hero__doodle-stroke,
+.hero__doodle-stroke * {
+  pointer-events: none !important;
+}
+
 .hero__doodle-stroke {
   position: absolute;
   pointer-events: none;
@@ -932,7 +946,7 @@ a {
 
    ⚠️ `(hover: hover) and (pointer: fine)` — a tap on a touchscreen
    fires hover and would leave a tile stuck zoomed. */
-@media (hover: hover) and (pointer: fine) {
+@media (min-width: 1024px) {
 
   .hero__doodle--camera,
   .hero__doodle--music,
@@ -1504,7 +1518,7 @@ a {
    ⚠️ `(hover: hover) and (pointer: fine)` — on a touchscreen a tap
    fires hover, and the card would stay shrunk until you tapped
    somewhere else. */
-@media (hover: hover) and (pointer: fine) {
+@media (min-width: 1024px) {
 
   .project__link {
     /* from the centre, so the card pulls in evenly on all four sides
@@ -1994,7 +2008,7 @@ a {
 
    ⚠️ `(hover: hover) and (pointer: fine)` — a tap on a touchscreen
    fires hover and would leave a card stuck shrunk. */
-@media (hover: hover) and (pointer: fine) {
+@media (min-width: 1024px) {
 
   .lab__card {
     transform-origin: center;

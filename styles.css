@@ -797,6 +797,52 @@ a {
   /* 399 */
 }
 
+/* ── THE DOODLE STROKES ─────────────────────────────────────
+   Animated SVG borders that orbit each tile. One desktop SVG
+   and one phone SVG per tile — the desktop variant matches the
+   desktop tile's shape, the phone variant matches the phone
+   tile's rotated shape. Each is absolutely positioned to sit
+   exactly on top of its tile, pointer-events: none so they
+   never steal clicks. */
+.hero__doodle-stroke {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.hero__doodle-stroke__path {
+  stroke-opacity: 0.2;
+}
+
+.hero__doodle-stroke--desktop {
+  display: block;
+}
+
+.hero__doodle-stroke--phone {
+  display: none;
+}
+
+.hero__doodle-stroke--camera {
+  left: 14.931cqw;
+  top: calc(13.455cqw + var(--collage-drop));
+  width: 5cqw;
+  height: 5cqw;
+}
+
+.hero__doodle-stroke--music {
+  left: 15.625cqw;
+  top: calc(20.139cqw + var(--collage-drop));
+  width: 5.75cqw;
+  height: 5.75cqw;
+}
+
+.hero__doodle-stroke--walks {
+  left: 17.795cqw;
+  top: calc(27.691cqw + var(--collage-drop));
+  width: 5.75cqw;
+  height: 5.75cqw;
+}
+
 /* 449.9, 547.6 */
 /* ── THE TILES' HOVER CARDS ──────────────────────────────────
    The blue cards Aniket drew behind two of the doodles (2026-09-09):
@@ -890,14 +936,18 @@ a {
 
   .hero__doodle--camera,
   .hero__doodle--music,
-  .hero__doodle--walks {
+  .hero__doodle--walks,
+  .hero__doodle-stroke {
     transition: transform 200ms ease;
     will-change: transform;
   }
 
   .hero__doodle--camera:hover,
   .hero__doodle--music:hover,
-  .hero__doodle--walks:hover {
+  .hero__doodle--walks:hover,
+  .hero__doodle-wrap--camera:hover + .hero__doodle-stroke--camera,
+  picture:has(.hero__doodle--music:hover) + .hero__doodle-stroke--music,
+  picture:has(.hero__doodle--walks:hover) + .hero__doodle-stroke--walks {
     transform: scale(1.08);
   }
 
@@ -4042,6 +4092,27 @@ main {
        This is the tile that decides how much bigger the set can go. */
   }
 
+  .hero__doodle-stroke--camera {
+    left: 12.9295cqw;
+    top: -6.2985cqw;
+    width: 25.641cqw;
+    height: 25.641cqw;
+  }
+
+  .hero__doodle-stroke--music {
+    left: 11.42cqw;
+    top: 26.0523cqw;
+    width: 17.9487cqw;
+    height: 17.9487cqw;
+  }
+
+  .hero__doodle-stroke--walks {
+    left: 61.4295cqw;
+    top: 10.8205cqw;
+    width: 25.641cqw;
+    height: 25.641cqw;
+  }
+
   /* ── The tools row on phones ──
      Back in the normal flow, centred by the stage, sized in rem — the
      cluster's cqw doesn't reach out here. Off the mobile frame: four
@@ -4079,6 +4150,14 @@ main {
    ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 767px) {
+  .hero__doodle-stroke--desktop {
+    display: none;
+  }
+
+  .hero__doodle-stroke--phone {
+    display: block;
+  }
+
   :root {
     --frame-pad: 1.25rem;
     /* 20 — matches the mobile frame inset */
@@ -4501,6 +4580,7 @@ main {
 
 .hero__photo,
 .hero__doodle,
+.hero__doodle-stroke,
 .hero__label,
 .hero__scribble,
 .hero__guide,
@@ -4531,18 +4611,21 @@ main {
 }
 
 .hero__doodle--camera,
+.hero__doodle-stroke--camera,
 .hero__label--photography,
 .hero__scribble--camera {
   animation-delay: 0.55s;
 }
 
 .hero__doodle--music,
+.hero__doodle-stroke--music,
 .hero__label--music,
 .hero__scribble--music {
   animation-delay: 0.67s;
 }
 
 .hero__doodle--walks,
+.hero__doodle-stroke--walks,
 .hero__label--walks,
 .hero__scribble--walks {
   animation-delay: 0.79s;
